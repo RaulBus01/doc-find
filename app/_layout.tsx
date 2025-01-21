@@ -31,7 +31,8 @@ export default function TabLayout() {
 
       <Tabs
         screenOptions={{
-          headerShown: false
+          headerShown: false,
+         
         }}
         tabBar={props => <TabBar {...props} />}
       
