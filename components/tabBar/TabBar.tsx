@@ -24,6 +24,10 @@ const allowedRoutes: AllowedRoute[] = [
 ];
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
+    const currentRoute = state.routes[state.index];
+    
+    if (currentRoute.name === 'map') return null;
+
     return (
         <View style={styles.container}>
             {state.routes

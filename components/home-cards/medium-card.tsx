@@ -36,7 +36,7 @@ const stylesMedium = StyleSheet.create({
   text: {
       
       textAlign: 'center',
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: 'Roboto-Medium',
      
   },
