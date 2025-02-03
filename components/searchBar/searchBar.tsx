@@ -90,12 +90,14 @@ const styles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: 20,
-    left: 20,
-    right: 20,
+    left:50,
+    right: 50,
+    width: '75%',
     height: 50,
     backgroundColor: Colors.light.textlight,
     borderRadius: 12,
     flexDirection: 'row',
+    
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {

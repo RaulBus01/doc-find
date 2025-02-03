@@ -1,7 +1,8 @@
 import { View, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type AllowedRoute = {
   name: string;
@@ -25,10 +26,19 @@ const allowedRoutes: AllowedRoute[] = [
 ];
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
-  if (!IsTabBarVisible) return null;
-  
+  // Shared value to control vertical translation
+  const translateY = useSharedValue(50); 
+
+  useEffect(() => {
+    translateY.value = withTiming(IsTabBarVisible ? 0 : 50, { duration: 300 });
+  }, [IsTabBarVisible, translateY]);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
+
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
       {state.routes
         .filter((route: { name: string }) => {
           return allowedRoutes.find(allowed => allowed.path === route.name);
@@ -41,6 +51,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
             options.tabBarLabel ?? options.title ?? matchingRoute.name;
           const isFocused = state.index === index;
           const onPress = () => {
+            console.log('onPress');
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,
@@ -70,7 +81,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
             />
           );
         })}
-    </View>
+    </Animated.View>
   );
 };
 

@@ -14,8 +14,9 @@ import { Colors } from "@/constants/Colors";
 import { TextInput } from "react-native";
 import CustomSearchBar from "@/components/searchBar/searchBar";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
-import { GestureDetector } from "react-native-gesture-handler";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { on } from "events";
+import { ComposedGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/gestureComposition";
 
 
 export default function Map() {
@@ -78,16 +79,9 @@ export default function Map() {
   }, []);
   const handleSearch = (text: string) => {
     setSearch(text);
-    console.log(text);
-    // Add your search logic here
-  };
-
-  const onPanDrag = () => {
-    console.log("Pan Drag");
-    setIsTabBarVisible(false);
-  }
 
   
+  };
 
   return (
     
@@ -106,7 +100,7 @@ export default function Map() {
 
 
       <CustomSearchBar onSearch={handleSearch} />
-
+      
       <MapView
         customMapStyle={mapStyle}
         style={StyleSheet.absoluteFill}
@@ -122,21 +116,19 @@ export default function Map() {
           longitudeDelta: 0.0421,
         }}
         ref={mapRef}
+        onPanDrag={() => setIsTabBarVisible(false)}
         onRegionChangeComplete={() => setIsTabBarVisible(true)}
-      
-        onPanDrag={() =>
-        { console.log("Pan Drag");
-          setIsTabBarVisible(false)}
-        }
-        onTouchStart={() => {
-          console.log("Touch Start");
-          setIsTabBarVisible(false);
+       
+        onTouchEnd={() => {
+          setTimeout(() => setIsTabBarVisible(true), 100);
+        }}
 
-        }
-        }
+
+       
       />
+     
     </View>
-  
+ 
   );
 }
 

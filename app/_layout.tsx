@@ -26,8 +26,9 @@ export default function TabLayout() {
     return null;
   }
   return (
+    <GestureHandlerRootView>
     <SafeAreaProvider>
-      <GestureHandlerRootView>
+      
         <TabBarVisibilityContext.Provider value={{ isTabBarVisible, setIsTabBarVisible }}>
           <StatusBar backgroundColor={Colors.light.tint} barStyle={'dark-content'} />
           <Tabs
@@ -39,7 +40,9 @@ export default function TabLayout() {
             )}
           />
         </TabBarVisibilityContext.Provider>
-      </GestureHandlerRootView>
+  
     </SafeAreaProvider>
+    </GestureHandlerRootView>
+    
   );
 }
