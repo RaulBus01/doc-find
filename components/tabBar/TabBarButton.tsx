@@ -35,7 +35,7 @@ const TabBarButton = (props) => {
     <Pressable {...props} style={styles.container}>
         <Animated.View style={{...animatedIcon}}>
 
-        <Ionicons name={isFocused ? iconDefault : iconFocused} size={24} color={isFocused} />
+        <Ionicons name={isFocused ? iconDefault : iconFocused} size={20} color={isFocused} />
       </Animated.View>
         <Animated.Text style={[{ color: isFocused ? color : 'black' },animatedText]}>
             {label}
