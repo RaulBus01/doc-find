@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,13 +6,17 @@ import {
   Touchable,
   TouchableOpacity,
 } from "react-native";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Camera, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { Colors } from "@/constants/Colors";
 import { TextInput } from "react-native";
 import CustomSearchBar from "@/components/searchBar/searchBar";
+import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { GestureDetector } from "react-native-gesture-handler";
+import { on } from "events";
+
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -22,7 +26,8 @@ export default function Map() {
   const mapRef = useRef<MapView>(null);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
-
+  const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); // Consume context
+  
   const userLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
@@ -31,6 +36,22 @@ export default function Map() {
     }
 
     let location = await Location.getCurrentPositionAsync({});
+  };
+
+  const handleZoomIn = () => {
+    mapRef.current?.getCamera().then((camera) => {
+      if(camera.zoom )
+      camera.zoom += 1;
+      mapRef.current?.animateCamera(camera, { duration: 300 });
+    });
+  };
+
+  const handleZoomOut = () => {
+    mapRef.current?.getCamera().then((camera) => {
+      if(camera.zoom )
+      camera.zoom -= 1;
+      mapRef.current?.animateCamera(camera, { duration: 300 });
+    });
   };
 
   const getUserLocation = async () => {
@@ -60,11 +81,30 @@ export default function Map() {
     console.log(text);
     // Add your search logic here
   };
+
+  const onPanDrag = () => {
+    console.log("Pan Drag");
+    setIsTabBarVisible(false);
+  }
+
+  
+
   return (
+    
     <View style={styles.container}>
+      <View style={styles.buttonsContainer}>
       <TouchableOpacity style={styles.locationButton} onPress={getUserLocation}>
         <Ionicons name="locate-sharp" size={22} color="black" />
       </TouchableOpacity>
+      <TouchableOpacity style={styles.plusButton} onPress={handleZoomIn}>
+        <Ionicons name="add" size={22} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.minusButton} onPress={handleZoomOut}>
+        <Ionicons name="remove" size={22} color="black" />
+      </TouchableOpacity>
+      </View>
+
+
       <CustomSearchBar onSearch={handleSearch} />
 
       <MapView
@@ -74,7 +114,7 @@ export default function Map() {
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={true}
-        zoomControlEnabled={true}
+        zoomControlEnabled={false}
         initialRegion={{
           latitude: location?.coords?.latitude || 46,
           longitude: location?.coords?.longitude || 23,
@@ -82,12 +122,21 @@ export default function Map() {
           longitudeDelta: 0.0421,
         }}
         ref={mapRef}
-        onRegionChangeComplete={(region) => {
-          console.log(region);
+        onRegionChangeComplete={() => setIsTabBarVisible(true)}
+      
+        onPanDrag={() =>
+        { console.log("Pan Drag");
+          setIsTabBarVisible(false)}
+        }
+        onTouchStart={() => {
+          console.log("Touch Start");
+          setIsTabBarVisible(false);
+
         }
         }
       />
     </View>
+  
   );
 }
 
@@ -96,13 +145,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationButton: {
-    position: "absolute",
-    bottom: 100,
-    right: 10,
-    zIndex: 1,
     backgroundColor: Colors.light.lightgreen,
     padding: 10,
     borderRadius: 10,
+    marginLeft: 10,
   },
   searchBar: { 
     position: "absolute",
@@ -120,6 +166,27 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     color:"black"
 
+  },
+  buttonsContainer: {
+    position: "absolute",
+    flexDirection: "column",
+    justifyContent: "center",
+    gap: 5,
+    bottom: 55,
+    right: 5,
+    zIndex: 1,
+  },
+  plusButton: {
+    backgroundColor: Colors.light.lightgreen,
+    padding: 10,
+    borderRadius: 10,
+    marginLeft: 10,
+  },
+  minusButton: {
+    backgroundColor: Colors.light.lightgreen,
+    padding: 10,
+    borderRadius: 10,
+    marginLeft: 10,
   },
   
 });
