@@ -117,7 +117,7 @@ export default function Map() {
         }}
         ref={mapRef}
         onPanDrag={() => setIsTabBarVisible(false)}
-        onRegionChangeComplete={() => setIsTabBarVisible(true)}
+        // onRegionChangeComplete={() => setIsTabBarVisible(true)}
        
         onTouchEnd={() => {
           setTimeout(() => setIsTabBarVisible(true), 100);

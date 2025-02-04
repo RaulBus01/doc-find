@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
       height: 2,
     },
     shadowRadius: 8,
-    elevation: 5,
+    elevation: 10,
     zIndex: 1,
   },
   searchIcon: {
