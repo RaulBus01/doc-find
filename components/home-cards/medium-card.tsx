@@ -23,23 +23,24 @@ const MediumCard = ({text,icon,color}:MediumCardProps) => {
 
 const stylesMedium = StyleSheet.create({
   container: {
-      flex: 1,
-      flexDirection: 'column',
-      marginHorizontal: 5,
-      justifyContent: 'center',
-      gap: 5,
-      alignItems: 'center',
-      width:128,
-      height:94,
-      borderRadius:25
+    flexDirection: 'column',
+    marginHorizontal: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 130,
+    height: 100,
+    borderRadius: 20,
+    padding: 12,
+    boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.1)',
+    elevation: 5,
+    gap: 8,
   },
   text: {
-      
-      textAlign: 'center',
-      fontSize: 16,
-      fontFamily: 'Roboto-Medium',
-      color: Colors.light.text,
+    textAlign: 'center',
+    fontSize: 15,
+    fontFamily: 'Roboto-Medium',
+    color: Colors.light.text,
+    letterSpacing: 0.3,
   },
-
 })
 export default MediumCard

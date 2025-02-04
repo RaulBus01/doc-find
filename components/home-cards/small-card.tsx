@@ -29,7 +29,11 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       width:128,
       height:51,
-      borderRadius:25
+      borderRadius:25,
+      boxShadow: '5px 5px 5px 1px rgba(0, 0, 0, 0.1)',
+      
+      elevation: 5,
+      
   },
   text: {
       
@@ -37,6 +41,7 @@ const styles = StyleSheet.create({
       fontSize: 16,
       fontFamily: 'Roboto-Medium',
       color: Colors.light.text,
+      letterSpacing: 0.3,
   },
 
 })

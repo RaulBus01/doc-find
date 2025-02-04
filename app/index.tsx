@@ -48,7 +48,7 @@ console.log(top,bottom)
     return <View style={{ padding: 10 }}>
       <Text style={[styles.text, { paddingLeft: 10 }]}>Your Profiles</Text>
       <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        <LargeCard text={'Start New Chat'} icon={'add-circle-outline'} color={Colors.light.mediumbackground} />
+        <LargeCard text={'User1'} icon={'add-circle-outline'} color={Colors.light.mediumbackground} />
         <LargeCard text={'Blood Analysis'} icon={'😷'} color={Colors.light.tint} />
         <LargeCard text={'Fever'} icon={'🤒'} color={Colors.light.darkbackground} />
       </ScrollView>
