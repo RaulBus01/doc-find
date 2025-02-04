@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       fontSize: 16,
       fontFamily: 'Roboto-Medium',
-     
+      color: Colors.light.text,
   },
 
 })
