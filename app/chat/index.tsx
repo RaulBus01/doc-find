@@ -1,99 +1,106 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
-import { Entypo, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import MessageBar from '@/components/ChatMessageBar/ChatMessageBar';
-import React from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Dimensions } from 'react-native';
+import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
+import MessageBar from '../../components/ChatMessageBar/ChatMessageBar';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useState } from 'react';
 
-const ChatScreen = () => {
-  const {top, bottom} = useSafeAreaInsets();
-  const [localMessage, setLocalMessage] = React.useState('');
-  const handleSendMessage = () => {
-    console.log('Sending message', localMessage);
-  }
-  
+const ChatPage = () => {
+    const [message, setMessage] = useState('');
 
-  const handleNewChat = () => {
-    console.log('New chat');
-  };
+    const handleMessageSend = (text: string) => {
+        console.log('Sending message:', text);
+        // Add your message sending logic here
+    };
 
-  const handleHistory = () => {
-    console.log('Chat history');
-  };
+    const handleModalPress = () => {
+        console.log('Modal pressed');
+        // Add your modal logic here
+    };
 
-  function setModalVisible(arg0: boolean): void {
-    throw new Error('Function not implemented.');
-  }
+    return (
+        <SafeAreaView style={styles.container}>
+            {/* Header */}
+            <View style={styles.header}>
+                <Text style={styles.headerTitle}>AI Assistant</Text>
+                <View style={styles.headerIcons}>
+                    <TouchableOpacity 
+                        style={styles.iconButton}
+                        onPress={() => console.log('History')}
+                    >
+                        <FontAwesome name="history" size={24} color="#333" />
+                    </TouchableOpacity>
+                    <TouchableOpacity 
+                        style={styles.iconButton}
+                        onPress={() => console.log('New chat')}
+                    >
+                        <Entypo name="new-message" size={24} color="#333" />
+                    </TouchableOpacity>
+                   
+               
+                </View>
+            </View>
 
-  return (
-    <SafeAreaView style={[styles.safeArea, {paddingTop: top, paddingBottom: bottom}]}>
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>DocAI</Text>
-          <View style={styles.headerButtons}>
-            <TouchableOpacity style={styles.headerButton} onPress={handleHistory}>
-              <FontAwesome5 name="history" size={22} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerButton} onPress={handleNewChat}>
-              <Entypo name="new-message" size={22} color="black" />
-            </TouchableOpacity>
-          </View>
-        </View>
-        <View style={styles.chatContainer}>
-          <Text>Chat messages will go here</Text>
-        </View>
-      </View>
-      <View style={styles.footer}>
-        <MessageBar 
-          onModalPress={() => setModalVisible(true)}
-          onMessageSend={handleSendMessage}
-          message={localMessage}
-          setMessage={setLocalMessage}
-        />
-      </View>
-    </SafeAreaView>
-  );
-}
+            {/* Chat Content */}
+            <View style={styles.chatContainer}>
+                <Text style={styles.placeholder}>Your chat messages will appear here</Text>
+            </View>
+
+           <View style={styles.footer}>
+            <MessageBar
+                message={message}
+                setMessage={setMessage}
+                onMessageSend={handleMessageSend}
+                onModalPress={handleModalPress}
+            />
+            </View>
+        </SafeAreaView>
+    );
+};
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    position: 'absolute',
-    right: 16,
-    alignItems: 'center',
-  },
-  headerButton: {
-    marginLeft: 15,
-    padding: 5,
-  },
-  chatContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 80,
-    left: 0,
-    right: 0,
-  },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#eee',
+    },
+    footer:{
+        position: 'absolute',
+        bottom: 50,
+        
+    },
+
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: '600',
+        color: '#333',
+    },
+    headerIcons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    iconButton: {
+        marginLeft: 16,
+        padding: 4,
+    },
+    chatContainer: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    placeholder: {
+        color: '#999',
+        fontSize: 16,
+    },
 });
 
-export default ChatScreen;
+export default ChatPage;

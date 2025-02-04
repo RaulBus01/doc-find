@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
 
 
@@ -23,7 +24,7 @@ const ChatMessageBarStyle = StyleSheet.create({
             borderRadius: 15,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: '#0084ff',
+            backgroundColor: Colors.light.tint,
         },
         buttonView:{
           flexDirection: 'row',
@@ -33,21 +34,19 @@ const ChatMessageBarStyle = StyleSheet.create({
         },
         textAreaView:{
           flex: 1,
-          minHeight:20,
+          minHeight:40,
           maxHeight: 150,
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: 'grey',
+          backgroundColor: Colors.light.background,
           borderRadius: 20,
           marginHorizontal: 10,
           paddingHorizontal: 10,
-         
         },
         messageInput:{
           flex: 1,
           marginLeft: 10,
           padding: 5,
-          
           borderRadius: 20,
           backgroundColor: 'transparent',
         },

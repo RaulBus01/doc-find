@@ -1,4 +1,4 @@
-import { View, Text, Pressable,StyleSheet, useAnimatedValue } from 'react-native'
+import { View, Text, Pressable,StyleSheet, useAnimatedValue, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -32,15 +32,19 @@ const TabBarButton = (props) => {
     )
 
     return (
-    <Pressable {...props} style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={props.onPress}
+    hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
+    activeOpacity={0.8}
+    >
         <Animated.View style={{...animatedIcon}}>
 
-        <Ionicons name={isFocused ? iconDefault : iconFocused} size={24} color={isFocused} />
+        <Ionicons name={isFocused ? iconDefault : iconFocused} size={20} color={isFocused} />
       </Animated.View>
         <Animated.Text style={[{ color: isFocused ? color : 'black' },animatedText]}>
             {label}
         </Animated.Text>
-    </Pressable>
+    </TouchableOpacity>
+    
   )
 }
 

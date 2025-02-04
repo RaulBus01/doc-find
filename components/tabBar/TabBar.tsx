@@ -1,108 +1,108 @@
-import { View, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
 import TabBarButton from './TabBarButton';
 import { Colors } from '@/constants/Colors';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 type AllowedRoute = {
-    name: string;
-    path: string;
-    iconDefault: string;
-    iconFocused: string;
+  name: string;
+  path: string;
+  iconDefault: string;
+  iconFocused: string;
 };
 
 type TabBarProps = {
-    state: any;
-    descriptors: any;
-    navigation: any;
+  state: any;
+  descriptors: any;
+  navigation: any;
+  IsTabBarVisible: boolean;
 };
 
 const allowedRoutes: AllowedRoute[] = [
-    { name: 'Home', path: 'index', iconFocused: 'home' , iconDefault: 'home-outline' },
-    { name: 'Map', path: 'map', iconFocused: 'map' , iconDefault: 'map-outline' },
-    { name: 'Account', path: 'account', iconFocused: 'person' , iconDefault: 'person-outline' },
-    { name: 'Chat', path: 'chat', iconFocused: 'chatbubbles' , iconDefault: 'chatbubbles-outline' },
+  { name: 'Home', path: 'index', iconFocused: 'home', iconDefault: 'home-outline' },
+  { name: 'Map', path: 'map', iconFocused: 'map', iconDefault: 'map-outline' },
+  { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline' },
+  { name: 'Chat', path: 'chat', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline' },
 ];
 
-const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
-    const currentRoute = state.routes[state.index];
-    
-    if (currentRoute.name === 'map') return null;
+const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
+  // Shared value to control vertical translation
+  const translateY = useSharedValue(50); 
 
-    return (
-        <View style={styles.container}>
-            {state.routes
-                .filter((route: { name: string; }) => {
-                    const routeName = route.name;
-                    return allowedRoutes.find(allowed => allowed.path === routeName);
-                })
-                .map((route: { key: string | number; name: string; }, index: any) => {
-                    const { options } = descriptors[route.key];
-                    const matchingRoute = allowedRoutes.find(allowed => allowed.path === route.name);
+  useEffect(() => {
+    translateY.value = withTiming(IsTabBarVisible ? 0 : 50, { duration: 300 });
+  }, [IsTabBarVisible, translateY]);
 
-                    if (!matchingRoute) return null;
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }));
 
-                    const label = options.tabBarLabel ?? 
-                                options.title ?? 
-                                matchingRoute.name;
+  return (
+    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
+      {state.routes
+        .filter((route: { name: string }) => {
+          return allowedRoutes.find(allowed => allowed.path === route.name);
+        })
+        .map((route: { key: string | number; name: string }, index: any) => {
+          const { options } = descriptors[route.key];
+          const matchingRoute = allowedRoutes.find(allowed => allowed.path === route.name);
+          if (!matchingRoute) return null;
+          const label =
+            options.tabBarLabel ?? options.title ?? matchingRoute.name;
+          const isFocused = state.index === index;
+          const onPress = () => {
+            console.log('onPress');
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name);
+            }
+          };
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
 
-                    const isFocused = state.index === index;
-
-                    const onPress = () => {
-                        const event = navigation.emit({
-                            type: 'tabPress',
-                            target: route.key,
-                            canPreventDefault: true,
-                        });
-
-                        if (!isFocused && !event.defaultPrevented) {
-                            navigation.navigate(route.name);
-                        }
-                    };
-
-                    const onLongPress = () => {
-                        navigation.emit({
-                            type: 'tabLongPress',
-                            target: route.key,
-                        });
-                    };
-
-                    return (
-                        <TabBarButton
-                            key={route.key}
-                            color={Colors.light.tabIconDefault}
-                            isFocused={isFocused}
-                            label={label}
-                            iconDefault={matchingRoute.iconDefault}
-                            iconFocused={matchingRoute.iconFocused}
-                            onPress={onPress}
-                            onLongPress={onLongPress}
-                        />
-                    );
-                })}
-        </View>
-    );
+          return (
+            <TabBarButton
+              key={route.key}
+              color={Colors.light.tabIconDefault}
+              isFocused={isFocused}
+              label={label}
+              iconDefault={matchingRoute.iconDefault}
+              iconFocused={matchingRoute.iconFocused}
+              onPress={onPress}
+              onLongPress={onLongPress}
+            />
+          );
+        })}
+    </Animated.View>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        bottom: 10,
-        position: 'absolute',
-        flexDirection: 'row',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        width: '95%',
-        height: '8%',
-        borderRadius: 25,
-        backgroundColor: 'white',
-        marginHorizontal: 10,
-        paddingVertical: 10,
-        borderCurve: 'continuous',
-        shadowColor: 'black',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.5,
-        elevation: 5,
-    }
+  container: {
+    bottom: 0,
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '100%',
+    height: 50,
+    backgroundColor: 'white',
+    borderTopWidth: 0.5,
+    borderTopColor: Colors.light.lightgreen,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.5,
+    elevation: 5,
+  }
 });
 
 export default TabBar;
