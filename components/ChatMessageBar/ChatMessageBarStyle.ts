@@ -8,8 +8,6 @@ const ChatMessageBarStyle = StyleSheet.create({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: 'white',
-         
-       
         },
         row:{
           flexDirection: 'row',
@@ -25,6 +23,7 @@ const ChatMessageBarStyle = StyleSheet.create({
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: Colors.light.tint,
+            
         },
         buttonView:{
           flexDirection: 'row',
