@@ -1,10 +1,10 @@
 import { View, Text, SafeAreaView, StyleSheet, FlatList } from 'react-native';
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
-import MessageBar from '../../components/ChatMessageBar/ChatMessageBar';
+import MessageBar from '../../../components/ChatMessageBar/ChatMessageBar';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useState } from 'react';
 
-import ChatMessage from '../../components/ChatMessage/ChatMessage';
+import ChatMessage from '../../../components/ChatMessage/ChatMessage';
 
 import { Chat } from '@/interface/Interface';
 

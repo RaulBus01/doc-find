@@ -5,5 +5,6 @@ const {
   } = require('react-native-reanimated/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
+const dotenv = require('dotenv');
 
 module.exports = wrapWithReanimatedMetroConfig(config);
