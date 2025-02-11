@@ -1,9 +1,10 @@
 import CustomCarousel from '@/components/Onboarding/ImageCarousel';
+import { save } from '@/utils/Token';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
+import { Credentials, useAuth0 } from 'react-native-auth0';
 
 const { width } = Dimensions.get('window');
 const data = [
@@ -38,10 +39,13 @@ const Page = () => {
       const authResult = await authorize({
         scope: "openid profile email"
       });
-      console.log(authResult);
+      if (!authResult) return;
+
+      save("accessToken", authResult.accessToken);
+     
       if (authResult) {
         const credentials = await getCredentials();
-        console.log(credentials);
+          
 
         router.push("/(tabs)");
       }

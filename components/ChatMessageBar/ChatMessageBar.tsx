@@ -141,7 +141,6 @@ const MessageBar = ({ onModalPress, onMessageSend, message, setMessage }: Props)
       <View style={ChatMessageBarStyle.textAreaView}>
        
         <TextInput
-          autoFocus
           ref={inputRef}
           placeholder="Type your symptoms here..."
           placeholderTextColor="#333"
