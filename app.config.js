@@ -43,7 +43,8 @@ export default {
           {
             "domain": "dev-20pzuivt0lfo5hhy.us.auth0.com"
           }
-        ]
+        ],
+        "expo-asset"
        
       ],
       "experiments": {

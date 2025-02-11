@@ -15,9 +15,6 @@ function Home () {
   
 const {top,bottom} = useSafeAreaInsets();
 
-console.log(top,bottom)
-
-
 
 
   return (

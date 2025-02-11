@@ -3,11 +3,12 @@ import { router } from "expo-router";
 
 import { Alert, Button, View,Text } from "react-native";
 import { useAuth0 } from "react-native-auth0";
-
+ //TODO: Implement a login page
 export default function AuthorizationScreen() {
+
+ 
   const { authorize, user, error, getCredentials, isLoading } = useAuth0();
 
-  console.log(user, error, isLoading);
 
   const onLogin = async () => {
     try {
@@ -15,10 +16,10 @@ export default function AuthorizationScreen() {
       const authResult = await authorize({
         scope: "openid profile email"
       });
-      console.log(authResult);
+   
       if(authResult){
         const credentials = await getCredentials();
-        console.log(credentials);
+      
 
         router.push("/(tabs)");
       }

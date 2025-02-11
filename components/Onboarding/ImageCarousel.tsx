@@ -1,0 +1,75 @@
+import * as React from "react";
+import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
+import Animated, { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+import { CustomCarouselProps } from "@/interface/Slider";
+ 
+const CustomCarousel = ({ data,width }: CustomCarouselProps) => {
+  const ref = React.useRef<ICarouselInstance>(null);
+  const progress = useSharedValue<number>(0);
+  
+  const onPressPagination = (index: number) => {
+    ref.current?.scrollTo({
+      /**
+       * Calculate the difference between the current index and the target index
+       * to ensure that the carousel scrolls to the nearest index
+       */
+      count: index - progress.value,
+      animated: true,
+    });
+  };
+
+	return (
+    <View style={styles.container}>
+    <Carousel
+      ref={ref}
+      width={width}
+      data={data}
+      onProgressChange={progress}
+      renderItem={({ index }) => (
+        <View
+          style={styles.carouselItem}
+        >
+          <Text>{data[index].title}</Text>
+          <Animated.Image 
+            source={data[index].image}
+            style={{ width: "60%", height: "60%", backgroundColor:"lightgreen", resizeMode:"contain" }}
+            />
+
+          
+        </View>
+      )}
+    />
+
+    <Pagination.Basic
+      progress={progress}
+      data={data}
+      dotStyle={{ backgroundColor: "rgba(0,0,0,0.2)", borderRadius: 50 }}
+      containerStyle={{ gap: 5, marginTop: 10 }}
+      onPress={onPressPagination}
+    />
+  </View>
+	);
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginBottom: 20,
+ 
+  },
+  carouselItem: {
+    flex: 1,
+    backgroundColor: "lightblue",
+    justifyContent: "center",
+    alignItems: "center",
+
+  },
+ 
+});
+ 
+export default CustomCarousel;
+ 

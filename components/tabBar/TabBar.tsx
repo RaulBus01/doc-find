@@ -51,7 +51,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
             options.tabBarLabel ?? options.title ?? matchingRoute.name;
           const isFocused = state.index === index;
           const onPress = () => {
-            console.log('onPress');
+          
             const event = navigation.emit({
               type: 'tabPress',
               target: route.key,

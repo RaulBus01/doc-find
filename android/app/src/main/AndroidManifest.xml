@@ -37,11 +37,6 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
-        <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
-        <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
-        <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
-        <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
-        <data android:scheme="com.laurbalaur.docfind.auth0" android:host="dev-20pzuivt0lfo5hhy.us.auth0.com"/>
       </intent-filter>
     </activity>
   </application>

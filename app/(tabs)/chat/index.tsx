@@ -7,11 +7,13 @@ import { useState } from 'react';
 import ChatMessage from '../../../components/ChatMessage/ChatMessage';
 
 import { Chat } from '@/interface/Interface';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ChatScreen = () => {
   const [showRecents, setShowRecents] = useState(true);
   const [isThinking, setIsThinking] = useState(false);
   const [message, setMessage] = useState('');
+  const {top,bottom} = useSafeAreaInsets();
 
   // Mock recent chats data
   const recentChats : Chat[] = [
@@ -36,7 +38,7 @@ const ChatScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container,{paddingTop:top,paddingBottom:bottom}]}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>AI Assistant</Text>
@@ -102,6 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+   
   },
   header: {
     flexDirection: 'row',

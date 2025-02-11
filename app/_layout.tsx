@@ -1,52 +1,77 @@
 import React, { useEffect } from 'react';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import * as SplashScreen from 'expo-splash-screen';
-import { Auth0Provider } from 'react-native-auth0';
-import Constants from 'expo-constants';
+
 import { useFonts } from 'expo-font';
+import { Auth0Provider, useAuth0 } from 'react-native-auth0';
+import Constants from 'expo-constants';
+
+
+
 
 SplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
-    const [loaded, error] = useFonts({
-        "Roboto-Bold": require("@/assets/fonts/RobotoSerif-Bold.ttf"),
-        "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
-        "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
-    });
 
-    useEffect(() => {
-        if (error || loaded) {
-            SplashScreen.hideAsync();
-        }
-    }, [error, loaded]);
 
-    if (!loaded && !error) {
-        return null;
+const InitialLayout = () => {
+  const [loaded, error] = useFonts({
+    "Roboto-Bold": require("@/assets/fonts/RobotoSerif-Bold.ttf"),
+    "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
+    "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
+  });
+
+  const { user, isLoading } = useAuth0();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
     }
-    console.log(Constants.expoConfig?.extra?.auth0?.domain);
-    console.log(Constants.expoConfig?.extra?.auth0?.clientId);
+  }, [loaded]);
 
-    return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <SafeAreaProvider>
-                <Auth0Provider
-                    domain={Constants.expoConfig?.extra?.auth0?.domain || ''}
-                    clientId={Constants.expoConfig?.extra?.auth0?.clientId || ''}
-                >
-                    <Stack>
-                        <Stack.Screen 
-                            name="(auth)" 
-                            options={{ headerShown: false }} 
-                        />
-                        <Stack.Screen 
-                            name="(tabs)" 
-                            options={{ headerShown: false }} 
-                        />
-                    </Stack>
-                </Auth0Provider>
-            </SafeAreaProvider>
-        </GestureHandlerRootView>
-    );
+  useEffect(() => {
+    if ( !isLoading && loaded){
+    if (user) {
+      router.push('/(tabs)');
+    } else {
+      router.push('/');
+    }
+  }
+  }, [user]);
+
+
+  if (!loaded || isLoading) {
+    return null; 
+  }
+
+  return (
+    <Stack>
+      <Stack.Screen name='index' options={{ headerShown: false }} />
+      <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+    </Stack>
+  );
 }
+
+
+const RootLayout = () => {
+  return (
+    <Auth0Provider
+      domain={Constants.expoConfig?.extra?.auth0?.domain || ''}
+      clientId={Constants.expoConfig?.extra?.auth0?.clientId || ''}
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+
+        <InitialLayout />
+      </GestureHandlerRootView>
+
+    </Auth0Provider>
+  );
+};
+
+export default RootLayout;

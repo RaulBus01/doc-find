@@ -5,7 +5,7 @@ import { StatusBar } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import * as SplashScreen from "expo-splash-screen";
-import ProtectedRoute from "@/components/ProtectedRoute/ProtectedRoute";
+
 
 SplashScreen.preventAutoHideAsync();
 
@@ -13,7 +13,7 @@ export default function TabLayout() {
   const [isTabBarVisible, setIsTabBarVisible] = useState(true);
 
   return (
-    <ProtectedRoute>
+  
       <TabBarVisibilityContext.Provider
         value={{ isTabBarVisible, setIsTabBarVisible }}
       >
@@ -30,6 +30,6 @@ export default function TabLayout() {
           )}
         />
       </TabBarVisibilityContext.Provider>
-    </ProtectedRoute>
+    
   );
 }
