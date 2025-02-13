@@ -35,18 +35,27 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-font"
+      "expo-font",                                  
+      [
+        "react-native-auth0",
+        {
+          "domain": "dev-20pzuivt0lfo5hhy.us.auth0.com"
+        }
+      ],
+      "expo-asset"
+     
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {
-        "origin": false
+      "origin": false
       },
       "eas": {
-        "projectId": "e5c7b9cb-3742-4d5c-b673-6a59e017ad82"
+      "projectId": "e5c7b9cb-3742-4d5c-b673-6a59e017ad82"
       }
+      
     }
   }
 }

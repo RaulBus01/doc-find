@@ -13,7 +13,7 @@ interface LargeCardProps {
 const LargeCard = ({text,icon,color}:LargeCardProps) => {
   return (
     <View style={[stylesLarge.container, {backgroundColor:color}]}>
-        <Text style={stylesLarge.text}>{text}</Text>
+        
         <Text style={stylesLarge.text}>Name: </Text>
         <Text style={stylesLarge.text}>Age: </Text>
         <Text style={stylesLarge.text}>Sex:</Text>
@@ -27,23 +27,33 @@ const LargeCard = ({text,icon,color}:LargeCardProps) => {
 
 const stylesLarge = StyleSheet.create({
   container: {
-      flex: 1,
-      flexDirection: 'column',
-      marginHorizontal: 5,
-      justifyContent: 'center',
-      gap: 5,
-      alignItems: 'center',
-      width:185,
-      height:150,
-      borderRadius:25
+    flexDirection: 'column',
+    marginHorizontal: 8,
+    marginVertical: 6,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    width: 190,
+    height: 160,
+    borderRadius: 24,
+    padding: 16,
+    boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.1)',
+    elevation: 10,
+    gap: 8,
   },
   text: {
-      
-      textAlign: 'center',
-      fontSize: 14,
-      fontFamily: 'Roboto-Medium',
-     
+    fontSize: 14,
+    fontFamily: 'Roboto-Medium',
+    color: Colors.light.text,
+    letterSpacing: 0.3,
+    opacity: 0.9,
+    lineHeight: 20,
   },
-
+  title: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: Colors.light.text,
+    opacity: 1,
+  }
 })
 export default LargeCard

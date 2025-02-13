@@ -1,0 +1,68 @@
+import 'dotenv/config';
+
+export default {
+    "expo": {
+      "name": "doc-find",
+      "slug": "doc-find",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./assets/images/icon.png",
+      "scheme": "myapp",
+      "userInterfaceStyle": "automatic",
+      "newArchEnabled": true,
+      "ios": {
+        "supportsTablet": true,
+        "bundleIdentifier": "com.laurbalaur.docfind"
+      },
+      "android": {
+        "adaptiveIcon": {
+          "foregroundImage": "./assets/images/adaptive-icon.png",
+          "backgroundColor": "#ffffff"
+        },
+        "package": "com.laurbalaur.docfind"
+      },
+      "web": {
+        "bundler": "metro",
+        "output": "static",
+        "favicon": "./assets/images/favicon.png"
+      },
+      "plugins": [
+        "expo-router",
+        [
+          "expo-splash-screen",
+          {
+            "image": "./assets/images/splash-icon.png",
+            "imageWidth": 200,
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+          }
+        ],
+        "expo-font",                                  
+        [
+          "react-native-auth0",
+          {
+            "domain": "dev-20pzuivt0lfo5hhy.us.auth0.com"
+          }
+        ],
+        "expo-asset"
+       
+      ],
+      "experiments": {
+        "typedRoutes": true
+      },
+      "extra": {
+        "router": {
+        "origin": false
+        },
+        "eas": {
+        "projectId": "e5c7b9cb-3742-4d5c-b673-6a59e017ad82"
+        },
+        "auth0": {
+        "domain": process.env.AUTH0_DOMAIN,
+        "clientId": process.env.AUTH0_CLIENT_ID,
+        "audience": process.env.AUTH0_AUDIENCE
+        }
+      }
+    }
+  }
+  

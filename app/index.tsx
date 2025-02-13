@@ -1,109 +1,95 @@
-import { View, Text, StyleSheet, ScrollView } from 'react-native'
-import React from 'react'
-import {useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Colors } from '@/constants/Colors';
-import SmallCard from '@/components/home-cards/small-card';
-import MediumCard from '@/components/home-cards/medium-card';
-import { Ionicons } from '@expo/vector-icons';
-import LargeCard from '@/components/home-cards/large-card';
+import CustomCarousel from '@/components/Onboarding/ImageCarousel';
+import { secureSave, secureSaveObject } from '@/utils/Token';
+import { FontAwesome6 } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { Credentials, useAuth0 } from 'react-native-auth0';
+import { ApiCall } from '@/utils/ApiCall';
 
+const { width } = Dimensions.get('window');
+const data = [
+  {
+    id: '1',
+    title: 'First item',
+    image: require('../assets/images/favicon.png')
+  },
+  {
+    id: '2',
+    title: 'Second item',
+    image: require('../assets/images/react-logo.png'),
+  },
+  {
+    id: '3',
+    title: 'Third item',
+    image: require('../assets/images/react-logo.png'),
+  },
+]
+const Page = () => {
+  const router = useRouter();
+  const { authorize, isLoading } = useAuth0();
+  const onLogin = async () => {
+    try {
 
-
-
-function Home () {
-
-  
-const {top,bottom} = useSafeAreaInsets();
-
-console.log(top,bottom)
-
-
-
-
-  return (
-    
-        <View style={{flex:1,backgroundColor:Colors.light.background,paddingTop:top,paddingBottom:bottom}}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.header}>Welcome</Text>
-          </View>
-          <ScrollView nestedScrollEnabled={true} style={{flex:1}}>
-          {ProfileComponent()}
-            {SymptomsComponent()}
-
-            {ChatsComponent()}
-            
-          </ScrollView>
-
-
-       
-
-        </View>
-   
-  )
-
-  
-
-
-  function ProfileComponent() {
-    return <View style={{ padding: 10 }}>
-      <Text style={[styles.text, { paddingLeft: 10 }]}>Your Profiles</Text>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        <LargeCard text={'Start New Chat'} icon={'add-circle-outline'} color={Colors.light.mediumbackground} />
-        <LargeCard text={'Blood Analysis'} icon={'😷'} color={Colors.light.tint} />
-        <LargeCard text={'Fever'} icon={'🤒'} color={Colors.light.darkbackground} />
-      </ScrollView>
-    </View>;
+      const authResult = await authorize({
+        scope: "openid profile email",
+        audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
+      });
+      if (!authResult) return;
+      console.log(authResult);
+      secureSave('accessToken', authResult.accessToken);
+      ApiCall.post('http://192.168.1.105:8000/user/signup', authResult.accessToken, {}).then((res) => {
+        secureSaveObject('user', res);
+      }
+      );
+      if (authResult) {
+        router.push("/(tabs)");
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
 
-  function ChatsComponent() {
-    return <View style={{ padding: 10 }}>
-      <Text style={[styles.text, { paddingLeft: 10 }]}>Last Chats</Text>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        <MediumCard text={'Start New Chat'} icon={'add-circle-outline'} color={Colors.light.mediumbackground} />
-        <MediumCard text={'Blood Analysis'} icon={'😷'} color={Colors.light.tint} />
-        <MediumCard text={'Fever'} icon={'🤒'} color={Colors.light.darkbackground} />
-      </ScrollView>
-    </View>;
-  }
 
-  function SymptomsComponent() {
-    return <View style={{ padding: 10 }}>
-      <Text style={[styles.text, { paddingLeft: 10 }]}>What are your symptoms?</Text>
-      <ScrollView horizontal={true} showsHorizontalScrollIndicator={false} style={styles.horizontalScroll}>
-        <SmallCard text={'Cough'} icon={'😷'} color={Colors.light.tint} />
-        <SmallCard text={'Headache'} icon={'🤕'} color={Colors.light.mediumbackground} />
-        <SmallCard text={'Fever'} icon={'🤒'} color={Colors.light.darkbackground} />
-      </ScrollView>
-    </View>;
-  }
-}
+return (
+  <View style={styles.container}>
+    <StatusBar style="dark" />
+    <CustomCarousel data={data} width={width} />
+    <View style={styles.footer}>
+      <TouchableOpacity onPress={onLogin} style={styles.loginButton}>
+        <Text> Continue to Login </Text>
+        <FontAwesome6 name="arrow-right-long" size={24} color="black" />
+      </TouchableOpacity>
+    </View>
+
+
+  </View>
+);
+};
+
 const styles = StyleSheet.create({
-  headerContainer: {
-      justifyContent: 'center',
-      backgroundColor: Colors.light.tint,
-      paddingVertical: 10,
-      paddingHorizontal: 20,
+  container: {
+    flex: 1,
   },
-  header: {
-      fontSize: 32,
-      fontFamily: 'Roboto-Bold',
-      color: Colors.light.text,
-      opacity: 0.65
+  footer: {
+    height: 100,
 
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent'
   },
-  horizontalScroll: {
-      flexDirection: 'row',
-      padding: 5,
-      // backgroundColor:'green',
-      alignContent:'center',
-      
-  },
-  text:{
-    fontSize:16,
-    fontFamily:'Roboto-Bold',
-    color:Colors.light.text
+  loginButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 10,
+    gap: 10,
+    borderRadius: 25,
+    borderWidth: 0.25,
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    width: '80%'
   }
- 
-})
-
-export default Home;
+});
+export default Page;

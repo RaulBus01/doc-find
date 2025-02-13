@@ -2,7 +2,6 @@ import React, {useRef} from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ChatMessageBarStyle from "./ChatMessageBarStyle";
-
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -142,7 +141,6 @@ const MessageBar = ({ onModalPress, onMessageSend, message, setMessage }: Props)
       <View style={ChatMessageBarStyle.textAreaView}>
        
         <TextInput
-          autoFocus
           ref={inputRef}
           placeholder="Type your symptoms here..."
           placeholderTextColor="#333"

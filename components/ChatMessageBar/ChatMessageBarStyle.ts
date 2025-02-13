@@ -8,8 +8,6 @@ const ChatMessageBarStyle = StyleSheet.create({
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: 'white',
-         
-       
         },
         row:{
           flexDirection: 'row',
@@ -25,6 +23,7 @@ const ChatMessageBarStyle = StyleSheet.create({
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: Colors.light.tint,
+            
         },
         buttonView:{
           flexDirection: 'row',
@@ -34,7 +33,7 @@ const ChatMessageBarStyle = StyleSheet.create({
         },
         textAreaView:{
           flex: 1,
-          minHeight:20,
+          minHeight:40,
           maxHeight: 150,
           flexDirection: 'row',
           alignItems: 'center',
@@ -42,13 +41,11 @@ const ChatMessageBarStyle = StyleSheet.create({
           borderRadius: 20,
           marginHorizontal: 10,
           paddingHorizontal: 10,
-         
         },
         messageInput:{
           flex: 1,
           marginLeft: 10,
           padding: 5,
-          
           borderRadius: 20,
           backgroundColor: 'transparent',
         },

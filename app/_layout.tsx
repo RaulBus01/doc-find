@@ -1,45 +1,83 @@
-import React, { useEffect, useState } from 'react';
-import { Tabs } from 'expo-router';
-import TabBar from '@/components/tabBar/TabBar';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { StatusBar } from 'react-native';
-import { Colors } from '@/constants/Colors';
-import { useFonts } from 'expo-font';
+import React, { useEffect } from 'react';
+import { Stack, useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { TabBarVisibilityContext } from '@/context/TabBarContext';
 
-export default function TabLayout() {
-  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
+import * as SplashScreen from 'expo-splash-screen';
+
+import { useFonts } from 'expo-font';
+import { Auth0Provider, useAuth0 } from 'react-native-auth0';
+import Constants from 'expo-constants';
+import { ApiCall } from '@/utils/ApiCall';
+
+
+
+
+
+SplashScreen.preventAutoHideAsync();
+
+
+
+const InitialLayout = () => {
   const [loaded, error] = useFonts({
-    'Roboto-Bold': require('@/assets/fonts/RobotoSerif-Bold.ttf'),
-    'Roboto-Regular': require('@/assets/fonts/RobotoSerif-Regular.ttf'),
-    'Roboto-Medium': require('@/assets/fonts/RobotoSerif-Medium.ttf'),
+    "Roboto-Bold": require("@/assets/fonts/RobotoSerif-Bold.ttf"),
+    "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
+    "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
   });
 
-  useEffect(() => {
-    if (error || loaded) {
-      console.log(error, loaded);
-    }
-  }, [error, loaded]);
 
-  if (!loaded && !error) {
-    return null;
+  
+
+  const { user, isLoading } = useAuth0();
+  const router = useRouter();
+
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    if ( !isLoading && loaded){
+    if (user) {
+      router.push('/(tabs)');
+    } else {
+      router.push('/');
+    }
   }
+  }, [user]);
+
+
+  if (!loaded || isLoading) {
+    return null; 
+  }
+
   return (
-    <SafeAreaProvider>
-      <GestureHandlerRootView>
-        <TabBarVisibilityContext.Provider value={{ isTabBarVisible, setIsTabBarVisible }}>
-          <StatusBar backgroundColor={Colors.light.tint} barStyle={'dark-content'} />
-          <Tabs
-            screenOptions={{
-              headerShown: false,
-            }}
-            tabBar={(props) => (
-              <TabBar {...props} IsTabBarVisible={isTabBarVisible} />
-            )}
-          />
-        </TabBarVisibilityContext.Provider>
-      </GestureHandlerRootView>
-    </SafeAreaProvider>
+    <Stack>
+      <Stack.Screen name='index' options={{ headerShown: false }} />
+      <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+    </Stack>
   );
 }
+
+
+const RootLayout = () => {
+  return (
+    <Auth0Provider
+      domain={Constants.expoConfig?.extra?.auth0?.domain || ''}
+      clientId={Constants.expoConfig?.extra?.auth0?.clientId || ''}
+    >
+      <GestureHandlerRootView style={{ flex: 1 }}>
+
+        <InitialLayout />
+      </GestureHandlerRootView>
+
+    </Auth0Provider>
+  );
+};
+
+export default RootLayout;
