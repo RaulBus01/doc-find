@@ -7,6 +7,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Auth0Provider, useAuth0 } from 'react-native-auth0';
 import Constants from 'expo-constants';
+import { ApiCall } from '@/utils/ApiCall';
+
 
 
 
@@ -22,8 +24,12 @@ const InitialLayout = () => {
     "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
   });
 
+
+  
+
   const { user, isLoading } = useAuth0();
   const router = useRouter();
+
 
   useEffect(() => {
     if (error) throw error;

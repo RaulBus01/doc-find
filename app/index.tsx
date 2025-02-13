@@ -1,10 +1,12 @@
 import CustomCarousel from '@/components/Onboarding/ImageCarousel';
-import { save } from '@/utils/Token';
+import { secureSave, secureSaveObject } from '@/utils/Token';
 import { FontAwesome6 } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Credentials, useAuth0 } from 'react-native-auth0';
+import { ApiCall } from '@/utils/ApiCall';
 
 const { width } = Dimensions.get('window');
 const data = [
@@ -25,28 +27,23 @@ const data = [
   },
 ]
 const Page = () => {
-
   const router = useRouter();
-
-
-  const { authorize, user, error, getCredentials, isLoading } = useAuth0();
-
-
-
+  const { authorize, isLoading } = useAuth0();
   const onLogin = async () => {
     try {
 
       const authResult = await authorize({
-        scope: "openid profile email"
+        scope: "openid profile email",
+        audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
       if (!authResult) return;
-
-      save("accessToken", authResult.accessToken);
-     
+      console.log(authResult);
+      secureSave('accessToken', authResult.accessToken);
+      ApiCall.post('http://192.168.1.105:8000/user/signup', authResult.accessToken, {}).then((res) => {
+        secureSaveObject('user', res);
+      }
+      );
       if (authResult) {
-        const credentials = await getCredentials();
-          
-
         router.push("/(tabs)");
       }
     } catch (e) {
