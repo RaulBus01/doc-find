@@ -7,19 +7,17 @@ import { Ionicons } from '@expo/vector-icons'
 
 interface ChatMessageProps {
   message: string;
-
- 
 }
 
 const ChatMessage = ({message}:ChatMessageProps) => {
  
   return (
     <View style={ChatCardStyle.cardContainer}>
-        <View >
-            <Ionicons name="person-circle" size={24} color="black" />
+        <View style={ChatCardStyle.avatarContainerUser}>
+            <Ionicons name="person-circle" size={28} color="black" />
             <Text></Text> 
         </View>
-        <View >
+        <View style={ChatCardStyle.messageContainer}>
             <Text>{message}</Text>
 
         </View>
@@ -38,7 +36,6 @@ const ChatCardStyle = StyleSheet.create({
       marginBottom: 10
   },
   avatarContainerBot: {
-
       flexDirection: 'row',
       justifyContent: 'flex-end',
       alignItems: 'center',
@@ -46,9 +43,23 @@ const ChatCardStyle = StyleSheet.create({
       marginBottom: 10
   },
   cardContainer: {
-      margin: 10,
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      padding: 10,
 
+      borderRadius: 10,
+      marginBottom: 10
   },
+  messageContainer: {
+
+      flexDirection: 'column',
+      justifyContent: 'flex-start',
+      alignItems: 'flex-start',
+      backgroundColor: '#f9f9f9',
+      padding: 10,
+      borderRadius: 10
+  }
 })
 
 export default ChatMessage

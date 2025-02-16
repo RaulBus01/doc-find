@@ -41,11 +41,11 @@ export default {
         [
           "react-native-auth0",
           {
-            "domain": "dev-20pzuivt0lfo5hhy.us.auth0.com"
+            "domain": process.env.AUTH0_DOMAIN,
           }
         ],
-        "expo-asset"
-       
+        "expo-asset",
+        
       ],
       "experiments": {
         "typedRoutes": true

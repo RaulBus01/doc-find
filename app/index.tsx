@@ -37,9 +37,9 @@ const Page = () => {
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
       if (!authResult) return;
-      console.log(authResult);
+      // console.log(authResult);
       secureSave('accessToken', authResult.accessToken);
-      ApiCall.post('http://192.168.1.105:8000/user/signup', authResult.accessToken, {}).then((res) => {
+      ApiCall.post('/user/signup', authResult.accessToken, {}).then((res) => {
         secureSaveObject('user', res);
       }
       );

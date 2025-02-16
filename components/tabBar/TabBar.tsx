@@ -9,6 +9,7 @@ type AllowedRoute = {
   path: string;
   iconDefault: string;
   iconFocused: string;
+  order: number;
 };
 
 type TabBarProps = {
@@ -19,10 +20,10 @@ type TabBarProps = {
 };
 
 const allowedRoutes: AllowedRoute[] = [
-  { name: 'Home', path: 'index', iconFocused: 'home', iconDefault: 'home-outline' },
-  { name: 'Map', path: 'map', iconFocused: 'map', iconDefault: 'map-outline' },
-  { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline' },
-  { name: 'Chat', path: 'chat', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline' },
+  { name: 'Home', path: 'index', iconFocused: 'home', iconDefault: 'home-outline', order: 1 },
+  { name: 'Map', path: 'map', iconFocused: 'map', iconDefault: 'map-outline', order: 2 },
+  { name: 'Chat', path: '(chat)', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline', order: 3 },
+  { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline', order: 4 },
 ];
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
@@ -36,20 +37,25 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
+  const filteredRoutes = state.routes.filter((route: { name: string }) =>
+    allowedRoutes.some(allowed => allowed.path === route.name)
+  );
+
+  const orderedRoutes = filteredRoutes.sort((a: { name: string }, b: { name: string }) => {
+    const aIndex = allowedRoutes.find(allowed => allowed.path === a.name)?.order;
+    const bIndex = allowedRoutes.find(allowed => allowed.path === b.name)?.order;
+    return aIndex! - bIndex!;
+  });
 
   return (
     <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
-      {state.routes
-        .filter((route: { name: string }) => {
-          return allowedRoutes.find(allowed => allowed.path === route.name);
-        })
-        .map((route: { key: string | number; name: string }, index: any) => {
+      {orderedRoutes?.map((route: { key: string | number; name: string }, index: any) => {
           const { options } = descriptors[route.key];
           const matchingRoute = allowedRoutes.find(allowed => allowed.path === route.name);
           if (!matchingRoute) return null;
           const label =
             options.tabBarLabel ?? options.title ?? matchingRoute.name;
-          const isFocused = state.index === index;
+          const isFocused = state.routes[state.index].name === route.name;
           const onPress = () => {
           
             const event = navigation.emit({

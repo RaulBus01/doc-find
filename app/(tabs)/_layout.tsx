@@ -24,6 +24,7 @@ export default function TabLayout() {
         <Tabs
           screenOptions={{
             headerShown: false,
+            
           }}
           tabBar={(props) => (
             <TabBar {...props} IsTabBarVisible={isTabBarVisible} />

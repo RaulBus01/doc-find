@@ -7,7 +7,8 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { Auth0Provider, useAuth0 } from 'react-native-auth0';
 import Constants from 'expo-constants';
-import { ApiCall } from '@/utils/ApiCall';
+import { TokenProvider } from '@/context/TokenContext';
+import { UserDataProvider } from '@/context/UserDataContext';
 
 
 
@@ -57,7 +58,14 @@ const InitialLayout = () => {
   }
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={
+        {
+          headerShown: false,
+          animation: 'slide_from_right',
+        }
+      }
+    >
       <Stack.Screen name='index' options={{ headerShown: false }} />
       <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
     </Stack>
@@ -72,8 +80,11 @@ const RootLayout = () => {
       clientId={Constants.expoConfig?.extra?.auth0?.clientId || ''}
     >
       <GestureHandlerRootView style={{ flex: 1 }}>
-
-        <InitialLayout />
+      <TokenProvider>
+        <UserDataProvider>
+          <InitialLayout />
+        </UserDataProvider>
+      </TokenProvider>
       </GestureHandlerRootView>
 
     </Auth0Provider>

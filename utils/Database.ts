@@ -1,0 +1,43 @@
+import { ApiCall } from "./ApiCall";
+
+export const addChat = async (token: string | null, message:string) => {
+  if (!token) {
+    throw new Error("No token available");
+  }
+  const chat = await ApiCall.post('/chat', token, { message });
+  return chat;
+};
+
+export const getChats = async (token: string | null) => {
+  if (!token) {
+    throw new Error("No token available");
+  }
+  const chats = await ApiCall.get('/chat/getChats/', token);
+  return chats;
+};
+
+export const getChat = async (token: string | null, chatId: string) => {
+  if (!token) {
+    throw new Error("No token available");
+  }
+  const chat = await ApiCall.get(`/chat/${chatId}`, token);
+  return chat;
+};
+
+export const getMessages = async (token: string | null, chatId: string) => {
+    if (!token) {
+        throw new Error("No token available");
+    }
+    const messages = await ApiCall.get(`/chat/${chatId}/messages`, token);
+    return messages;
+};
+
+export const addMessage = async (chatId: string, token: string | null, content: { message: string }) => {
+    if (!token) {
+        throw new Error("No token available");
+    }
+    const message = await ApiCall.post(`/chat/${chatId}/addMessage`, token,  {
+      message: content.message,
+    });
+    return message;
+}

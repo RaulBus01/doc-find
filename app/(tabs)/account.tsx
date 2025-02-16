@@ -4,28 +4,13 @@ import { router } from "expo-router";
 import {  secureGetValueFor } from '@/utils/Token';
 import { useEffect, useState } from 'react';
 import { deleteItemAsync } from 'expo-secure-store';
+import { useToken } from '@/context/TokenContext';
 export default function Account() {
 
   const { clearSession } = useAuth0();
-  const [token, setToken] = useState<string | null>(null);
+  const {token} = useToken();
   const [user, setUser] = useState<any | null>(null);
 
-
-   // Handle token fetching
-  useEffect(() => {
-    const fetchToken = async () => {
-      try {
-        const accessToken = await secureGetValueFor("accessToken");
-        if (accessToken) {
-          setToken(accessToken);
-        }
-      } catch (error) {
-        console.error('Error fetching token:', error);
-      }
-    };
-
-    fetchToken();
-  }, []);
 
   // Handle user data fetching
   useEffect(() => {
@@ -34,7 +19,7 @@ export default function Account() {
         const userData = await secureGetValueFor("user");
         if (userData) {
           const userJSON = await JSON.parse(userData);
-          console.log(userJSON);
+     
           setUser(userJSON);
         }
        
@@ -52,7 +37,7 @@ export default function Account() {
       await deleteItemAsync("accessToken");
       router.replace("/");
     } catch (e) {
-      console.log("Log out cancelled");
+      console.error(e);
     }
   };
 
