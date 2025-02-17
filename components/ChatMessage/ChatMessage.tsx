@@ -2,23 +2,36 @@ import { View, Text,StyleSheet } from 'react-native'
 import React from 'react'
 
 import { Ionicons } from '@expo/vector-icons'
-
+import Markdown from 'react-native-markdown-display';
 
 
 interface ChatMessageProps {
   message: string;
+  isAI: boolean;
 }
 
-const ChatMessage = ({message}:ChatMessageProps) => {
+const ChatMessage = ({message,isAI}:ChatMessageProps) => {
  
   return (
     <View style={ChatCardStyle.cardContainer}>
-        <View style={ChatCardStyle.avatarContainerUser}>
+        <View style={isAI ? ChatCardStyle.avatarContainerBot : ChatCardStyle.avatarContainerUser}>
+            { isAI ? 
+            <>
+            <Text>Bot</Text> 
             <Ionicons name="person-circle" size={28} color="black" />
-            <Text></Text> 
+            </>
+            :
+            <>
+            <Ionicons name="person-circle" size={28} color="black" />
+            <Text>{isAI ? 'Bot' : 'User'}</Text>
+            </>
+            
+          }  
         </View>
         <View style={ChatCardStyle.messageContainer}>
-            <Text>{message}</Text>
+            <Markdown>
+              {message}
+            </Markdown>
 
         </View>
         
@@ -44,8 +57,8 @@ const ChatCardStyle = StyleSheet.create({
   },
   cardContainer: {
       flexDirection: 'column',
-      justifyContent: 'flex-start',
-      alignItems: 'flex-start',
+      // justifyContent: 'flex-start',
+      // alignItems: 'flex-start',
       padding: 10,
 
       borderRadius: 10,

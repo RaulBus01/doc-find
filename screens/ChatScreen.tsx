@@ -11,6 +11,7 @@ import { useToken } from '@/context/TokenContext';
 import { addChat, addMessage, getMessages } from '@/utils/Database';
 import { Colors } from '@/constants/Colors';
 import { useUserData } from '@/context/UserDataContext';
+import { streamModelResponse } from '@/utils/Model';
 
 const ChatScreen = () => {
 
@@ -21,6 +22,7 @@ const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { token, isLoading, error } = useToken();
   const { userId } = useUserData();
+  const flatListRef = useRef<FlatList<Message>>(null);
 
 
   function setChatId(id: string) {
@@ -29,13 +31,23 @@ const ChatScreen = () => {
   }
 
   useEffect(() => {
-    if (id) {
-      if (!isLoading && !error && token)
-        getMessages(token, id).then((data) => {
+    const loadMessages = async () => {
+      if (id && token && !isLoading && !error) {
+        try {
+          const data = await getMessages(token, id);
+    
           setMessages(data);
-        });
-    }
-  }, [id]);
+          // Scroll to bottom after messages are loaded
+          setTimeout(() => {
+            flatListRef.current?.scrollToEnd({ animated: false });
+          }, 100);
+        } catch (e) {
+          console.error('Failed to load messages:', e);
+        }
+      }
+    };
+    loadMessages();
+  }, [id, token, isLoading, error]);
 
 
   const router = useRouter();
@@ -60,39 +72,73 @@ const ChatScreen = () => {
         throw new Error('Chat id, user id or token not found');
       }
       const messageContent = message.trim();
-      if (id){        
-        const newMessage = {
+      if (chatIdRef.current){        
+        const newMessage : Message = {
           id: '',
           content: messageContent,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           userId: userId,
-          chatId: id,
+          chatId: chatIdRef.current,
+          isAI: false,
         };
-        const savedMessage = await addMessage(id, token, {
+        const savedMessage = await addMessage(chatIdRef.current, token, {
           message: newMessage.content,
+          isAI: false,
         });
 
         setMessages([...messages, savedMessage]);
+       
       }
       else
       {
-        const newMessage = {
+        const newMessage : Message = {
           id: '',
           content: messageContent,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
           userId: userId,
-          chatId: id,
+          chatId: chatIdRef.current,
+          isAI: false,
         };
 
         const chat = await addChat(token, newMessage.content);
-        if (chat) {
+        if (chat?.id) {
           setChatId(chat.id);
           setMessages([...messages, newMessage]);
         }
 
+
       }
+      const aiMessageId = `temp-${Date.now()}`;
+      setMessages(prev => [...prev, {
+          id: aiMessageId,
+          content: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          userId: 'ai',
+          chatId: chatIdRef.current!,
+          isAI: true,
+      }]);
+      let fullResponse = '';
+      await streamModelResponse(token, message, (chunk) => {
+          fullResponse += chunk.content;
+          setMessages(prev => prev.map(msg => 
+            msg.id === aiMessageId 
+                ? { ...msg, content: fullResponse }
+                : msg
+        ));
+      });
+      const savedAIMessage = await addMessage(chatIdRef.current, token, {
+        message: fullResponse,
+        isAI: true,
+      });
+      setMessages(prev => prev.map(msg => 
+        msg.id === aiMessageId ? savedAIMessage : msg
+    ));
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 100);
         Keyboard.dismiss();
     } catch (e) {
       console.error(e);
@@ -114,11 +160,11 @@ const ChatScreen = () => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
-            disabled={id ? false : true}
+            disabled={chatIdRef.current ? false : true}
             
             onPress={() => handleRoute('new')}
           >
-            <Entypo name="new-message" size={24} color={id ? '#333' : '#ccc'} />
+            <Entypo name="new-message" size={24} color={chatIdRef.current ? '#333' : '#ccc'} />
           </TouchableOpacity>
         </View>
       </View>
@@ -127,12 +173,23 @@ const ChatScreen = () => {
       <View style={styles.content}>
 
         <FlatList
+          ref={flatListRef}
           style={styles.chatContainer}
           data={messages}
-          renderItem={({ item }) => <ChatMessage message={item.content} />}
+          renderItem={({ item }) => <ChatMessage message={item.content} isAI={item.isAI} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingTop: 30, paddingBottom: 150 }}
           keyboardDismissMode="on-drag"
+          onContentSizeChange={() => {
+            if (messages.length > 0) {
+              flatListRef.current?.scrollToEnd({ animated: true });
+            }
+          }}
+          initialNumToRender={messages.length} // Ensure all messages are rendered initially
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+            autoscrollToTopThreshold: 10
+          }}
         />
 
       </View>
@@ -164,8 +221,9 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 50
-
+    left: 0,
+    right: 0,
+    bottom: 50,
   },
   headerTitle: {
     fontSize: 20,
@@ -198,6 +256,7 @@ const styles = StyleSheet.create({
   chatContainer: {
     flex: 1,
     backgroundColor: Colors.light.lightgreen,
+    marginBottom: 50,
   },
 });
 

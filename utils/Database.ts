@@ -32,12 +32,13 @@ export const getMessages = async (token: string | null, chatId: string) => {
     return messages;
 };
 
-export const addMessage = async (chatId: string, token: string | null, content: { message: string }) => {
+export const addMessage = async (chatId: string, token: string | null, content: { message: string, isAI:boolean }) => {
     if (!token) {
         throw new Error("No token available");
     }
     const message = await ApiCall.post(`/chat/${chatId}/addMessage`, token,  {
       message: content.message,
+      isAI: content.isAI
     });
     return message;
 }

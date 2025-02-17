@@ -11,6 +11,7 @@ export enum Role {
     content: string;
     createdAt: string;
     updatedAt: string;
+    isAI: boolean;
   }
   
   export interface Chat {
