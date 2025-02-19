@@ -1,26 +1,28 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Colors } from '@/constants/Colors'
 import { Ionicons } from '@expo/vector-icons'
 
 interface LargeCardProps {
-    text:string
-    icon:string
-    color:string 
+  text: string
+  icon: string
+  color: string
 
 }
 
-const LargeCard = ({text,icon,color}:LargeCardProps) => {
+const LargeCard = ({ text, icon, color }: LargeCardProps) => {
   return (
-    <View style={[stylesLarge.container, {backgroundColor:color}]}>
-        
-        <Text style={stylesLarge.text}>Name: </Text>
-        <Text style={stylesLarge.text}>Age: </Text>
-        <Text style={stylesLarge.text}>Sex:</Text>
-        <Text style={stylesLarge.text}>Blood Group:</Text>
-        
-      
-    </View>
+    <TouchableOpacity
+      activeOpacity={0.6}
+      style={[stylesLarge.container, { backgroundColor: color }]}>
+
+      <Text style={stylesLarge.text}>Name: </Text>
+      <Text style={stylesLarge.text}>Age: </Text>
+      <Text style={stylesLarge.text}>Sex:</Text>
+      <Text style={stylesLarge.text}>Blood Group:</Text>
+
+
+    </TouchableOpacity>
   )
 }
 

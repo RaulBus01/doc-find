@@ -1,4 +1,4 @@
-import CustomCarousel from '@/components/Onboarding/ImageCarousel';
+import CustomCarousel from '@/components/ImageCarousel';
 import { secureSave, secureSaveObject } from '@/utils/Token';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Constants from 'expo-constants';

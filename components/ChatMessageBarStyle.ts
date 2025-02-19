@@ -7,23 +7,33 @@ const ChatMessageBarStyle = StyleSheet.create({
         contentView : {
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: 'white',
+          backgroundColor: Colors.light.tint,
+          borderTopLeftRadius:20,
+          borderTopRightRadius:20,
+          borderWidth:1,
+          borderColor:Colors.light.darkbackground,
+          paddingHorizontal: 10,
+          paddingVertical: 5,
+          
         },
         row:{
           flexDirection: 'row',
           alignItems: 'center',
-          
-          paddingHorizontal: 20,
+          paddingHorizontal: 10,
           marginVertical: 5,
         },
         button:{
-           width: 30,
+
+            marginHorizontal: 5,
+            width: 30,
             height: 30,
             borderRadius: 15,
             justifyContent: 'center',
             alignItems: 'center',
-            backgroundColor: Colors.light.tint,
-            
+            borderWidth:1,
+            borderColor:Colors.light.background,
+            backgroundColor:Colors.light.textlight,
+
         },
         buttonView:{
           flexDirection: 'row',
@@ -33,14 +43,23 @@ const ChatMessageBarStyle = StyleSheet.create({
         },
         textAreaView:{
           flex: 1,
-          minHeight:40,
+          minHeight:30,
           maxHeight: 150,
           flexDirection: 'row',
           alignItems: 'center',
           backgroundColor: Colors.light.background,
           borderRadius: 20,
-          marginHorizontal: 10,
-          paddingHorizontal: 10,
+          marginHorizontal: 5,
+          marginVertical: 5,
+          
+        },
+        bottomIcons: {
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: 12,
+          position: 'absolute',
+          bottom: 10,
+          right: 10,
         },
         messageInput:{
           flex: 1,

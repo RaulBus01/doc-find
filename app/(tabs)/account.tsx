@@ -11,7 +11,6 @@ export default function Account() {
   const {token} = useToken();
   const [user, setUser] = useState<any | null>(null);
 
-
   // Handle user data fetching
   useEffect(() => {
     const fetchUser = async () => {

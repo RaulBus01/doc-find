@@ -19,6 +19,7 @@ export default function AuthorizationScreen() {
    
       if(authResult){
         const credentials = await getCredentials();
+        
       
 
         router.push("/(tabs)");

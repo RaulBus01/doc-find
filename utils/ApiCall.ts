@@ -1,13 +1,27 @@
 import { fetch } from "expo/fetch";
 const API_URL = "http://192.168.1.105:8080";
-
+interface QueryParams {
+  [key: string]: string | number | boolean;
+}
 export class ApiCall {
-  static async get(url: string, token: string) {
+  private static buildUrl(baseUrl: string, query?: QueryParams): string {
+    if (!query) return baseUrl;
+    
+    const searchParams = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => {
+      searchParams.append(key, String(value));
+    });
+    
+    return `${baseUrl}?${searchParams.toString()}`;
+  }
+  static async get(url: string, token: string,query?:QueryParams) {
     try {
-      const response = await fetch(API_URL + url, {
+      const fullUrl = this.buildUrl(API_URL + url, query);
+      const response = await fetch(fullUrl, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
       if (!response.ok) {
@@ -15,7 +29,7 @@ export class ApiCall {
       }
       return response.json();
     } catch (error) {
-      console.error(error);
+      // console.error("Get" + error);
     }
   }
 
@@ -55,6 +69,23 @@ export class ApiCall {
       console.error(error);
     }
   }
+  static async delete(url: string, token: string) {
+    try {
+      const response = await fetch(API_URL + url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(response.statusText);
+      }
+      return response.json();
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
   static async stream(
     url: string,
     token: string,

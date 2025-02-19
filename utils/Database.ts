@@ -8,11 +8,14 @@ export const addChat = async (token: string | null, message:string) => {
   return chat;
 };
 
-export const getChats = async (token: string | null) => {
+export const getChats = async (token: string | null, limit?:number) => {
   if (!token) {
     throw new Error("No token available");
   }
-  const chats = await ApiCall.get('/chat/getChats/', token);
+  const chats = await ApiCall.get('/chat/getChats/', token,{
+    limit: limit ?? 5
+  })
+  
   return chats;
 };
 
@@ -42,3 +45,11 @@ export const addMessage = async (chatId: string, token: string | null, content: 
     });
     return message;
 }
+
+export const deleteChat = async (token: string | null, chatId: string) => {
+    if (!token) {
+        throw new Error("No token available");
+    }
+    await ApiCall.delete(`/chat/${chatId}`, token);
+}
+// Compare this snippet from app/%28tabs%29/index.tsx:

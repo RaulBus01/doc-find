@@ -1,9 +1,9 @@
 import { View, Text, SafeAreaView, StyleSheet, FlatList, Keyboard } from 'react-native';
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
-import MessageBar from '../components/ChatMessageBar/ChatMessageBar';
+import MessageBar from '../components/ChatMessageBar';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useEffect, useRef, useState } from 'react';
-import ChatMessage from '../components/ChatMessage/ChatMessage';
+import ChatMessage from '../components/ChatMessage';
 import { Message } from '@/interface/Interface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -21,7 +21,7 @@ const ChatScreen = () => {
   const chatIdRef = useRef(chatId);
   const [messages, setMessages] = useState<Message[]>([]);
   const { token, isLoading, error } = useToken();
-  const { userId } = useUserData();
+  const { userId,picture } = useUserData();
   const flatListRef = useRef<FlatList<Message>>(null);
 
 
@@ -39,7 +39,7 @@ const ChatScreen = () => {
           setMessages(data);
           // Scroll to bottom after messages are loaded
           setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: false });
+            flatListRef.current?.scrollToEnd({ animated: true });
           }, 100);
         } catch (e) {
           console.error('Failed to load messages:', e);
@@ -176,7 +176,7 @@ const ChatScreen = () => {
           ref={flatListRef}
           style={styles.chatContainer}
           data={messages}
-          renderItem={({ item }) => <ChatMessage message={item.content} isAI={item.isAI} />}
+          renderItem={({ item }) => <ChatMessage picture={picture || "icon"} message={item.content} isAI={item.isAI} createdAt={item.createdAt} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingTop: 30, paddingBottom: 150 }}
           keyboardDismissMode="on-drag"
@@ -185,7 +185,7 @@ const ChatScreen = () => {
               flatListRef.current?.scrollToEnd({ animated: true });
             }
           }}
-          initialNumToRender={messages.length} // Ensure all messages are rendered initially
+          initialNumToRender={messages?.length} // Ensure all messages are rendered initially
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
             autoscrollToTopThreshold: 10
@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 50,
+    backgroundColor:"transparent"
   },
   headerTitle: {
     fontSize: 20,
@@ -255,7 +256,7 @@ const styles = StyleSheet.create({
 
   chatContainer: {
     flex: 1,
-    backgroundColor: Colors.light.lightgreen,
+    backgroundColor: Colors.light.background,
     marginBottom: 50,
   },
 });

@@ -1,22 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Colors } from '@/constants/Colors'
 import { Ionicons } from '@expo/vector-icons'
 
 interface MediumCardProps {
-    text:string
-    icon:string
-    color:string 
-
+  text: string
+  icon: string
+  color: string
+  onPress: () => void
 }
 
-const MediumCard = ({text,icon,color}:MediumCardProps) => {
+const MediumCard = ({text, icon, color,onPress }: MediumCardProps) => {
   return (
-    <View style={[stylesMedium.container, {backgroundColor:color}]}>
-        <Text style={stylesMedium.text}>{text}</Text>
-        {icon === 'add-circle-outline' ? <Ionicons  name={icon as any} size={24} color="black" /> : <Text style={stylesMedium.text}>{icon}</Text>}
+    <TouchableOpacity
       
-    </View>
+      activeOpacity={0.6}
+      onPress={onPress}
+      style={[stylesMedium.container, { backgroundColor: color }]}>
+      <Text style={stylesMedium.text}>{text}</Text>
+      <Ionicons name={icon as any} size={24} color="black" /> 
+
+    </TouchableOpacity>
   )
 }
 
