@@ -163,12 +163,13 @@ const Home = () => {
 
   return (
     <View
-      style={{
-        flex: 1,
-        backgroundColor: Colors.light.background,
-        paddingTop: top,
-        paddingBottom: bottom,
-      }}
+      style={[
+        styles.container,
+        {
+          paddingTop: top,
+          paddingBottom: bottom,
+        },
+      ]}
     >
       <View style={styles.headerContainer}>
         <Text style={styles.header}>Welcome</Text>
@@ -182,6 +183,10 @@ const Home = () => {
   );
 };
 const styles = StyleSheet.create({
+  container:{
+      flex: 1,
+      backgroundColor: Colors.light.background,
+    },
   headerContainer: {
     justifyContent: "center",
     backgroundColor: Colors.light.tint,

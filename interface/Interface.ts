@@ -22,7 +22,12 @@ export enum Role {
     updatedAt: string;
   }
   export interface User {
-    id: number
-    name: string;
-    profileData: string;
+    id: true,
+    username: true,
+    email: true,
+    emailVerified: true,
+    givenName: true,
+    familyName: true,
+    picture: true,
+    createdAt: true,
   }
