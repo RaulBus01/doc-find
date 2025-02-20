@@ -1,33 +1,53 @@
-import { View, Text, Button, Image,StyleSheet, Touchable, TouchableOpacity } from 'react-native';
-import { useAuth0 } from 'react-native-auth0';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
+import Animated, {
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+} from "react-native-reanimated";
+import { useAuth0 } from "react-native-auth0";
 import { router } from "expo-router";
-import {  secureGetValueFor } from '@/utils/Token';
-import { useEffect, useState } from 'react';
-import { deleteItemAsync } from 'expo-secure-store';
-import { useToken } from '@/context/TokenContext';
-import { Colors } from '@/constants/Colors';
-import { User } from '@/interface/Interface';
-import { Ionicons } from '@expo/vector-icons';
+import { secureGetValueFor } from "@/utils/Token";
+import { deleteItemAsync } from "expo-secure-store";
+import { useToken } from "@/context/TokenContext";
+import { Colors } from "@/constants/Colors";
+import { User } from "@/interface/Interface";
+import { Ionicons } from "@expo/vector-icons";
+import CategoryView from "@/components/ui/CategoryView";
+import CustomButton from "@/components/ui/CustomButton";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+
+
+const BOTTOM_TAB_HEIGHT = 50;
 
 export default function Account() {
-
   const { clearSession } = useAuth0();
-  const {token} = useToken();
+  const { token } = useToken();
   const [user, setUser] = useState<User | null>(null);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const scrollOffset = useScrollViewOffset(scrollRef);
 
-  // Handle user data fetching
+
+  
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const userData = await secureGetValueFor("user");
         if (userData) {
-          const userJSON = await JSON.parse(userData);
-     
+          const userJSON = JSON.parse(userData);
           setUser(userJSON);
         }
-       
       } catch (error) {
-        console.error('Error fetching user:', error);
+        console.error("Error fetching user:", error);
       }
     };
 
@@ -45,41 +65,87 @@ export default function Account() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerText}>Account</Text>
-      </View>
-      <View style={styles.body}>
-        <View style={styles.profile}>
-          <Image source={{ uri: user?.picture }} style={styles.image} />
-          <Text style={styles.profileText}>{user?.givenName}</Text>
-          <Text style={styles.profileText}>{user?.familyName}</Text>
-        </View>
-        <View style={styles.category}>
-          <View style={styles.categoryHeader}>
-            <Text style={styles.profileText}>Account</Text>
+    <Animated.ScrollView
+      ref={scrollRef}
+      scrollEventThrottle={16}
+      scrollIndicatorInsets={{ bottom: BOTTOM_TAB_HEIGHT }}
+      contentContainerStyle={{ paddingBottom: BOTTOM_TAB_HEIGHT}}
+      style={styles.container}
+    >
+        <View style={styles.body}>
+          <View style={styles.profile}>
+            <Image source={{ uri: user?.picture }} style={styles.image} />
+            <Text style={styles.profileText}>{user?.givenName}</Text>
+            <Text style={styles.profileText}>{user?.familyName}</Text>
           </View>
-          <View style={styles.categoryContent}>
-             <TouchableOpacity style={styles.profile}>
-              <Ionicons name="mail-outline" size={24} />
-              <View style={styles.buttonView}>
-                <Text style={styles.categoryText}>E-mail</Text>
-                <Text style={styles.categoryText}>{user?.email}</Text>
-              </View>
-            </TouchableOpacity>
-           </View>
+          <CategoryView header="Account">
+            <CustomButton
+              icon={<Ionicons name="mail-outline" size={24} />}
+              label="E-mail"
+              subLabel={user?.email || ""}
+              onPress={() => console.log("Email")}
+              containerStyle={styles.accountButton}
+            />
+            <CustomButton
+              icon={<Ionicons name="lock-closed-outline" size={24} />}
+              label="Password"
+              subLabel="Change your password"
+              onPress={() => console.log("Password")}
+              containerStyle={styles.accountButton}
+            />
+            <CustomButton
+              icon={<Ionicons name="person-outline" size={24} />}
+              label="Profiles"
+              subLabel="Edit your profiles"
+              onPress={() => console.log("Profiles")}
+              containerStyle={styles.accountButton}
+            />
+            <CustomButton
+              icon={<Ionicons name="log-out-outline" size={24}  color={Colors.light.red}/>}
+              label="Log Out"
+              subLabel="Log out of your account"
+              onPress={onLogout}
+              containerStyle={styles.logoutButton}
+              labelStyle={{ color: Colors.light.red }}
+              subLabelStyle={{ color: Colors.light.red }}
+            />
+            
+          </CategoryView>
+          <CategoryView header="Preferences">
+            <CustomButton
+              icon={<Ionicons name="notifications-outline" size={24} />}
+              label="Notifications"
+              subLabel="Manage your notifications"
+              onPress={() => console.log("Notifications")}
+              containerStyle={styles.accountButton}
+            />
+            <CustomButton
+              icon={<Ionicons name="moon-outline" size={24} />}
+              label="Dark Mode"
+              subLabel="Toggle dark mode"
+              onPress={() => console.log("Dark Mode")}
+              containerStyle={styles.accountButton}
+            />
+          </CategoryView>
+          <CategoryView header="About">
+            <CustomButton
+              icon={<Ionicons name="information-circle-outline" size={24} />}
+              label="About"
+              subLabel="Learn more about the app"
+              onPress={() => console.log("About")}
+              containerStyle={styles.accountButton}
+            />
+            <CustomButton
+              icon={<Ionicons name="document-text-outline" size={24} />}
+              label="Terms of Use"
+              subLabel="Read our terms of use"
+              onPress={() => console.log("Terms of Use")}
+              containerStyle={styles.accountButton}
+            />
+          </CategoryView>
         </View>
-
-      </View>
-    
-      <Text>{user?.email}</Text>
-      <Text>{user?.username}</Text>
-      <Text>{user?.id}</Text>
-      {/* <Text>{user?.name}</Text> */}
-      <Text>{token}</Text>
-  
-      <Button onPress={onLogout} title={"Log Out"} />
-    </View>
+      
+    </Animated.ScrollView>
   );
 }
 
@@ -89,22 +155,22 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-      justifyContent: "center",
-      backgroundColor: Colors.light.tint,
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-    },
-  headerText: {
-    fontSize: 26,
-    fontFamily: "Roboto-Bold",
-    color: Colors.light.text,
-    opacity: 0.65,
+    justifyContent: "center",
+    alignItems: "center",
+    overflow: "hidden",
+  },
+  headerImage: {
+    width: "100%",
+    height: "100%",
+  },
+  content: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
   },
   body: {
     flex: 1,
-    flexDirection: 'column',
+    flexDirection: "column",
     padding: 20,
-  
   },
   image: {
     width: 40,
@@ -112,41 +178,24 @@ const styles = StyleSheet.create({
     borderRadius: 50,
   },
   profile: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
+    marginBottom: 20,
   },
   profileText: {
     fontSize: 18,
     fontFamily: "Roboto-Bold",
     color: Colors.light.textlight,
   },
-  category: {
-    flexDirection: 'column',
-   
+  accountButton: {
+    backgroundColor: Colors.light.border,
+    borderRadius: 10,
+    padding: 10,
   },
-  categoryHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingLeft: 10,
-    paddingVertical: 5,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+  logoutButton: {
+    backgroundColor: Colors.light.red,
+    borderRadius: 10,
+    padding: 10,
   },
-  categoryContent: {
-    flexDirection: 'column',
-    gap: 10,
-  },
-  categoryText:{
-    fontSize: 14,
-    fontFamily: "Roboto-Bold",
-    color: Colors.light.text
-  },
-  buttonView: {
-    flexDirection: 'column',
-  },
-
-  
-
-
 });
