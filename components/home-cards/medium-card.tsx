@@ -1,50 +1,67 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { Colors } from '@/constants/Colors'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native";
+import React from "react";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface MediumCardProps {
-  text: string
-  icon: string
-  color: string
-  onPress: () => void
+  text: string;
+  icon: string;
+  color: string;
+  onPress: () => void;
 }
 
-const MediumCard = ({text, icon, color,onPress }: MediumCardProps) => {
+const MediumCard = ({ text, icon, color, onPress }: MediumCardProps) => {
   return (
-    <TouchableOpacity
-      
-      activeOpacity={0.6}
+    <TouchableHighlight
       onPress={onPress}
-      style={[stylesMedium.container, { backgroundColor: color }]}>
-      <Text style={stylesMedium.text}>{text}</Text>
-      <Ionicons name={icon as any} size={24} color="black" /> 
-
-    </TouchableOpacity>
-  )
-}
-
+      activeOpacity={0.8}
+      underlayColor="rgb(242, 250, 169)"
+      style={stylesMedium.container}
+    >
+      <LinearGradient
+        style={stylesMedium.gradientContainer}
+        colors={[color, Colors.light.textlight]}
+        start={[0, 0]}
+        end={[1, 1]}
+      >
+        <Text style={stylesMedium.text}>{text}</Text>
+        <Ionicons name={icon as any} size={24} color={Colors.light.text} />
+      </LinearGradient>
+    </TouchableHighlight>
+  );
+};
 
 const stylesMedium = StyleSheet.create({
   container: {
-    flexDirection: 'column',
-    marginHorizontal: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
     width: 130,
     height: 100,
     borderRadius: 20,
-    padding: 12,
-    boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.1)',
+    marginHorizontal: 5,
     elevation: 5,
-    gap: 8,
+  },
+  gradientContainer:{
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    width: 130,
+    height: 100,
+    borderRadius: 20,
+    elevation: 5,
+    gap: 10,
   },
   text: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 15,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: "Roboto-Medium",
     color: Colors.light.text,
     letterSpacing: 0.3,
   },
-})
-export default MediumCard
+});
+export default MediumCard;

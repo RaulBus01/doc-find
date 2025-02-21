@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 18,
     fontFamily: "Roboto-Bold",
-    color: Colors.light.textlight,
+    color: Colors.light.text,
   },
   categoryContent: {
     flexDirection: "column",

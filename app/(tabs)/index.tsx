@@ -3,6 +3,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,13 +15,10 @@ import { useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
 import { getChats } from "@/utils/Database";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Home = () => {
   const { top, bottom } = useSafeAreaInsets();
-
-  
-
-
 
   const ProfileComponent = () => {
     return (
@@ -32,19 +30,22 @@ const Home = () => {
           style={styles.horizontalScroll}
         >
           <LargeCard
-            text={"User1"}
-            icon={"add-circle-outline"}
+            text={"Add New Profile"}
+            icon={"person-add-outline"}
             color={Colors.light.mediumbackground}
+            onPress={() => console.log("User1")}
           />
           <LargeCard
             text={"Blood Analysis"}
             icon={"😷"}
             color={Colors.light.tint}
+            onPress={() => console.log("Blood Analysis")}
           />
           <LargeCard
             text={"Fever"}
             icon={"🤒"}
             color={Colors.light.darkbackground}
+            onPress={() => console.log("Fever")}
           />
         </ScrollView>
       </View>
@@ -53,47 +54,47 @@ const Home = () => {
 
   const ChatsComponent = () => {
     const RETRIVE_CHATS = 5;
-    const [chats,setChats] = useState<Chat[]>();
-    const [isLoading,setIsLoading] = useState(true);
+    const [chats, setChats] = useState<Chat[]>();
+    const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
     const { token } = useToken();
     const router = useRouter();
-    
+
     useEffect(() => {
       const fetchChats = async () => {
         try {
           setIsLoading(true);
-          const data = await getChats(token,RETRIVE_CHATS);
+          const data = await getChats(token, RETRIVE_CHATS);
           setChats(data);
         } catch (err) {
-          setError(err instanceof Error ? err : new Error('Failed to fetch chats'));
+          setError(
+            err instanceof Error ? err : new Error("Failed to fetch chats")
+          );
         } finally {
           setIsLoading(false);
         }
       };
-  
+
       if (token) {
         fetchChats();
       }
     }, [token]);
 
-    const handleRouting= (path:string) =>{
+    const handleRouting = (path: string) => {
       router.push(`/(tabs)/(chat)/${path}`);
-    }
-    if (isLoading) {
-      return <View>
-        <Text>isLoading</Text>
-      </View>
-    }
-  
+    };
+
     if (error) {
-      return <View>
-        <Text>ERROR</Text>
-      </View>
+      return (
+        <View>
+          <Text>ERROR</Text>
+        </View>
+      );
     }
     return (
       <View style={{ padding: 10 }}>
         <Text style={[styles.text, { paddingLeft: 10 }]}>Last Chats</Text>
+
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -103,23 +104,27 @@ const Home = () => {
             text={"Start New Chat"}
             icon={"add-circle-outline"}
             color={Colors.light.mediumbackground}
-            onPress={()=>handleRouting("new")}
+            onPress={() => handleRouting("new")}
           />
-          {chats?.map((chat) =>(
-            <MediumCard
-            key={chat.id}
-            text={chat.title}
-            icon="chatbox-outline"
-            color={Colors.light.tint}
-            onPress={()=>handleRouting(chat.id)}
-            />
-          ))}
+          {isLoading ? (
+            <ActivityIndicator size="large" color={Colors.light.tint} />
+          ) : (
+            chats?.map((chat) => (
+              <MediumCard
+                key={chat.id}
+                text={chat.title}
+                icon="chatbox-outline"
+                color={Colors.light.tint}
+                onPress={() => handleRouting(chat.id)}
+              />
+            ))
+          )}
           <MediumCard
-           text={"Chat History"}
-           icon={"chatbubbles-outline"}
-           color={Colors.light.darkbackground}
-           onPress={()=>handleRouting("history")}
-           />
+            text={"Chat History"}
+            icon={"chatbubbles-outline"}
+            color={Colors.light.darkbackground}
+            onPress={() => handleRouting("history")}
+          />
         </ScrollView>
       </View>
     );
@@ -127,10 +132,10 @@ const Home = () => {
 
   const SymptomsComponent = () => {
     const router = useRouter();
-    const handleRouting= (symptom:string) =>{
-        console.log(symptom);
-        router.push("/(tabs)/(chat)/new");
-    }
+    const handleRouting = (symptom: string) => {
+      console.log(symptom);
+      router.push("/(tabs)/(chat)/new");
+    };
     return (
       <View style={{ padding: 10 }}>
         <Text style={[styles.text, { paddingLeft: 10 }]}>
@@ -141,8 +146,12 @@ const Home = () => {
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalScroll}
         >
-          <SmallCard text={"Cough"} icon={"😷"} color={Colors.light.tint} 
-          onPress={handleRouting}/>
+          <SmallCard
+            text={"Cough"}
+            icon={"😷"}
+            color={Colors.light.tint}
+            onPress={handleRouting}
+          />
           <SmallCard
             text={"Headache"}
             icon={"🤕"}
@@ -155,38 +164,41 @@ const Home = () => {
             color={Colors.light.darkbackground}
             onPress={handleRouting}
           />
-          
         </ScrollView>
       </View>
     );
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          paddingTop: top,
-          paddingBottom: bottom,
-        },
-      ]}
+    <LinearGradient
+      colors={[Colors.light.darkbackground,Colors.light.mediumbackground,Colors.light.background,Colors.light.textlight]}
+      locations={[0, 0.35, 0.56, 1]} 
+      start={{ x: 0.5, y: 0 }} 
+      end={{ x: 0.5, y: 1 }} 
+      style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}
     >
-      <View style={styles.headerContainer}>
+      <LinearGradient 
+        style={styles.headerContainer}
+        colors={[Colors.light.textlight,Colors.light.tint,Colors.light.mediumbackground]}
+        locations={[0, 0.44, 0.90]}
+        start={{ x: 0.5, y: 0 }}
+        end={{ x: 0.5, y: 1 }}
+        >
         <Text style={styles.header}>Welcome</Text>
-      </View>
+        </LinearGradient>
       <ScrollView nestedScrollEnabled={true} style={{ flex: 1 }}>
-       <ProfileComponent />
-       <SymptomsComponent/>
-       <ChatsComponent />
+        <ProfileComponent />
+        <SymptomsComponent />
+        <ChatsComponent />
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 };
 const styles = StyleSheet.create({
-  container:{
-      flex: 1,
-      backgroundColor: Colors.light.background,
-    },
+  container: {
+    flex: 1,
+    // backgroundColor: Colors.light.background,
+  },
   headerContainer: {
     justifyContent: "center",
     backgroundColor: Colors.light.tint,
@@ -202,7 +214,7 @@ const styles = StyleSheet.create({
   horizontalScroll: {
     flexDirection: "row",
     padding: 5,
-    // backgroundColor:'green',
+
     alignContent: "center",
   },
   text: {

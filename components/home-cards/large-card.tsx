@@ -1,61 +1,69 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { Colors } from '@/constants/Colors'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native";
+import React from "react";
+import { Colors } from "@/constants/Colors";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface LargeCardProps {
-  text: string
-  icon: string
-  color: string
-
+  text: string;
+  icon: string;
+  color: string;
+  onPress: () => void;
 }
 
-const LargeCard = ({ text, icon, color }: LargeCardProps) => {
+const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.6}
-      style={[stylesLarge.container, { backgroundColor: color }]}>
+    <TouchableHighlight
+         onPress={onPress}
+         activeOpacity={0.8}
+         underlayColor="rgb(242, 250, 169)"
+         style={styles.container}
+       >
+         <LinearGradient
+           style={styles.gradientContainer}
+           colors={[color, Colors.light.textlight]}
+           start={[0, 0]}
+           end={[1, 1]}
+         >
+        <Text style={styles.text}>{text}</Text>
+        <Ionicons name={icon as any} size={24} color={Colors.light.text} />
+       
+       </LinearGradient>
+         </TouchableHighlight>
+  );
+};
 
-      <Text style={stylesLarge.text}>Name: </Text>
-      <Text style={stylesLarge.text}>Age: </Text>
-      <Text style={stylesLarge.text}>Sex:</Text>
-      <Text style={stylesLarge.text}>Blood Group:</Text>
-
-
-    </TouchableOpacity>
-  )
-}
-
-
-const stylesLarge = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
-    marginHorizontal: 8,
-    marginVertical: 6,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
     width: 190,
     height: 160,
-    borderRadius: 24,
-    padding: 16,
-    boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.1)',
-    elevation: 10,
-    gap: 8,
+    borderRadius: 25,
+    marginHorizontal: 5,
+    elevation: 5,
+  },
+  gradientContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    width: 190,
+    height: 160,
+    borderRadius: 25,
+    gap: 10,
+    elevation: 5,
   },
   text: {
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
+    fontFamily: "Roboto-Medium",
     color: Colors.light.text,
     letterSpacing: 0.3,
     opacity: 0.9,
     lineHeight: 20,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-    color: Colors.light.text,
-    opacity: 1,
-  }
-})
-export default LargeCard
+});
+export default LargeCard;

@@ -12,6 +12,8 @@ import { addChat, addMessage, getMessages } from '@/utils/Database';
 import { Colors } from '@/constants/Colors';
 import { useUserData } from '@/context/UserDataContext';
 import { streamModelResponse } from '@/utils/Model';
+import { welcomeMessages } from '@/constants/WelcomeMessages';
+
 
 const ChatScreen = () => {
 
@@ -19,7 +21,8 @@ const ChatScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const [chatId, _setChatId] = useState(id);
   const chatIdRef = useRef(chatId);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const randomWelcomeMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+  const [messages, setMessages] = useState<Message[]>(!id ? [randomWelcomeMessage] : []);
   const { token, isLoading, error } = useToken();
   const { userId,picture } = useUserData();
   const flatListRef = useRef<FlatList<Message>>(null);
@@ -105,7 +108,7 @@ const ChatScreen = () => {
         const chat = await addChat(token, newMessage.content);
         if (chat?.id) {
           setChatId(chat.id);
-          setMessages([...messages, newMessage]);
+          setMessages([newMessage]);
         }
 
 
@@ -176,7 +179,7 @@ const ChatScreen = () => {
           ref={flatListRef}
           style={styles.chatContainer}
           data={messages}
-          renderItem={({ item }) => <ChatMessage picture={picture || "icon"} message={item.content} isAI={item.isAI} createdAt={item.createdAt} />}
+          renderItem={({ item }) => <ChatMessage id={item.id} picture={picture || "icon"} message={item.content} isAI={item.isAI} createdAt={item.createdAt} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingTop: 30, paddingBottom: 150 }}
           keyboardDismissMode="on-drag"

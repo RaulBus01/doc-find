@@ -22,7 +22,8 @@ import { User } from "@/interface/Interface";
 import { Ionicons } from "@expo/vector-icons";
 import CategoryView from "@/components/ui/CategoryView";
 import CustomButton from "@/components/ui/CustomButton";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 
 
 
@@ -34,7 +35,7 @@ export default function Account() {
   const [user, setUser] = useState<User | null>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
-
+  const { top, bottom } = useSafeAreaInsets();
 
   
 
@@ -65,13 +66,19 @@ export default function Account() {
   };
 
   return (
+    <SafeAreaView style={styles.container}>
     <Animated.ScrollView
       ref={scrollRef}
       scrollEventThrottle={16}
       scrollIndicatorInsets={{ bottom: BOTTOM_TAB_HEIGHT }}
       contentContainerStyle={{ paddingBottom: BOTTOM_TAB_HEIGHT}}
-      style={styles.container}
     >
+      <LinearGradient
+                colors={[Colors.light.textlight,Colors.light.tint,Colors.light.mediumbackground]}
+                locations={[0, 0.44, 0.90]}
+                start={{ x: 0.5, y: 0 }}
+                end={{ x: 0.5, y: 1 }}
+      >
         <View style={styles.body}>
           <View style={styles.profile}>
             <Image source={{ uri: user?.picture }} style={styles.image} />
@@ -145,14 +152,15 @@ export default function Account() {
           </CategoryView>
         </View>
       
+    </LinearGradient>
     </Animated.ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
   },
   header: {
     justifyContent: "center",
@@ -186,7 +194,7 @@ const styles = StyleSheet.create({
   profileText: {
     fontSize: 18,
     fontFamily: "Roboto-Bold",
-    color: Colors.light.textlight,
+    color: Colors.light.text,
   },
   accountButton: {
     backgroundColor: Colors.light.border,

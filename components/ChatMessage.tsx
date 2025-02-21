@@ -1,18 +1,35 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Touchable,
+  TouchableOpacity,
+} from "react-native";
 import React from "react";
 
 import { Ionicons } from "@expo/vector-icons";
 import Markdown from "react-native-markdown-display";
-import { formatDate } from "@/utils/Date";
+import * as Clipboard from "expo-clipboard";
 
 interface ChatMessageProps {
+  id: string;
   message: string;
   isAI: boolean;
   picture: string;
-  createdAt:string;
+  createdAt: string;
 }
 
-const ChatMessage = ({ message, isAI, picture,createdAt }: ChatMessageProps) => {
+const ChatMessage = ({
+  id,
+  message,
+  isAI,
+  picture,
+  createdAt,
+}: ChatMessageProps) => {
+  const handleCopyToClipboard = async () => {
+    await Clipboard.setStringAsync(message);
+  };
   return (
     <View style={ChatCardStyle.cardContainer}>
       <View
@@ -42,8 +59,21 @@ const ChatMessage = ({ message, isAI, picture,createdAt }: ChatMessageProps) => 
         <Markdown>{message}</Markdown>
       </View>
       <View style={ChatCardStyle.footer}>
-      <Text>{formatDate(createdAt)}</Text>
-
+        {isAI ? (
+          id !== "welcome" && (
+          <View style={ChatCardStyle.footerButtons}>
+            <TouchableOpacity
+              activeOpacity={0.2}
+              onPress={handleCopyToClipboard}
+            >
+              <Ionicons name="copy" size={20} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={0.2}>
+              <Ionicons name="refresh" size={20} color="black" />
+            </TouchableOpacity>
+          </View>
+          )
+        ) : null}
       </View>
     </View>
   );
@@ -77,7 +107,7 @@ const ChatCardStyle = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "flex-start",
     backgroundColor: "#f9f9f9",
-    padding:15,
+    padding: 15,
     borderRadius: 20,
   },
   avatar: {
@@ -86,9 +116,19 @@ const ChatCardStyle = StyleSheet.create({
     borderRadius: 20,
     backgroundColor: "#e1e1e1",
   },
-  footer:{
-    paddingLeft:20
-  }
+  footer: {
+    marginTop: 10,
+    paddingRight: 20,
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  footerButtons: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: 20,
+  },
 });
 
 export default ChatMessage;

@@ -3,7 +3,6 @@ import { secureSave, secureSaveObject } from '@/utils/Token';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { Credentials, useAuth0 } from 'react-native-auth0';
 import { ApiCall } from '@/utils/ApiCall';
@@ -54,7 +53,7 @@ const Page = () => {
 
 return (
   <View style={styles.container}>
-    <StatusBar style="dark" />
+     
     <CustomCarousel data={data} width={width} />
     <View style={styles.footer}>
       <TouchableOpacity onPress={onLogin} style={styles.loginButton}>

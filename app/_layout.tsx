@@ -10,6 +10,8 @@ import { UserDataProvider } from '@/context/UserDataContext';
 import { View, ActivityIndicator,Text } from 'react-native';
 import { Colors } from '@/constants/Colors';
 import {  BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import { StatusBar } from 'expo-status-bar';
+
 
 
 SplashScreen.preventAutoHideAsync();
@@ -110,6 +112,7 @@ const RootLayout = () => {
         <BottomSheetModalProvider>
         <TokenProvider>
           <UserDataProvider>
+            <StatusBar animated={true} style="dark" backgroundColor='white' />
             <InitialLayout />
           </UserDataProvider>
         </TokenProvider>
