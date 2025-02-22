@@ -1,5 +1,4 @@
 import ChatItem from "@/components/ChatItem";
-import { Colors } from "@/constants/Colors";
 import { useToken } from "@/context/TokenContext";
 import { Chat } from "@/interface/Interface";
 import { deleteChat, getChats } from "@/utils/Database";
@@ -19,7 +18,7 @@ import CustomBottomSheetModal, {
 } from "../components/CustomBottomSheetModal";
 import { useRouter } from "expo-router";
 import CustomModal from "@/components/CustomModal";
-import { Entypo } from "@expo/vector-icons";
+import { useTheme } from "@/context/ThemeContext";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -29,6 +28,8 @@ const ChatHistoryScreen = () => {
   const bottomSheetModalRef = useRef<Ref>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   useEffect(() => {
     if (!isLoading && !error && token) {
@@ -110,20 +111,19 @@ const ChatHistoryScreen = () => {
               handleModal={() => handlePresentModalPress(item.id)}
             />
           )}
-          ListHeaderComponent={ListHeader}
           contentContainerStyle={styles.listContentChat}
           showsVerticalScrollIndicator={false}
         />
       ) : (
         <View style={styles.listContent}>
-          <Text style={{ textAlign: "center", padding: 20 }}>
+          <Text style={{ textAlign: "center", padding: 20, color: theme.text }}>
             No chats found
           </Text>
           <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("/new")}
           >
-            <Text>Start a new chat</Text>
+            <Text style={{ color: theme.text }}>Start a new chat</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -144,10 +144,10 @@ const ChatHistoryScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: "row",
@@ -155,13 +155,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: Colors.light.tint,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    backgroundColor: theme.tint,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
+    color:theme.text,
   },
   headerIcons: {
     flexDirection: "row",
@@ -175,8 +174,6 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
     bottom: 10,
   },
   listContentChat: {
@@ -188,7 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: Colors.light.tint,
+    backgroundColor: theme.tint,
     paddingVertical: 10,
 
     margin: 15,

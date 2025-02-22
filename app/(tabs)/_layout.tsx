@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Tabs } from "expo-router";
 import TabBar from "@/components/tabBar/TabBar";
-import { Colors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import * as SplashScreen from "expo-splash-screen";
 

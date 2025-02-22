@@ -9,10 +9,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useToken } from '@/context/TokenContext';
 import { addChat, addMessage, getMessages } from '@/utils/Database';
-import { Colors } from '@/constants/Colors';
 import { useUserData } from '@/context/UserDataContext';
 import { streamModelResponse } from '@/utils/Model';
 import { welcomeMessages } from '@/constants/WelcomeMessages';
+import { useTheme } from '@/context/ThemeContext';
 
 
 const ChatScreen = () => {
@@ -26,6 +26,8 @@ const ChatScreen = () => {
   const { token, isLoading, error } = useToken();
   const { userId,picture } = useUserData();
   const flatListRef = useRef<FlatList<Message>>(null);
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
 
   function setChatId(id: string) {
@@ -207,7 +209,7 @@ const ChatScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -259,7 +261,7 @@ const styles = StyleSheet.create({
 
   chatContainer: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: theme.background,
     marginBottom: 50,
   },
 });

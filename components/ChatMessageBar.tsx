@@ -14,6 +14,7 @@ import {
 } from "react-native-reanimated";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
+import { useTheme } from "@/context/ThemeContext";
 
 const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -29,6 +30,8 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   const focusedHeight = useSharedValue(0);
   const inputRef = useRef<TextInput>(null);
   const isSendDisabled = !message.trim();
+  const {theme} = useTheme();
+  const styles = ChatMessageBarStyle(theme);
   const springConfig: WithSpringConfig = {
     damping: 15,
     stiffness: 120
@@ -137,17 +140,17 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   };
 
   return (
-    <Animated.View style={[ChatMessageBarStyle.contentView, { paddingBottom: bottom }]}>
+    <Animated.View style={[styles.contentView, { paddingBottom: bottom }]}>
       
         <ATouchableOpacity
           onPress={expandItems}
-          style={[ChatMessageBarStyle.button, expandButtonStyle]}
+          style={[styles.button, expandButtonStyle]}
         >
-          <Ionicons name="add-outline" size={28} color="black" />
+          <Ionicons name="add-outline" size={28} color={theme.text} />
         </ATouchableOpacity>
 
         <Animated.View
-          style={[ChatMessageBarStyle.buttonView, buttonContainerStyle]}
+          style={[styles.buttonView, buttonContainerStyle]}
         >
           <TouchableOpacity
             onPress={() => {
@@ -155,7 +158,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
               console.log("Camera");
             }}
           >
-            <Ionicons name="camera-outline" size={26} />
+            <Ionicons name="camera-outline" size={26} color={theme.text}/>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -163,7 +166,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
               console.log("Gallery");
             }}
           >
-            <Ionicons name="image-outline" size={26} />
+            <Ionicons name="image-outline" size={26} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -171,16 +174,16 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
               console.log("Document");
             }}
           >
-            <Ionicons name="document-outline" size={26} />
+            <Ionicons name="document-outline" size={26} color={theme.text} />
           </TouchableOpacity>
         </Animated.View>
 
-        <Animated.View style={[ChatMessageBarStyle.textAreaView, textAreaAnimatedStyle]}>
+        <Animated.View style={[styles.textAreaView, textAreaAnimatedStyle]}>
           <Animated.View style={inputContainerStyle}>
             <TextInput
               ref={inputRef}
               placeholder="Type your symptoms here..."
-              placeholderTextColor="#333"
+              placeholderTextColor={theme.text}
               multiline
               numberOfLines={3}
               onContentSizeChange={handleContentSizeChange}
@@ -188,23 +191,25 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
               onChangeText={onChangeText}
               onFocus={onInputFocus}
               onBlur={onInputBlur}
-              style={ChatMessageBarStyle.messageInput}
+              style={styles.messageInput}
             />
           </Animated.View>
 
-          <Animated.View style={ChatMessageBarStyle.bottomIcons}>
+          <Animated.View style={styles.bottomIcons}>
             <TouchableOpacity onPress={() => { }}>
-              <Ionicons name="mic" size={26} />
+              <Ionicons name="mic" size={26} color={theme.text}/>
             </TouchableOpacity>
         
+            {!isSendDisabled && (
               <Ionicons
                 name="send"
                 size={26}
                 disabled={isSendDisabled}
+                color={theme.text}
                 onPress={handleSend}
-                color={isSendDisabled ? "#ccc" : "black"}
+               
               />
-            
+            )}
           </Animated.View>
         </Animated.View>
     

@@ -8,7 +8,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
+import { useTheme } from '@/context/ThemeContext';
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
@@ -22,6 +22,8 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
   const [searchText, setSearchText] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const animatedWidth = new Animated.Value(1);
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -58,13 +60,13 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
       ]}
     >
       <View style={styles.searchIcon}>
-        <Ionicons name="search" size={20} color={Colors.light.text} />
+        <Ionicons name="search" size={20} color={theme.text} />
       </View>
       
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        placeholderTextColor={Colors.light.text + '80'}
+        placeholderTextColor={theme.text + '80'}
         value={searchText}
         onChangeText={(text) => {
           setSearchText(text);
@@ -79,14 +81,14 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
           style={styles.clearButton}
           onPress={clearSearch}
         >
-          <Ionicons name="close-circle" size={20} color={Colors.light.text} />
+          <Ionicons name="close-circle" size={20} color={theme.text} />
         </TouchableOpacity>
       )}
     </Animated.View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 20,
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
     right: 50,
     width: '75%',
     height: 50,
-    backgroundColor: Colors.light.textlight,
+    backgroundColor: theme.textlight,
     borderRadius: 12,
     flexDirection: 'row',
     
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: theme.text,
     paddingVertical: 8,
   },
   clearButton: {

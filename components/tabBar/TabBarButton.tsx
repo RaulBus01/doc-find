@@ -1,10 +1,13 @@
-import { View, Text, Pressable,StyleSheet, useAnimatedValue, TouchableOpacity } from 'react-native'
+import {StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { useTheme } from '@/context/ThemeContext';
 
 const TabBarButton = (props) => {
     const {isFocused, label,iconDefault,iconFocused,color } = props;
+    const {theme} = useTheme();
+    const styles = getStyles(theme);
 
     const scale = useSharedValue(0);
 
@@ -38,9 +41,9 @@ const TabBarButton = (props) => {
     >
         <Animated.View style={{...animatedIcon}}>
 
-        <Ionicons name={isFocused ? iconDefault : iconFocused} size={20} color={isFocused} />
+        <Ionicons name={isFocused ? iconDefault : iconFocused} size={20} color={theme.text}/>
       </Animated.View>
-        <Animated.Text style={[{ color: isFocused ? color : 'black' },animatedText]}>
+        <Animated.Text style={[styles.text,animatedText]}>
             {label}
         </Animated.Text>
     </TouchableOpacity>
@@ -48,18 +51,15 @@ const TabBarButton = (props) => {
   )
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: 'blue',
         justifyContent: 'center',
         alignItems: 'center',
-    
-    
     },
     text: {
         fontSize: 14,
-       
+        color: theme.text,
     },
 })
 

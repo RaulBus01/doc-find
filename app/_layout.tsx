@@ -7,14 +7,15 @@ import { Auth0Provider, useAuth0 } from 'react-native-auth0';
 import Constants from 'expo-constants';
 import { TokenProvider } from '@/context/TokenContext';
 import { UserDataProvider } from '@/context/UserDataContext';
-import { View, ActivityIndicator,Text } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { View, ActivityIndicator,Text, useColorScheme } from 'react-native';
 import {  BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import { StatusBar } from 'expo-status-bar';
+import { ThemeProvider, useTheme } from '@/context/ThemeContext';
 
 
 
 SplashScreen.preventAutoHideAsync();
+
 
 
 const fonts = {
@@ -23,17 +24,18 @@ const fonts = {
   "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
 };
 
-const LoadingScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <ActivityIndicator size="large" color={Colors.light.tint} />
-  </View>
-);
+
 
 const InitialLayout = () => {
   const [fontsLoaded, fontError] = useFonts(fonts);
   const { user, isLoading: authLoading, error: authError } = useAuth0();
   const router = useRouter();
-
+  const {theme} = useTheme();
+  const LoadingScreen = () => (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <ActivityIndicator size="large" color={theme.tint} />
+    </View>
+  );
   // Handle font loading error
   useEffect(() => {
     if (fontError) {
@@ -77,7 +79,7 @@ const InitialLayout = () => {
       screenOptions={{
         headerShown: false,
         animation: 'slide_from_right',
-        contentStyle: { backgroundColor: Colors.light.background }
+        contentStyle: { backgroundColor: theme.background }
       }}
     >
       <Stack.Screen 
@@ -105,20 +107,27 @@ const RootLayout = () => {
   if (!domain || !clientId) {
     throw new Error('Auth0 configuration is missing');
   }
+  const colorScheme = useColorScheme();
 
   return (
+    <ThemeProvider>
     <Auth0Provider domain={domain} clientId={clientId}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
         <TokenProvider>
           <UserDataProvider>
-            <StatusBar animated={true} style="dark" backgroundColor='white' />
+            <StatusBar 
+              animated={true} 
+              style={colorScheme === 'dark' ? "light" : "dark"} 
+              backgroundColor={colorScheme === 'dark' ? 'black' : 'white'} 
+            />
             <InitialLayout />
           </UserDataProvider>
         </TokenProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </Auth0Provider>
+    </ThemeProvider>
   );
 };
 

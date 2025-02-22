@@ -17,13 +17,15 @@ import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { on } from "events";
 import { ComposedGesture } from "react-native-gesture-handler/lib/typescript/handlers/gestures/gestureComposition";
+import { useTheme } from "@/context/ThemeContext";
 
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null
   );
- 
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const mapRef = useRef<MapView>(null);
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
@@ -132,12 +134,12 @@ export default function Map() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
   locationButton: {
-    backgroundColor: Colors.light.lightgreen,
+    backgroundColor: theme.lightgreen,
     padding: 10,
     borderRadius: 10,
     marginLeft: 10,
@@ -149,7 +151,7 @@ const styles = StyleSheet.create({
     right: 20,
     borderRadius: 10,
     padding: 10,
-    backgroundColor: Colors.light.textlight,
+    backgroundColor: theme.textlight,
     zIndex: 1,
     minWidth: 300,
     minHeight: 50,
@@ -169,13 +171,13 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   plusButton: {
-    backgroundColor: Colors.light.lightgreen,
+    backgroundColor: theme.lightgreen,
     padding: 10,
     borderRadius: 10,
     marginLeft: 10,
   },
   minusButton: {
-    backgroundColor: Colors.light.lightgreen,
+    backgroundColor: theme.lightgreen,
     padding: 10,
     borderRadius: 10,
     marginLeft: 10,

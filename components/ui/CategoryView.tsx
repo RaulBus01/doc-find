@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { Colors } from "@/constants/Colors";
+import { useTheme } from "@/context/ThemeContext";
 
 interface CategoryViewProps {
   header: string;
@@ -15,6 +15,8 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   headerStyle,
   containerStyle,
 }) => {
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
   return (
     <View style={[styles.category, containerStyle]}>
       <View style={styles.categoryHeader}>
@@ -25,7 +27,7 @@ const CategoryView: React.FC<CategoryViewProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   category: {
     flexDirection: "column",
   },
@@ -35,17 +37,18 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     paddingVertical: 5,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
+    borderBottomColor: theme.border,
   },
   headerText: {
     fontSize: 18,
     fontFamily: "Roboto-Bold",
-    color: Colors.light.text,
+    color: theme.text,
   },
   categoryContent: {
     flexDirection: "column",
     gap: 10,
   },
+  
 });
 
 export default CategoryView;

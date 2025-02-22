@@ -1,8 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableHighlight } from "react-native";
+import {Text, StyleSheet,TouchableHighlight } from "react-native";
 import React from "react";
-import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/context/ThemeContext";
 
 interface LargeCardProps {
   text: string;
@@ -12,6 +12,8 @@ interface LargeCardProps {
 }
 
 const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
+   const { theme } = useTheme();
+    const styles = getStyles(theme);
   return (
     <TouchableHighlight
          onPress={onPress}
@@ -21,19 +23,19 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
        >
          <LinearGradient
            style={styles.gradientContainer}
-           colors={[color, Colors.light.textlight]}
+           colors={[color, theme.textlight]}
            start={[0, 0]}
            end={[1, 1]}
          >
         <Text style={styles.text}>{text}</Text>
-        <Ionicons name={icon as any} size={24} color={Colors.light.text} />
+        <Ionicons name={icon as any} size={24} color={theme.text} />
        
        </LinearGradient>
          </TouchableHighlight>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
@@ -60,7 +62,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     fontFamily: "Roboto-Medium",
-    color: Colors.light.text,
+    color: theme.text,
     letterSpacing: 0.3,
     opacity: 0.9,
     lineHeight: 20,

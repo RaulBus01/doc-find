@@ -1,8 +1,8 @@
 import { View, StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
 import TabBarButton from './TabBarButton';
-import { Colors } from '@/constants/Colors';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useTheme } from '@/context/ThemeContext';
 
 type AllowedRoute = {
   name: string;
@@ -47,6 +47,9 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
     return aIndex! - bIndex!;
   });
 
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
+
   return (
     <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
       {orderedRoutes?.map((route: { key: string | number; name: string }, index: any) => {
@@ -77,7 +80,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
           return (
             <TabBarButton
               key={route.key}
-              color={Colors.light.tabIconDefault}
+              color={theme.tabIconDefault}
               isFocused={isFocused}
               label={label}
               iconDefault={matchingRoute.iconDefault}
@@ -91,7 +94,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     bottom: 0,
     position: 'absolute',
@@ -100,9 +103,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 50,
-    backgroundColor: 'white',
+    backgroundColor: theme.tint,
     borderTopWidth: 0.5,
-    borderTopColor: Colors.light.lightgreen,
+    borderTopColor: theme.tabBorder,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,

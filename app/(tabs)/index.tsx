@@ -7,7 +7,6 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Colors } from "@/constants/Colors";
 import SmallCard from "@/components/home-cards/small-card";
 import MediumCard from "@/components/home-cards/medium-card";
 import LargeCard from "@/components/home-cards/large-card";
@@ -16,10 +15,12 @@ import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
 import { getChats } from "@/utils/Database";
 import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "@/context/ThemeContext";
 
 const Home = () => {
   const { top, bottom } = useSafeAreaInsets();
-
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const ProfileComponent = () => {
     return (
       <View style={{ padding: 10 }}>
@@ -32,19 +33,19 @@ const Home = () => {
           <LargeCard
             text={"Add New Profile"}
             icon={"person-add-outline"}
-            color={Colors.light.mediumbackground}
+            color={theme.mediumbackground}
             onPress={() => console.log("User1")}
           />
           <LargeCard
             text={"Blood Analysis"}
             icon={"😷"}
-            color={Colors.light.tint}
+            color={theme.tint}
             onPress={() => console.log("Blood Analysis")}
           />
           <LargeCard
             text={"Fever"}
             icon={"🤒"}
-            color={Colors.light.darkbackground}
+            color={theme.darkbackground}
             onPress={() => console.log("Fever")}
           />
         </ScrollView>
@@ -103,18 +104,18 @@ const Home = () => {
           <MediumCard
             text={"Start New Chat"}
             icon={"add-circle-outline"}
-            color={Colors.light.mediumbackground}
+            color={theme.mediumbackground}
             onPress={() => handleRouting("new")}
           />
           {isLoading ? (
-            <ActivityIndicator size="large" color={Colors.light.tint} />
+            <ActivityIndicator size="large" color={theme.tint} />
           ) : (
             chats?.map((chat) => (
               <MediumCard
                 key={chat.id}
                 text={chat.title}
                 icon="chatbox-outline"
-                color={Colors.light.tint}
+                color={theme.tint}
                 onPress={() => handleRouting(chat.id)}
               />
             ))
@@ -122,7 +123,7 @@ const Home = () => {
           <MediumCard
             text={"Chat History"}
             icon={"chatbubbles-outline"}
-            color={Colors.light.darkbackground}
+            color={theme.darkbackground}
             onPress={() => handleRouting("history")}
           />
         </ScrollView>
@@ -149,19 +150,19 @@ const Home = () => {
           <SmallCard
             text={"Cough"}
             icon={"😷"}
-            color={Colors.light.tint}
+            color={theme.tint}
             onPress={handleRouting}
           />
           <SmallCard
             text={"Headache"}
             icon={"🤕"}
-            color={Colors.light.mediumbackground}
+            color={theme.mediumbackground}
             onPress={handleRouting}
           />
           <SmallCard
             text={"Fever"}
             icon={"🤒"}
-            color={Colors.light.darkbackground}
+            color={theme.darkbackground}
             onPress={handleRouting}
           />
         </ScrollView>
@@ -171,7 +172,7 @@ const Home = () => {
 
   return (
     <LinearGradient
-      colors={[Colors.light.darkbackground,Colors.light.mediumbackground,Colors.light.background,Colors.light.textlight]}
+      colors={[theme.darkbackground,theme.mediumbackground,theme.background,theme.textlight]}
       locations={[0, 0.35, 0.56, 1]} 
       start={{ x: 0.5, y: 0 }} 
       end={{ x: 0.5, y: 1 }} 
@@ -179,7 +180,7 @@ const Home = () => {
     >
       <LinearGradient 
         style={styles.headerContainer}
-        colors={[Colors.light.textlight,Colors.light.tint,Colors.light.mediumbackground]}
+        colors={[theme.textlight,theme.tint,theme.mediumbackground]}
         locations={[0, 0.44, 0.90]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
@@ -194,21 +195,21 @@ const Home = () => {
     </LinearGradient>
   );
 };
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: Colors.light.background,
+    // backgroundColor: theme.background,
   },
   headerContainer: {
     justifyContent: "center",
-    backgroundColor: Colors.light.tint,
+    backgroundColor: theme.tint,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   header: {
     fontSize: 32,
     fontFamily: "Roboto-Bold",
-    color: Colors.light.text,
+    color: theme.text,
     opacity: 0.65,
   },
   horizontalScroll: {
@@ -220,7 +221,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontFamily: "Roboto-Bold",
-    color: Colors.light.text,
+    color: theme.text,
   },
 });
 

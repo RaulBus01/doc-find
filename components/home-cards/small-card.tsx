@@ -6,9 +6,8 @@ import {
   TouchableHighlight,
 } from "react-native";
 import React from "react";
-import { Colors } from "@/constants/Colors";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/context/ThemeContext";
 
 interface SmallCardProps {
   text: string;
@@ -18,6 +17,8 @@ interface SmallCardProps {
 }
 
 const SmallCard = ({ text, icon, color, onPress }: SmallCardProps) => {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   return (
     <TouchableHighlight
     onPress={() => onPress(text)}
@@ -27,7 +28,7 @@ const SmallCard = ({ text, icon, color, onPress }: SmallCardProps) => {
   >
     <LinearGradient
       style={styles.gradientContainer}
-      colors={[color, Colors.light.textlight]}
+      colors={[color, theme.textlight]}
       start={[0, 0]}
       end={[1, 1]}
     >
@@ -38,7 +39,7 @@ const SmallCard = ({ text, icon, color, onPress }: SmallCardProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
@@ -67,7 +68,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 16,
     fontFamily: "Roboto-Medium",
-    color: Colors.light.text,
+    color: theme.text,
     letterSpacing: 0.3,
   
   },

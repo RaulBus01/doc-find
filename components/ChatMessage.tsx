@@ -11,6 +11,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import Markdown from "react-native-markdown-display";
 import * as Clipboard from "expo-clipboard";
+import { useTheme } from "@/context/ThemeContext";
 
 interface ChatMessageProps {
   id: string;
@@ -27,49 +28,53 @@ const ChatMessage = ({
   picture,
   createdAt,
 }: ChatMessageProps) => {
+
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
+
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(message);
   };
   return (
-    <View style={ChatCardStyle.cardContainer}>
+    <View style={styles.cardContainer}>
       <View
         style={
           isAI
-            ? ChatCardStyle.avatarContainerBot
-            : ChatCardStyle.avatarContainerUser
+            ? styles.avatarContainerBot
+            : styles.avatarContainerUser
         }
       >
         {isAI ? (
           <>
-            <Text>Bot</Text>
-            <Ionicons name="person-circle" size={28} color="black" />
+            <Text style={{color:theme.text}}>Bot</Text>
+            <Ionicons name="person-circle" size={28} color={theme.text}/>
           </>
         ) : (
           <>
             {picture === "icon" ? (
-              <Ionicons name="person-circle" size={28} color="black" />
+              <Ionicons name="person-circle" size={28} color={theme.text} />
             ) : (
-              <Image source={{ uri: picture }} style={ChatCardStyle.avatar} />
+              <Image source={{ uri: picture }} style={styles.avatar} />
             )}
-            <Text>{isAI ? "Bot" : "User"}</Text>
+            <Text style={{color:theme.text}}>{isAI ? "Bot" : "User"}</Text>
           </>
         )}
       </View>
-      <View style={ChatCardStyle.messageContainer}>
+      <View style={styles.messageContainer}>
         <Markdown>{message}</Markdown>
       </View>
-      <View style={ChatCardStyle.footer}>
+      <View style={styles.footer}>
         {isAI ? (
           id !== "welcome" && (
-          <View style={ChatCardStyle.footerButtons}>
+          <View style={styles.footerButtons}>
             <TouchableOpacity
               activeOpacity={0.2}
               onPress={handleCopyToClipboard}
             >
-              <Ionicons name="copy" size={20} color="black" />
+              <Ionicons name="copy" size={20} color={theme.text} />
             </TouchableOpacity>
             <TouchableOpacity activeOpacity={0.2}>
-              <Ionicons name="refresh" size={20} color="black" />
+              <Ionicons name="refresh" size={20} color={theme.text}/>
             </TouchableOpacity>
           </View>
           )
@@ -78,7 +83,7 @@ const ChatMessage = ({
     </View>
   );
 };
-const ChatCardStyle = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   avatarContainerUser: {
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -114,7 +119,7 @@ const ChatCardStyle = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 20,
-    backgroundColor: "#e1e1e1",
+    backgroundColor: theme.tint,
   },
   footer: {
     marginTop: 10,

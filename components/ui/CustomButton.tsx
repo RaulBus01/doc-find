@@ -1,3 +1,4 @@
+import { useTheme } from "@/context/ThemeContext";
 import React from "react";
 import {
   Pressable,
@@ -28,6 +29,9 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   labelStyle,
   subLabelStyle,
 }) => {
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
+  
   return (
     <TouchableHighlight
       onPress={onPress}
@@ -48,7 +52,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   button: {
     flexDirection: "row",
     alignItems: "center",
@@ -63,11 +67,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontFamily: "Roboto-Bold",
-    
+    color: theme.text,
   },
   subLabel: {
-    fontSize: 12,
-    fontFamily: "Roboto-Bold"
+    fontSize: 14,
+    fontFamily: "Roboto-Medium",
+    color: theme.text
   },
 });
 

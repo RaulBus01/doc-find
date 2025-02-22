@@ -2,8 +2,8 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
 import { formatDate } from "../utils/Date";
+import { useTheme } from "@/context/ThemeContext";
 
 interface ChatItemProps {
   id: string;
@@ -21,6 +21,8 @@ const ChatItem: React.FC<ChatItemProps> = ({
   handleModal,
 }) => {
   const router = useRouter();
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
 
   const handlePress = () => {
     router.push(`/${id}`);
@@ -38,22 +40,23 @@ const ChatItem: React.FC<ChatItemProps> = ({
           <Text style={styles.date}>{formatDate(updatedAt)}</Text>
         </View>
         <TouchableOpacity onPress={() => handleModal(id)}>
-          <Entypo name="dots-three-vertical" size={22} color="#333" />
+          <Entypo name="dots-three-vertical" size={22} color={theme.text} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
   container: {
-    backgroundColor: Colors.light.tint,
+    backgroundColor: theme.tint,
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    marginVertical: 2,
-    borderBottomColor: Colors.light.border,
-    boxShadow: "0 1px 2px rgba(0, 0, 0, 0.1)",
+    marginVertical: 4,
+    shadowColor: "#000",
+    elevation: 2,
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
   contentContainer: {
     backgroundColor: "transparent",
@@ -69,6 +72,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
     marginBottom: 4,
+    color: theme.text,
   },
   date: {
     fontSize: 14,
