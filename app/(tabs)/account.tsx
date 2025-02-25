@@ -34,6 +34,7 @@ const BOTTOM_TAB_HEIGHT = 50;
 export default function Account() {
   const { clearSession } = useAuth0();
   const { token } = useToken();
+  console.log(token);
   const [user, setUser] = useState<User | null>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);

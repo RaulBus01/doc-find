@@ -21,6 +21,12 @@ const Home = () => {
   const { top, bottom } = useSafeAreaInsets();
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const router = useRouter();
+
+  const handleRouting = (path: string) => {
+    console.log(path);
+    router.push(`/(profiles)/${path}`);
+  };
   const ProfileComponent = () => {
     return (
       <View style={{ padding: 10 }}>
@@ -34,19 +40,19 @@ const Home = () => {
             text={"Add New Profile"}
             icon={"person-add-outline"}
             color={theme.mediumbackground}
-            onPress={() => console.log("User1")}
+            onPress={() => handleRouting("new")}
           />
           <LargeCard
             text={"Blood Analysis"}
             icon={"😷"}
             color={theme.tint}
-            onPress={() => console.log("Blood Analysis")}
+            onPress={() => handleRouting("1")}
           />
           <LargeCard
-            text={"Fever"}
-            icon={"🤒"}
+            text={"Profile 1"}
+            icon={"😷"}
             color={theme.darkbackground}
-            onPress={() => console.log("Fever")}
+            onPress={() => handleRouting("history")}
           />
         </ScrollView>
       </View>

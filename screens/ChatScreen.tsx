@@ -153,7 +153,7 @@ const ChatScreen = () => {
 
   return (
     <SafeAreaView style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}>
-      {/* Header */}
+   
       <View style={styles.header}>
         <Text style={styles.headerTitle}>AI Assistant</Text>
         <View style={styles.headerIcons}>
@@ -174,7 +174,7 @@ const ChatScreen = () => {
         </View>
       </View>
 
-      {/* Content */}
+      
       <View style={styles.content}>
 
         <FlatList

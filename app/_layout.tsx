@@ -96,6 +96,13 @@ const InitialLayout = () => {
           gestureEnabled: false 
         }} 
       />
+      <Stack.Screen
+        name='(profiles)'
+        options={{
+          headerShown: false,
+          gestureEnabled: false
+        }}
+      />
     </Stack>
   );
 };

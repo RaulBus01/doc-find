@@ -19,6 +19,7 @@ export default function TabLayout() {
         <Tabs
           screenOptions={{
             headerShown: false,
+            animation: "fade",
             
           }}
           tabBar={(props) => (
