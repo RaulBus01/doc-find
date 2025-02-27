@@ -15,6 +15,11 @@ import { useRouter } from "expo-router";
 import { FormData } from "@/interface/Interface";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import * as schema from "@/database/schema";
+import { profiles } from "@/database/schema";
+import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -30,7 +35,9 @@ const NewProfile = () => {
     console.log("Displaying date picker");
     setShowDatePicker((prev) => !prev);
   };
-
+  const database = useSQLiteContext();
+  const drizzleDB = drizzle(database,{schema})
+  useDrizzleStudio(database);
   const [formData, setFormData] = useState<FormData>({
     name: "",
     gender: "",
@@ -73,10 +80,10 @@ const NewProfile = () => {
               key={gender}
               style={[
                 styles.genderButton,
-                formData.sex === gender && styles.selectedGender
+                formData.gender === gender && styles.selectedGender
               ]}
               onPress={() => {
-                setFormData((prev) => ({ ...prev, sex: gender }));
+                setFormData((prev) => ({ ...prev, gender: gender }));
                 setTimeout(() => {
                   if (!!gender) handleNext(currentStep);
                 }, 100);
@@ -84,7 +91,7 @@ const NewProfile = () => {
             >
               <Text style={[
                 styles.genderText,
-                formData.sex === gender && styles.selectedGenderText
+                formData.gender === gender && styles.selectedGenderText
               ]}>{gender}</Text>
             </TouchableOpacity>
           ))}
@@ -241,6 +248,22 @@ const NewProfile = () => {
   const handleComplete = () => {
     // Handle form submission
     console.log("Form completed:", formData);
+    drizzleDB.insert(profiles).values({
+      fullname: formData.name,
+      gender: formData.gender,
+      age: formData.age,
+      diabetic: formData.diabetic,
+      smoker: formData.smoker,
+      hypertensive: formData.hypertensive,
+      created_at: Date.now(),
+      updated_at: Date.now(),
+    } as typeof profiles.$inferInsert).execute().then((result) => {
+      console.log("Inserted profile", result);
+      router.back();
+    }
+    );
+
+    
   };
   return (
     <LinearGradient

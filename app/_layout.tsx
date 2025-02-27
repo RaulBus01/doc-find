@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect} from 'react';
 import { Stack, useRouter } from 'expo-router';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,7 +11,10 @@ import { View, ActivityIndicator,Text, useColorScheme } from 'react-native';
 import {  BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import { StatusBar } from 'expo-status-bar';
 import { ThemeProvider, useTheme } from '@/context/ThemeContext';
-
+import { SQLiteProvider, openDatabaseSync } from 'expo-sqlite';
+import { drizzle } from 'drizzle-orm/expo-sqlite';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import migrations from '@/drizzle/migrations';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -108,8 +111,13 @@ const InitialLayout = () => {
 };
 
 const RootLayout = () => {
+  const DATABASE_NAME='tasks';
   const domain = Constants.expoConfig?.extra?.auth0?.domain;
   const clientId = Constants.expoConfig?.extra?.auth0?.clientId;
+  const expoDatabase = openDatabaseSync(DATABASE_NAME);
+  const database = drizzle(expoDatabase);
+  const {success,error} = useMigrations(database,migrations);
+
 
   if (!domain || !clientId) {
     throw new Error('Auth0 configuration is missing');
@@ -117,8 +125,12 @@ const RootLayout = () => {
   const colorScheme = useColorScheme();
 
   return (
+    <Suspense fallback={<ActivityIndicator size="large" />}>
     <ThemeProvider>
     <Auth0Provider domain={domain} clientId={clientId}>
+      <SQLiteProvider databaseName={DATABASE_NAME} options={{enableChangeListener:true}}
+        useSuspense
+      >
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
         <TokenProvider>
@@ -133,8 +145,10 @@ const RootLayout = () => {
         </TokenProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      </SQLiteProvider>
     </Auth0Provider>
     </ThemeProvider>
+    </Suspense>
   );
 };
 

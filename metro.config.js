@@ -6,5 +6,5 @@ const {
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
 const dotenv = require('dotenv');
-
+config.resolver.sourceExts.push('sql');
 module.exports = wrapWithReanimatedMetroConfig(config);

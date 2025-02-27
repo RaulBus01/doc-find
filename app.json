@@ -25,6 +25,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      "expo-sqlite",
       "expo-router",
       [
         "expo-splash-screen",
@@ -42,7 +43,10 @@
           
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      {
+        "assets":[ "./drizzle/*.sql"]
+      }
      
      
     ],
