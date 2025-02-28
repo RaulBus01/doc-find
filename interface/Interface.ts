@@ -31,12 +31,3 @@ export enum Role {
     picture: string,
     createdAt: string,
   }
-  export interface ProfileForm {
-    name: string;
-    gender: 'Male' | 'Female' | '';
-    age: string;
-    smoker: "Yes" | "No" | "I used to"| null;
-    hypertensive: "Yes" | "No" | "I don't know"| null;
-    diabetic: "Yes" | "No" | "I don't know" | null;
-    
-  }

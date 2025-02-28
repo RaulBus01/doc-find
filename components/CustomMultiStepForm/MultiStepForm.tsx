@@ -117,7 +117,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
             <Text style={styles.buttonText}>
               {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
             </Text>
-            <FontAwesome6 name="arrow-right-long" size={24} color="black" />
+            <FontAwesome6 name="arrow-right-long" size={24} color={theme.text} />
           </TouchableOpacity>
         )}
       </View>

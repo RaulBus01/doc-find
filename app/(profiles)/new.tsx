@@ -12,14 +12,14 @@ import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { ProfileForm } from "@/interface/Interface";
+import { ProfileForm } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import { useSQLiteContext } from "expo-sqlite";
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import * as schema from "@/database/schema";
+
+import { useDatabase } from '@/hooks/useDatabase';
 import { profiles } from "@/database/schema";
-import { useDrizzleStudio } from 'expo-drizzle-studio-plugin';
+import { sum } from "drizzle-orm";
+
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -35,16 +35,15 @@ const NewProfile = () => {
     console.log("Displaying date picker");
     setShowDatePicker((prev) => !prev);
   };
-  const database = useSQLiteContext();
-  const drizzleDB = drizzle(database,{schema})
-  useDrizzleStudio(database);
+  const drizzleDB = useDatabase();
+
   const [formData, setFormData] = useState<ProfileForm>({
-    name: "",
+    fullname: "",
     gender: "",
     age: "",
-    smoker: null,
-    hypertensive: null,
-    diabetic: null,
+    smoker: "",
+    hypertensive: "",
+    diabetic: "",
   });
   const handleNext = (step: number) => {
     setCurrentStep(step + 1);
@@ -61,18 +60,19 @@ const NewProfile = () => {
       component: (
         <TextInput
           style={styles.textInput}
-          value={formData.name}
+          value={formData.fullname}
           onChangeText={(text: any) =>
-            setFormData((prev) => ({ ...prev, name: text }))
+            setFormData((prev) => ({ ...prev, fullname: text }))
           }
           placeholder="Enter your name"
+          placeholderTextColor={theme.text}
         />
       ),
-      validate: () => formData.name.length > 0,
+      validate: () => formData.fullname.length > 0,
     },
     {
-      key: "sex",
-      title: "Select your sex",
+      key: "gender",
+      title: "Select your gender",
       component: (
         <View style={styles.choiceContainer}>
           {["Male", "Female"].map((gender) => (
@@ -229,13 +229,24 @@ const NewProfile = () => {
     {key:"finish",
     title: "Profile Summary",
     component: (
-      <View>
-        <Text>Name: {formData.name}</Text>
-        <Text>Gender:{formData.gender}</Text>
-        <Text>Age: {formData.age}</Text>
-        <Text>Smoker: {formData.smoker}</Text>
-        <Text>Hypertensive: {formData.hypertensive}</Text>
-        <Text>Diabetic: {formData.diabetic}</Text>
+      <View style={styles.summaryContainer}>
+    
+        {Object.entries({
+          "Name:": formData.fullname || "Laur",
+          "Gender:": formData.gender || "Male",
+          "Date of Birth:": formData.age || "12.05.2021",
+          "Smoker:": formData.smoker || "Yes",
+          "Hypertensive:": formData.hypertensive || "No",
+          "Diabetic:": formData.diabetic || "I don't know"
+        }).map(([key, value]) => (
+          <View key={key} style={styles.summaryRow}>
+            <Text style={styles.summaryTextHeader}>{key}</Text>
+            <Text style={styles.summaryText}>{value}</Text>
+          </View>
+        ))}
+        
+       
+     
         
       </View>
           
@@ -249,7 +260,7 @@ const NewProfile = () => {
     // Handle form submission
     console.log("Form completed:", formData);
     drizzleDB.insert(profiles).values({
-      fullname: formData.name,
+      fullname: formData.fullname,
       gender: formData.gender,
       age: formData.age,
       diabetic: formData.diabetic,
@@ -259,9 +270,8 @@ const NewProfile = () => {
       updated_at: Date.now(),
     } as typeof profiles.$inferInsert).execute().then((result) => {
       console.log("Inserted profile", result);
-      router.back();
-    }
-    );
+      router.replace("/(tabs)");
+    });
 
     
   };
@@ -300,9 +310,7 @@ const NewProfile = () => {
     </LinearGradient>
   );
 };
-//Input Fields
-//Text Input -> Choice -> Calendar->Yes/no/Maybe->
-//Name->Sex->Age->Smoker->Hypertensive->Diabetic
+
 const getStyles = (theme: any) =>
   StyleSheet.create({
     container: {
@@ -360,6 +368,26 @@ const getStyles = (theme: any) =>
       color: theme.background,
       fontWeight: 'bold',
     },
+    summaryContainer: {
+      flexDirection: "column",
+      gap: 20,
+      justifyContent: "space-between",
+    },
+    summaryRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 15,
+    },
+    summaryTextHeader: {
+      color: theme.text,
+      fontSize: 20,
+      fontWeight: "bold",
+    },
+    summaryText: {
+      color: theme.text,
+      fontSize: 16,
+    },
+
   });
 
 export default NewProfile;

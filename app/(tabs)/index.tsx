@@ -16,8 +16,8 @@ import { useToken } from "@/context/TokenContext";
 import { getChats } from "@/utils/DatabaseAPI";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
-import { useSQLiteContext } from "expo-sqlite";
-import { drizzle } from "drizzle-orm/expo-sqlite";
+import { useDatabase } from "@/hooks/useDatabase";
+import { ProfileForm, profiles } from "@/database/schema";
 
 
 const Home = () => {
@@ -25,19 +25,19 @@ const Home = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
-  const database = useSQLiteContext();
-  const drizzleDB = drizzle(database);
-  const [profile, setProfile] = useState<any>();
+  const drizzleDB = useDatabase();
+
+  const [profilesData, setProfilesData] = useState<any>();
 
   useEffect(() => {
+    console.log("Fetching profiles");
     const fetchProfile = async () => {
-      const profile = await drizzleDB.get("profile");
+      const profile = await drizzleDB.select().from(profiles).execute();
       console.log(profile);
-      setProfile(profile);
+      setProfilesData(profile);
     };
     fetchProfile();
-  }
-  , []);
+  }, []);
     
 
   const handleRouting = (path: string) => {
@@ -55,22 +55,21 @@ const Home = () => {
         >
           <LargeCard
             text={"Add New Profile"}
-            icon={"person-add-outline"}
+            icon={"user-plus"}
             color={theme.mediumbackground}
             onPress={() => handleRouting("new")}
           />
-          <LargeCard
-            text={"Blood Analysis"}
-            icon={"😷"}
-            color={theme.tint}
-            onPress={() => handleRouting("1")}
-          />
-          <LargeCard
-            text={"Profile 1"}
-            icon={"😷"}
-            color={theme.darkbackground}
-            onPress={() => handleRouting("history")}
-          />
+          {profilesData?.map((profile: ProfileForm) => (
+
+            <LargeCard
+              key={profile.id}
+              text={profile.fullname}
+              icon={profile.gender}
+              color={theme.tint}
+              onPress={() => handleRouting(profile.id?.toString() || 'new')}
+            />
+          ))}
+          
         </ScrollView>
       </View>
     );

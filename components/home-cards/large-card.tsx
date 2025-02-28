@@ -1,6 +1,6 @@
 import {Text, StyleSheet,TouchableHighlight } from "react-native";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -28,7 +28,7 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
            end={[1, 1]}
          >
         <Text style={styles.text}>{text}</Text>
-        <Ionicons name={icon as any} size={24} color={theme.text} />
+        <FontAwesome5 name={icon.toLowerCase()} size={28} color={theme.text} />
        
        </LinearGradient>
          </TouchableHighlight>
