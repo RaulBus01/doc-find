@@ -52,4 +52,3 @@ export const deleteChat = async (token: string | null, chatId: string) => {
     }
     await ApiCall.delete(`/chat/${chatId}`, token);
 }
-// Compare this snippet from app/%28tabs%29/index.tsx:

@@ -1,7 +1,7 @@
 import ChatItem from "@/components/ChatItem";
 import { useToken } from "@/context/TokenContext";
 import { Chat } from "@/interface/Interface";
-import { deleteChat, getChats } from "@/utils/Database";
+import { deleteChat, getChats } from "@/utils/DatabaseAPI";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,

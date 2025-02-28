@@ -8,7 +8,7 @@ import { Message } from '@/interface/Interface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useToken } from '@/context/TokenContext';
-import { addChat, addMessage, getMessages } from '@/utils/Database';
+import { addChat, addMessage, getMessages } from '@/utils/DatabaseAPI';
 import { useUserData } from '@/context/UserDataContext';
 import { streamModelResponse } from '@/utils/Model';
 import { welcomeMessages } from '@/constants/WelcomeMessages';

@@ -15,7 +15,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useAuth0 } from "react-native-auth0";
 import { router } from "expo-router";
-import { secureGetValueFor } from "@/utils/Token";
 import { deleteItemAsync } from "expo-secure-store";
 import { useToken } from "@/context/TokenContext";
 import { User } from "@/interface/Interface";
@@ -25,6 +24,7 @@ import CustomButton from "@/components/ui/CustomButton";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
+import { secureGetValueFor } from "@/utils/SecureStorage";
 
 
 
@@ -34,21 +34,16 @@ const BOTTOM_TAB_HEIGHT = 50;
 export default function Account() {
   const { clearSession } = useAuth0();
   const { token } = useToken();
-  console.log(token);
+  // console.log(token);
   const [user, setUser] = useState<User | null>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const styles = getStyles(theme);
 
   
   const handleChangeTheme = () => {
-    const scheme = Appearance.getColorScheme();
-    if (scheme === "light") {
-      Appearance.setColorScheme("dark");
-    } else {
-      Appearance.setColorScheme("light");
-    }
+    toggleTheme();
   }
 
 

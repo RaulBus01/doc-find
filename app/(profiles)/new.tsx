@@ -12,7 +12,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { FormData } from "@/interface/Interface";
+import { ProfileForm } from "@/interface/Interface";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useSQLiteContext } from "expo-sqlite";
@@ -38,7 +38,7 @@ const NewProfile = () => {
   const database = useSQLiteContext();
   const drizzleDB = drizzle(database,{schema})
   useDrizzleStudio(database);
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<ProfileForm>({
     name: "",
     gender: "",
     age: "",
@@ -83,7 +83,7 @@ const NewProfile = () => {
                 formData.gender === gender && styles.selectedGender
               ]}
               onPress={() => {
-                setFormData((prev) => ({ ...prev, gender: gender }));
+                setFormData((prev) => ({ ...prev, gender: gender as "" | "Male" | "Female" }));
                 setTimeout(() => {
                   if (!!gender) handleNext(currentStep);
                 }, 100);
@@ -148,7 +148,7 @@ const NewProfile = () => {
               formData.smoker === choice && styles.selectedGender
             ]}
             onPress={() => {
-              setFormData((prev) => ({ ...prev, smoker: choice }));
+              setFormData((prev) => ({ ...prev, smoker: choice as "Yes" | "No" | "I used to" }));
               setTimeout(() => {
                 if (!!choice) handleNext(currentStep);
               }, 100);
@@ -178,7 +178,7 @@ const NewProfile = () => {
               formData.hypertensive === choice && styles.selectedGender
             ]}
             onPress={() => {
-              setFormData((prev) => ({ ...prev, hypertensive: choice }));
+              setFormData((prev) => ({ ...prev, hypertensive: choice  as "Yes" | "No" | "I don't know" }));
               setTimeout(() => {
                 if (!!choice) handleNext(currentStep);
               }, 100);
@@ -208,7 +208,7 @@ const NewProfile = () => {
               formData.diabetic === choice && styles.selectedGender
             ]}
             onPress={() => {
-              setFormData((prev) => ({ ...prev, diabetic: choice }));
+              setFormData((prev) => ({ ...prev, diabetic: choice as "Yes" | "No" | "I don't know" }));
               setTimeout(() => {
                 if (!!choice) handleNext(currentStep);
               }, 100);

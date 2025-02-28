@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { secureGetValueFor } from '@/utils/Token';
+import { secureGetValueFor } from '../utils/SecureStorage';
 
 interface TokenContextType {
   token: string | null;

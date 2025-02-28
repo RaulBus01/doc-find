@@ -1,5 +1,5 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import TabBarButton from './TabBarButton';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
@@ -41,14 +41,17 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
     allowedRoutes.some(allowed => allowed.path === route.name)
   );
 
-  const orderedRoutes = filteredRoutes.sort((a: { name: string }, b: { name: string }) => {
-    const aIndex = allowedRoutes.find(allowed => allowed.path === a.name)?.order;
-    const bIndex = allowedRoutes.find(allowed => allowed.path === b.name)?.order;
-    return aIndex! - bIndex!;
-  });
-
   const {theme} = useTheme();
   const styles = getStyles(theme);
+
+  // Use useMemo to prevent unnecessary re-renders
+  const orderedRoutes = useMemo(() => {
+    return [...filteredRoutes].sort((a, b) => {
+      const aIndex = allowedRoutes.find(allowed => allowed.path === a.name)?.order;
+      const bIndex = allowedRoutes.find(allowed => allowed.path === b.name)?.order;
+      return aIndex! - bIndex!;
+    });
+  }, [filteredRoutes]);
 
   return (
     <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>

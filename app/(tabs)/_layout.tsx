@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Tabs } from "expo-router";
 import TabBar from "@/components/tabBar/TabBar";
-import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { TabBarVisibilityContext, TabBarVisibilityProvider } from "@/context/TabBarContext";
 import * as SplashScreen from "expo-splash-screen";
-import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useSQLiteContext } from "expo-sqlite";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
@@ -16,9 +15,7 @@ export default function TabLayout() {
   useDrizzleStudio(database);
   return (
   
-      <TabBarVisibilityContext.Provider
-        value={{ isTabBarVisible, setIsTabBarVisible }}
-      >
+      <TabBarVisibilityProvider>
       
         <Tabs
           screenOptions={{
@@ -30,7 +27,7 @@ export default function TabLayout() {
             <TabBar {...props} IsTabBarVisible={isTabBarVisible} />
           )}
         />
-      </TabBarVisibilityContext.Provider>
+      </TabBarVisibilityProvider>
     
   );
 }

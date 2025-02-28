@@ -1,5 +1,5 @@
 import CustomCarousel from '@/components/ImageCarousel';
-import { secureSave, secureSaveObject } from '@/utils/Token';
+import { secureSave, secureSaveObject } from '../utils/SecureStorage';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';

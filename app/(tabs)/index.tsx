@@ -13,15 +13,32 @@ import LargeCard from "@/components/home-cards/large-card";
 import { useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
-import { getChats } from "@/utils/Database";
+import { getChats } from "@/utils/DatabaseAPI";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
+import { useSQLiteContext } from "expo-sqlite";
+import { drizzle } from "drizzle-orm/expo-sqlite";
+
 
 const Home = () => {
   const { top, bottom } = useSafeAreaInsets();
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
+  const database = useSQLiteContext();
+  const drizzleDB = drizzle(database);
+  const [profile, setProfile] = useState<any>();
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await drizzleDB.get("profile");
+      console.log(profile);
+      setProfile(profile);
+    };
+    fetchProfile();
+  }
+  , []);
+    
 
   const handleRouting = (path: string) => {
     console.log(path);

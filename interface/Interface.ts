@@ -31,7 +31,7 @@ export enum Role {
     picture: string,
     createdAt: string,
   }
-  export interface FormData {
+  export interface ProfileForm {
     name: string;
     gender: 'Male' | 'Female' | '';
     age: string;

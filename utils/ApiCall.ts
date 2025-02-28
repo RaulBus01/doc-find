@@ -1,5 +1,5 @@
 import { fetch } from "expo/fetch";
-const API_URL = "http://192.168.1.104:8080";
+const API_URL = "http://192.168.1.105:8080";
 interface QueryParams {
   [key: string]: string | number | boolean;
 }

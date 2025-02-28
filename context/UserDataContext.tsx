@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { secureGetValueFor } from '@/utils/Token';
+import { secureGetValueFor } from '../utils/SecureStorage';
 
 interface UserDataContextType {
     email: string | null;
@@ -34,7 +34,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         try {
             const userData = await secureGetValueFor("user");
-            console.log(userData);
+            // console.log(userData);
             if (userData) {
                 const userJSON = await JSON.parse(userData);
                 setEmail(userJSON.email);
