@@ -20,7 +20,7 @@ import { useDatabase } from '@/hooks/useDatabase';
 import { profiles } from "@/database/schema";
 import { sum } from "drizzle-orm";
 
-
+// Reusable Choice Component
 const NewProfile = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
@@ -72,7 +72,7 @@ const NewProfile = () => {
     },
     {
       key: "gender",
-      title: "Select your gender",
+      title: `${formData.fullname} select your gender`,
       component: (
         <View style={styles.choiceContainer}>
           {["Male", "Female"].map((gender) => (
@@ -102,7 +102,7 @@ const NewProfile = () => {
     },
     {
       key: "age",
-      title: "Date of Birth",
+      title: `When ${formData.fullname} was born?`,
       component: (
         <View style={styles.choiceContainer}>
           <TouchableOpacity onPress={displayDatePicker}>
@@ -110,7 +110,7 @@ const NewProfile = () => {
       style={styles.textInput}
       value={formData.age}
       editable={false} 
-      placeholder="Select your date of birth"
+      placeholder="Select date of birth"
       pointerEvents="none" 
     />
   </TouchableOpacity>
@@ -124,9 +124,15 @@ const NewProfile = () => {
               minimumDate={new Date(1900, 0, 1)}
               onChange={(event, selectedDate) => {
                 if (selectedDate) {
+                  const formattedDate = selectedDate.toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  });
+                 
                   setFormData((prev) => ({
                     ...prev,
-                    age: selectedDate.toDateString(),
+                    age: formattedDate,
                   }));
                   displayDatePicker();
                 }
@@ -137,7 +143,7 @@ const NewProfile = () => {
       ),
     },
     {key: "smoker",
-    title: "Are you a smoker?",
+    title: `Is ${formData.fullname} a smoker?`,
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I used to"].map((choice) => (
@@ -167,7 +173,7 @@ const NewProfile = () => {
 
     },
     {key: "hypertensive",
-    title: "Are you diagnosed with hypertension?",
+    title: `Is ${formData.fullname} hypertensive?`,
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I don't know"].map((choice) => (
@@ -197,7 +203,7 @@ const NewProfile = () => {
 
     },
     {key: "diabetic",
-    title: "Are you diagnosed with diabetes?",
+    title: `Is ${formData.fullname} diabetic?`,
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I don't know"].map((choice) => (
@@ -232,12 +238,12 @@ const NewProfile = () => {
       <View style={styles.summaryContainer}>
     
         {Object.entries({
-          "Name:": formData.fullname || "Laur",
-          "Gender:": formData.gender || "Male",
-          "Date of Birth:": formData.age || "12.05.2021",
-          "Smoker:": formData.smoker || "Yes",
-          "Hypertensive:": formData.hypertensive || "No",
-          "Diabetic:": formData.diabetic || "I don't know"
+          "Name:": formData.fullname,
+          "Gender:": formData.gender,
+          "Date of Birth:": formData.age,
+          "Smoker:": formData.smoker,
+          "Hypertensive:": formData.hypertensive,
+          "Diabetic:": formData.diabetic
         }).map(([key, value]) => (
           <View key={key} style={styles.summaryRow}>
             <Text style={styles.summaryTextHeader}>{key}</Text>

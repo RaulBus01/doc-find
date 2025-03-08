@@ -147,12 +147,13 @@ const ChatHistoryScreen = () => {
 const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: theme.textlight,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
     backgroundColor: theme.tint,

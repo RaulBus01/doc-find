@@ -21,7 +21,7 @@ import { User } from "@/interface/Interface";
 import { Ionicons } from "@expo/vector-icons";
 import CategoryView from "@/components/ui/CategoryView";
 import CustomButton from "@/components/ui/CustomButton";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { secureGetValueFor } from "@/utils/SecureStorage";
@@ -76,7 +76,7 @@ export default function Account() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top","bottom"]}>
     <Animated.ScrollView
       ref={scrollRef}
       scrollEventThrottle={16}

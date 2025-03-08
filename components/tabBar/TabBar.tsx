@@ -29,6 +29,8 @@ const allowedRoutes: AllowedRoute[] = [
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
   // Shared value to control vertical translation
   const translateY = useSharedValue(50); 
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
 
   useEffect(() => {
     translateY.value = withTiming(IsTabBarVisible ? 0 : 50, { duration: 300 });
@@ -37,12 +39,13 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
-  const filteredRoutes = state.routes.filter((route: { name: string }) =>
-    allowedRoutes.some(allowed => allowed.path === route.name)
-  );
 
-  const {theme} = useTheme();
-  const styles = getStyles(theme);
+  // Use a stable reference with useMemo to prevent unnecessary re-renders
+  const filteredRoutes = useMemo(() => 
+    state.routes.filter((route: { name: string }) =>
+      allowedRoutes.some(allowed => allowed.path === route.name)
+    ), 
+  [state.routes]);
 
   // Use useMemo to prevent unnecessary re-renders
   const orderedRoutes = useMemo(() => {

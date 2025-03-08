@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import SmallCard from "@/components/home-cards/small-card";
 import MediumCard from "@/components/home-cards/medium-card";
 import LargeCard from "@/components/home-cards/large-card";
@@ -59,16 +59,12 @@ const Home = () => {
             color={theme.mediumbackground}
             onPress={() => handleRouting("new")}
           />
-          {profilesData?.map((profile: ProfileForm) => (
-
-            <LargeCard
-              key={profile.id}
-              text={profile.fullname}
-              icon={profile.gender}
-              color={theme.tint}
-              onPress={() => handleRouting(profile.id?.toString() || 'new')}
-            />
-          ))}
+         <LargeCard
+          text="View All Profiles"
+          icon="users"
+          color={theme.darkbackground}
+          onPress={() => handleRouting("history")}
+        />
           
         </ScrollView>
       </View>
@@ -192,13 +188,15 @@ const Home = () => {
     );
   };
 
+
   return (
+    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
     <LinearGradient
       colors={[theme.darkbackground,theme.mediumbackground,theme.background,theme.textlight]}
       locations={[0, 0.35, 0.56, 1]} 
       start={{ x: 0.5, y: 0 }} 
-      end={{ x: 0.5, y: 1 }} 
-      style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}
+      end={{ x: 0.5, y: 1 }}
+      style={{flex: 1}} 
     >
       <LinearGradient 
         style={styles.headerContainer}
@@ -215,18 +213,20 @@ const Home = () => {
         <ChatsComponent />
       </ScrollView>
     </LinearGradient>
+    </SafeAreaView>
   );
 };
 const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: theme.background,
+
   },
   headerContainer: {
     justifyContent: "center",
     backgroundColor: theme.tint,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    elevation: 2
   },
   header: {
     fontSize: 32,
@@ -237,7 +237,6 @@ const getStyles = (theme: any) => StyleSheet.create({
   horizontalScroll: {
     flexDirection: "row",
     padding: 5,
-
     alignContent: "center",
   },
   text: {

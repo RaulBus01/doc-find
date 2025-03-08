@@ -28,7 +28,7 @@ const InitialLayout = () => {
   const [fontsLoaded, fontError] = useFonts(fonts);
   const { user, isLoading: authLoading, error: authError } = useAuth0();
   const router = useRouter();
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const LoadingScreen = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color={theme.tint} />
@@ -73,35 +73,38 @@ const InitialLayout = () => {
   }
 
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animation: "slide_from_right",
-        contentStyle: { backgroundColor: theme.background },
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{
+    <>
+    <StatusBar animated={true} backgroundColor={theme.textlight}  style={isDark ? "light" : "dark"} />
+      <Stack
+        screenOptions={{
           headerShown: false,
-          gestureEnabled: false,
+          animation: "slide_from_right",
         }}
-      />
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-          gestureEnabled: false,
-        }}
-      />
-      <Stack.Screen
-        name="(profiles)"
-        options={{
-          headerShown: false,
-          gestureEnabled: false,
-        }}
-      />
-    </Stack>
+        >
+        <Stack.Screen
+          name="index"
+          options={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
+          />
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
+          />
+        <Stack.Screen
+          name="(profiles)"
+          options={{
+            headerShown: false,
+            gestureEnabled: false,
+          }}
+          />
+      </Stack>
+    </>
+
   );
 };
 
@@ -116,7 +119,7 @@ const RootLayout = () => {
   if (!domain || !clientId) {
     throw new Error("Auth0 configuration is missing");
   }
-  const colorScheme = useColorScheme();
+
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
@@ -131,13 +134,7 @@ const RootLayout = () => {
               <BottomSheetModalProvider>
                 <TokenProvider>
                   <UserDataProvider>
-                    <StatusBar
-                      animated={true}
-                      style={colorScheme === "dark" ? "light" : "dark"}
-                      backgroundColor={
-                        colorScheme === "dark" ? "black" : "white"
-                      }
-                    />
+       
                     <InitialLayout />
                   </UserDataProvider>
                 </TokenProvider>

@@ -18,6 +18,7 @@ interface MultiStepFormProps {
   onComplete: (currentStep: number) => void;
   onNext: (currentStep: number) => void;
   onBack: (currentStep: number) => void;
+  
 }
 
 export const MultiStepForm: React.FC<MultiStepFormProps> = ({
@@ -53,7 +54,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
     const isValid = steps[currentStep].validate?.() ?? true;
     if (isValid) {
       if (currentStep < steps.length - 1) {
-        contentOpacity.value = withSpring(0, {}, (finished) => {
+        contentOpacity.value = withSpring(0, { damping: 15, stiffness: 100, mass: 0.5, velocity: 2 }, (finished) => {
           if (finished) {
             runOnJS(onNext)(currentStep);
             contentOpacity.value = withSpring(1, {});
@@ -100,7 +101,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
       </View>
 
       {/* Step Content */}
-      <Animated.View style={[styles.contentContainer, contentAnimatedStyle]}>
+      <Animated.View style={[styles.contentContainer, contentAnimatedStyle,{marginTop:currentStep*15}]}>
            {/* Step Title */}
         <Text style={styles.stepTitle}>{steps[currentStep]?.title}</Text>
         {steps[currentStep]?.component}
