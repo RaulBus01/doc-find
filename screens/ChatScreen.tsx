@@ -161,7 +161,7 @@ const ChatScreen = () => {
             style={styles.iconButton}
             onPress={() => handleRoute('history')}
           >
-            <FontAwesome name="history" size={24} color="#333" />
+            <FontAwesome name="history" size={24} color={theme.text} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
@@ -169,7 +169,7 @@ const ChatScreen = () => {
             
             onPress={() => handleRoute('new')}
           >
-            <Entypo name="new-message" size={24} color={chatIdRef.current ? '#333' : '#ccc'} />
+            <Entypo name="new-message" size={24} color={chatIdRef.current ? theme.text : '#918F86' } />
           </TouchableOpacity>
         </View>
       </View>
@@ -217,6 +217,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: theme.textlight,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -230,6 +231,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor:"transparent"
   },
   headerTitle: {
+    color: theme.text,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -238,6 +240,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
   },
   iconButton: {
+    color: theme.text,
     marginLeft: 16,
     padding: 4,
   },
@@ -249,7 +252,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: '#666',
+    color: theme.textlight,
   },
   content: {
     flex: 1,
