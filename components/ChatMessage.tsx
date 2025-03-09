@@ -9,7 +9,6 @@ import {
 import React from "react";
 
 import { Ionicons } from "@expo/vector-icons";
-import Markdown from "react-native-markdown-display";
 import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -61,7 +60,7 @@ const ChatMessage = ({
         )}
       </View>
       <View style={styles.messageContainer}>
-        <Markdown>{message}</Markdown>
+        <Text style={{color:theme.text}}>{message}</Text>
       </View>
       <View style={styles.footer}>
         {isAI ? (

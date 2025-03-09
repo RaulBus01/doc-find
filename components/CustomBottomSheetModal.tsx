@@ -12,10 +12,11 @@ import { useTheme } from "@/context/ThemeContext";
 export type Ref = BottomSheetModal;
 interface CustomBottomSheetModalProps {
   onDelete: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
 }
 
 const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
+  
   (props, ref) => {
     const { onDelete, onEdit } = props;
     const snapPoints = useMemo(() => ["20%", "25%"], []);
@@ -55,6 +56,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
               (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
             }}
           />
+          { onEdit &&
           <BottomSheetModalButton
             title="Edit"
             icon="create-outline"
@@ -63,6 +65,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
               (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
             }}
           />
+          }
         </BottomSheetView>
       </BottomSheetModal>
     );
@@ -86,8 +89,10 @@ const getStyles = (theme: any) =>
     },
     content: {
       flex: 1,
+      justifyContent: "center",
       flexDirection: "column",
       backgroundColor: theme.tint,
+      paddingBottom: 20,
     },
   });
 
