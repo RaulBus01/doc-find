@@ -32,7 +32,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
   const styles = getStyles(theme);
   const progressAnimated = useSharedValue(0);
   const contentOpacity = useSharedValue(1);
-  console.log('currentStep', currentStep);
+
 
   useEffect(() => {
     progressAnimated.value = withSpring((currentStep + 1) / steps.length, {

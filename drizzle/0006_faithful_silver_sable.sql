@@ -1,0 +1,1 @@
+DROP INDEX `health_indicators_profile_id_unique`;

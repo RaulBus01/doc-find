@@ -12,13 +12,12 @@ import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { ProfileForm } from "@/database/schema";
+import { healthIndicators, ProfileForm } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 import { useDatabase } from '@/hooks/useDatabase';
 import { profiles } from "@/database/schema";
-import { sum } from "drizzle-orm";
 
 // Reusable Choice Component
 const NewProfile = () => {
@@ -32,7 +31,7 @@ const NewProfile = () => {
   };
   const [showDatePicker, setShowDatePicker] = useState(false);
   const displayDatePicker = () => {
-    console.log("Displaying date picker");
+   
     setShowDatePicker((prev) => !prev);
   };
   const drizzleDB = useDatabase();
@@ -51,7 +50,7 @@ const NewProfile = () => {
   
   const handleBack = (step: number) => {
     setCurrentStep(step - 1);
-    console.log("Went back to step", step - 1);
+
   };
   const steps = [
     {
@@ -62,7 +61,7 @@ const NewProfile = () => {
           style={styles.textInput}
           value={formData.fullname}
           onChangeText={(text: any) =>
-            setFormData((prev) => ({ ...prev, fullname: text }))
+            setFormData((prev: any) => ({ ...prev, fullname: text }))
           }
           placeholder="Enter your name"
           placeholderTextColor={theme.text}
@@ -262,25 +261,36 @@ const NewProfile = () => {
 
 
   ];
-  const handleComplete = () => {
+
+  const handleComplete = async () => {
+
     // Handle form submission
-    console.log("Form completed:", formData);
-    drizzleDB.insert(profiles).values({
-      fullname: formData.fullname,
-      gender: formData.gender,
-      age: formData.age,
-      diabetic: formData.diabetic,
-      smoker: formData.smoker,
-      hypertensive: formData.hypertensive,
-      created_at: Date.now(),
-      updated_at: Date.now(),
-    } as typeof profiles.$inferInsert).execute().then((result) => {
-      console.log("Inserted profile", result);
-      router.replace("/(tabs)");
+   try{
+    const {diabetic,hypertensive,smoker,...profileData} = formData;
+    
+    await drizzleDB.transaction(async (tx)=>{
+      const newProfile = await tx.insert(profiles).values(profileData).returning({ id: profiles.id }).execute();
+      
+      const newProfileId = newProfile[0].id;
+      await tx.insert(healthIndicators).values({
+        profile_id:newProfileId,
+        diabetic,
+        hypertensive,
+        smoker
+      }).execute();
     });
+    
+    console.log("Profile created successfully");
+    router.replace("/(tabs)");
+  }catch(error){
+    console.error("Error creating profile:",error);
+  }
+  
+}
+
 
     
-  };
+  
   return (
     <LinearGradient
       colors={[

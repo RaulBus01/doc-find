@@ -17,7 +17,7 @@ import { getChats } from "@/utils/DatabaseAPI";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { useDatabase } from "@/hooks/useDatabase";
-import { ProfileForm, profiles } from "@/database/schema";
+import {  profiles } from "@/database/schema";
 
 
 const Home = () => {
@@ -27,21 +27,10 @@ const Home = () => {
   const router = useRouter();
   const drizzleDB = useDatabase();
 
-  const [profilesData, setProfilesData] = useState<any>();
 
-  useEffect(() => {
-    console.log("Fetching profiles");
-    const fetchProfile = async () => {
-      const profile = await drizzleDB.select().from(profiles).execute();
-      console.log(profile);
-      setProfilesData(profile);
-    };
-    fetchProfile();
-  }, []);
-    
 
   const handleRouting = (path: string) => {
-    console.log(path);
+
     router.push(`/(profiles)/${path}`);
   };
   const ProfileComponent = () => {

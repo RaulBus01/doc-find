@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableHighlight, Alert, TouchableOpacity } f
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDatabase } from '@/hooks/useDatabase';
 import { profiles } from '@/database/schema';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { useTheme } from '@/context/ThemeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { useAnimatedRef } from 'react-native-reanimated';
