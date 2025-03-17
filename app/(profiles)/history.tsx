@@ -113,6 +113,7 @@ const HistoryProfile = () => {
               </TouchableHighlight>
             ))}
           <CustomBottomSheetModal
+          
             onDelete={() => {
               // You need to get the profileId from somewhere - possibly store it in state when opening the modal
               if (profilesData && profilesData.length > 0) {
@@ -139,7 +140,6 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: '100%',
   },
   scrollContent: {
-    flexGrow: 1,
     paddingBottom: 50,
     paddingTop: 10,
   },
@@ -153,8 +153,9 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   button: {
     borderRadius: 25,
-    overflow: 'hidden',
+    marginBottom: 10,
     backgroundColor: 'transparent',
+
   },
   title: {
     color: theme.text,
@@ -164,14 +165,9 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   profileCard: {
     borderRadius: 25,
-    elevation: 4,
-    marginVertical: 10,
     padding: 15,
-    backgroundColor: theme.background,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    backgroundColor: theme.textlight,
+   
   },
   profileRow: {
     flexDirection: 'row',

@@ -69,7 +69,7 @@ export default function Account() {
     try {
       await clearSession();
       await deleteItemAsync("accessToken");
-      router.replace("/");
+      router.replace("/login");
     } catch (e) {
       console.error(e);
     }

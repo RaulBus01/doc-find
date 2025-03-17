@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import React, { forwardRef, useCallback, useMemo } from "react";
+import { BackHandler, StyleSheet } from "react-native";
+import React, { forwardRef, useCallback, useEffect, useMemo } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -23,6 +23,16 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
     const { theme } = useTheme();
     const styles = getStyles(theme);
 
+    const [isModalVisible, setModalVisible] = React.useState(false);
+
+    const handleBackPress = useCallback(() => {
+      if (isModalVisible && ref) {
+        (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
+        return true; // Prevent default behavior (app exit)
+      }
+      return false;
+    }, [isModalVisible, ref]);
+
     const renderBackdrop = useCallback(
       (props: any) => (
         <BottomSheetBackdrop
@@ -34,18 +44,33 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
       ),
       []
     );
-
+    useEffect(() => {
+      // Add the event listener for handling back button
+      const backHandler = BackHandler.addEventListener(
+        'hardwareBackPress', 
+        handleBackPress
+      );
+      
+      // Clean up function to remove the listener when component unmounts
+      return () => backHandler.remove();
+    }, [handleBackPress]);
+    const handleOnAnimate = useCallback((fromIndex: number, toIndex: number) => {
+      setModalVisible(toIndex >= 0);
+    }, []);
     return (
       <BottomSheetModal
         index={0}
         ref={ref}
         backdropComponent={renderBackdrop}
         snapPoints={snapPoints}
+        
         enablePanDownToClose={true}
         keyboardBehavior="interactive"
         handleIndicatorStyle={styles.handleIndicator}
         handleStyle={styles.handle}
         backgroundStyle={styles.container}
+        onDismiss={() => setModalVisible(false)}
+        onAnimate={handleOnAnimate}
       >
         <BottomSheetView style={styles.content}>
           <BottomSheetModalButton
