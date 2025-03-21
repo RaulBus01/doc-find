@@ -6,7 +6,6 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import Animated, {
   interpolate,
@@ -20,9 +19,7 @@ import { deleteItemAsync } from "expo-secure-store";
 import { useToken } from "@/context/TokenContext";
 import { User } from "@/interface/Interface";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
-import CategoryView from "@/components/ui/CategoryView";
-import CustomButton from "@/components/ui/CustomButton";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { secureGetValueFor } from "@/utils/SecureStorage";
