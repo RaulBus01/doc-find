@@ -248,7 +248,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: theme.separator,
   },
   headerTitle: {
     color: theme.text,
@@ -264,7 +264,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: theme.profileActionBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -311,10 +311,8 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginBottom: 16,
     borderRadius: 20,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    
+    backgroundColor: theme.cardBackground,
   },
-
   profileTouchable: {
     borderRadius: 20,
   },
@@ -329,7 +327,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: theme.avatarBackground,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -360,7 +358,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: theme.separator,
     marginHorizontal: 8,
   },
   moreButton: {
@@ -375,14 +373,14 @@ const getStyles = (theme: any) => StyleSheet.create({
   indicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: theme.profileActionBackground,
     borderRadius: 15,
     paddingHorizontal: 10,
     paddingVertical: 6,
     marginRight: 8,
   },
   indicatorActive: {
-    backgroundColor: 'rgba(255, 100, 100, 0.3)',
+    backgroundColor: theme.RedIconBackground,
   },
   indicatorText: {
     color: theme.text,
@@ -396,7 +394,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginTop: 8,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderTopColor: theme.separator,
   },
   lastUpdated: {
     flexDirection: 'row',
@@ -411,7 +409,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   viewButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: theme.profileActionBackground,
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 15,

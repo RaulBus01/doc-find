@@ -206,6 +206,8 @@ const ProfileScreen = () => {
   )
 }
 
+// Update the styles in the getStyles function
+
 const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
@@ -228,7 +230,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: theme.separator,
   },
   backButton: {
     padding: 5,
@@ -256,7 +258,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.34)',
+    backgroundColor: theme.avatarBackground,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -283,10 +285,10 @@ const getStyles = (theme: any) => StyleSheet.create({
   metaDivider: {
     width: 1,
     height: 16,
-    backgroundColor: 'rgba(255,255,255,0.7)',
+    backgroundColor: theme.separator,
   },
   sectionCard: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: theme.cardBackground,
     borderRadius: 15,
     padding: 15,
     marginHorizontal: 15,
@@ -307,7 +309,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: theme.profileActionBackground,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -341,13 +343,13 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginHorizontal: 5,
   },
   medicationsButton: {
-    backgroundColor: 'rgba(0, 150, 255, 0.3)',
+    backgroundColor: theme.BlueIconBackground,
   },
   allergiesButton: {
-    backgroundColor: 'rgba(255, 100, 100, 0.3)',
+    backgroundColor: theme.RedIconBackground,
   },
   historyButton: {
-    backgroundColor: 'rgba(100, 200, 100, 0.3)',
+    backgroundColor: theme.GreenIconBackground,
   },
   actionButtonText: {
     color: theme.text,
@@ -361,7 +363,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     paddingHorizontal: 15,
   },
   quickInfoCard: {
-    backgroundColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: theme.cardBackground,
     borderRadius: 12,
     padding: 12,
     flex: 1,

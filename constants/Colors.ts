@@ -19,7 +19,7 @@ export const Colors = {
     red:"#af1222",
     //Additional colors for the app
     cardBackground: 'rgba(255, 255, 255, 0.38)',
-    pressedBackground: 'rgba(255, 255, 255, 0.05)',
+    pressedBackground: 'rgba(36, 29, 29, 0.05)',
     separator: 'rgba(255, 255, 255, 0.1)',
     avatarBackground: 'rgba(255, 255, 255, 0.2)',
     profileActionBackground: 'rgba(255, 255, 255, 0.15)',

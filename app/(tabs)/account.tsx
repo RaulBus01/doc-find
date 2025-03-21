@@ -297,17 +297,7 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     borderRadius: 38,
     backgroundColor: theme.avatarBackground,
     padding: 3,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 4,
-      },
-    }),
+    
   },
   avatar: {
     width: '100%',
