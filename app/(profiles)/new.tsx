@@ -2,22 +2,21 @@ import {
   View,
   Text,
   StyleSheet,
-  Touchable,
   TouchableOpacity,
   TextInput,
+  Platform,
 } from "react-native";
-import React, { useState } from "react";
+import { Picker } from '@react-native-picker/picker';
+import React, { useState, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { healthIndicators, ProfileForm } from "@/database/schema";
+import { healthIndicators, ProfileInput, profiles } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
-import RNDateTimePicker from "@react-native-community/datetimepicker";
-
 import { useDatabase } from '@/hooks/useDatabase';
-import { profiles } from "@/database/schema";
+
 
 // Reusable Choice Component
 const NewProfile = () => {
@@ -29,21 +28,19 @@ const NewProfile = () => {
   const handleRoutingBack = () => {
     router.back();
   };
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const displayDatePicker = () => {
-   
-    setShowDatePicker((prev) => !prev);
-  };
-  const drizzleDB = useDatabase();
 
-  const [formData, setFormData] = useState<ProfileForm>({
+  const drizzleDB = useDatabase();
+  const pickerRef = useRef(null);
+
+  const [formData, setFormData] = useState({
     fullname: "",
     gender: "",
-    age: "",
+    age: -1,
     smoker: "",
     hypertensive: "",
     diabetic: "",
   });
+
   const handleNext = (step: number) => {
     setCurrentStep(step + 1);
   };
@@ -83,9 +80,6 @@ const NewProfile = () => {
               ]}
               onPress={() => {
                 setFormData((prev) => ({ ...prev, gender: gender as "" | "Male" | "Female" }));
-                setTimeout(() => {
-                  if (!!gender) handleNext(currentStep);
-                }, 100);
               }}
             >
               <Text style={[
@@ -97,49 +91,39 @@ const NewProfile = () => {
         </View>
       ),
       validate: () => !!formData.gender,
-      hideNextButton: true,
     },
     {
       key: "age",
-      title: `When ${formData.fullname} was born?`,
+      title: `What year was ${formData.fullname} born?`,
       component: (
-        <View style={styles.choiceContainer}>
-          <TouchableOpacity onPress={displayDatePicker}>
-    <TextInput
-      style={styles.textInput}
-      value={formData.age}
-      editable={false} 
-      placeholder="Select date of birth"
-      pointerEvents="none" 
-    />
-  </TouchableOpacity>
-
-          {showDatePicker && (
-            <RNDateTimePicker
-              mode="date"
-              display="default"
-              value={new Date()}
-              maximumDate={new Date()}
-              minimumDate={new Date(1900, 0, 1)}
-              onChange={(event, selectedDate) => {
-                if (selectedDate) {
-                  const formattedDate = selectedDate.toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                  });
-                 
-                  setFormData((prev) => ({
-                    ...prev,
-                    age: formattedDate,
-                  }));
-                  displayDatePicker();
-                }
+        <View style={styles.pickerOuterContainer}>
+          <View style={styles.pickerContainer}>
+            <Picker
+              ref={pickerRef}
+              selectedValue={formData.age > 0 ? formData.age : undefined}
+              style={styles.picker}
+              itemStyle={styles.pickerItem}
+              dropdownIconColor={theme.text}
+              
+              onValueChange={(itemValue) => {
+                setFormData(prev => ({
+                  ...prev,
+                  age: itemValue
+                }));
               }}
-            />
-          )}
+            >
+             
+              <Picker.Item label="Select birth year" value={-1}  style={styles.pickerItem}/>
+              {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
+                <Picker.Item key={year} label={`${year}`} value={new Date().getFullYear() - year} style={styles.pickerItem} />
+              ))}
+              
+            </Picker>
+        
+          </View>
         </View>
       ),
+      validate: () => formData.age > 0,
     },
     {key: "smoker",
     title: `Is ${formData.fullname} a smoker?`,
@@ -154,9 +138,7 @@ const NewProfile = () => {
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, smoker: choice as "Yes" | "No" | "I used to" }));
-              setTimeout(() => {
-                if (!!choice) handleNext(currentStep);
-              }, 100);
+         
             }}
           >
             <Text style={[
@@ -184,9 +166,7 @@ const NewProfile = () => {
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, hypertensive: choice  as "Yes" | "No" | "I don't know" }));
-              setTimeout(() => {
-                if (!!choice) handleNext(currentStep);
-              }, 100);
+    
             }}
           >
             <Text style={[
@@ -214,9 +194,6 @@ const NewProfile = () => {
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, diabetic: choice as "Yes" | "No" | "I don't know" }));
-              setTimeout(() => {
-                if (!!choice) handleNext(currentStep);
-              }, 100);
             }}
           >
             <Text style={[
@@ -267,6 +244,9 @@ const NewProfile = () => {
     // Handle form submission
    try{
     const {diabetic,hypertensive,smoker,...profileData} = formData;
+    
+    // Convert age string to a number (timestamp) for database storage
+
     
     await drizzleDB.transaction(async (tx)=>{
       const newProfile = await tx.insert(profiles).values(profileData).returning({ id: profiles.id }).execute();
@@ -403,7 +383,66 @@ const getStyles = (theme: any) =>
       color: theme.text,
       fontSize: 16,
     },
-
+    yearSelectorContainer: {
+      height: 300,
+      width: '100%',
+    },
+    yearScrollView: {
+      width: '100%',
+      borderWidth: 1,
+      borderColor: theme.text,
+      borderRadius: 8,
+    },
+    yearScrollContent: {
+      paddingVertical: 10,
+    },
+    yearButton: {
+      paddingVertical: 12,
+      paddingHorizontal: 24,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border || 'rgba(255,255,255,0.2)',
+      alignItems: 'center',
+    },
+    selectedYear: {
+      backgroundColor: theme.tint,
+    },
+    yearText: {
+      color: theme.text,
+      fontSize: 16,
+    },
+    selectedYearText: {
+      color: theme.background,
+      fontWeight: 'bold',
+    },
+    pickerOuterContainer: {
+      overflow: 'hidden',
+      borderBottomWidth: 1,
+      borderColor: theme.text,
+      marginVertical: 10,
+    },
+    pickerContainer: {
+      width: '100%',
+    
+      overflow: 'hidden',
+      borderRadius: 25, // This may not work on Android
+    },
+    picker: {
+      width: '100%',
+      color: theme.text,
+      // For Android center alignment
+      justifyContent: 'center',
+      alignItems: 'center',
+      textAlign: 'center',
+    },
+    pickerItem: {
+      fontSize: 16,
+      color: theme.text,
+      backgroundColor: theme.background,
+      textAlign: 'center',
+      fontFamily: 'Roboto-Regular',
+      
+    },
+  
   });
 
 export default NewProfile;

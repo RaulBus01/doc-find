@@ -25,9 +25,6 @@ const Home = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
-  const drizzleDB = useDatabase();
-
-
 
   const handleRouting = (path: string) => {
 

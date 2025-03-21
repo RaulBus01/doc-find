@@ -9,7 +9,6 @@ interface Step {
   title: string;
   component: ReactNode;
   validate?: () => boolean;
-  hideNextButton?: boolean;
 }
 
 interface MultiStepFormProps {
@@ -18,7 +17,6 @@ interface MultiStepFormProps {
   onComplete: (currentStep: number) => void;
   onNext: (currentStep: number) => void;
   onBack: (currentStep: number) => void;
-  
 }
 
 export const MultiStepForm: React.FC<MultiStepFormProps> = ({
@@ -32,7 +30,6 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
   const styles = getStyles(theme);
   const progressAnimated = useSharedValue(0);
   const contentOpacity = useSharedValue(1);
-
 
   useEffect(() => {
     progressAnimated.value = withSpring((currentStep + 1) / steps.length, {
@@ -91,7 +88,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
 
       <View style={styles.backButtonContainer}>
         <TouchableOpacity
-          style={[ styles.backButton,currentStep === 0 && styles.hiddenButton]}
+          style={[styles.backButton, currentStep === 0 && styles.hiddenButton]}
           onPress={handleBack}
           disabled={currentStep === 0}
         >
@@ -101,26 +98,23 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
       </View>
 
       {/* Step Content */}
-      <Animated.View style={[styles.contentContainer, contentAnimatedStyle,{marginTop:currentStep*15}]}>
-           {/* Step Title */}
+      <Animated.View style={[styles.contentContainer, contentAnimatedStyle, {marginTop: currentStep * 15}]}>
+        {/* Step Title */}
         <Text style={styles.stepTitle}>{steps[currentStep]?.title}</Text>
         {steps[currentStep]?.component}
       </Animated.View>
 
-      {/* Navigation Buttons */}
+      {/* Navigation Buttons - Always show the Next button */}
       <View style={styles.navigationContainer}>
-        {/* Check if the step exists before accessing its properties */}
-        {steps[currentStep] && !steps[currentStep].hideNextButton && (
-          <TouchableOpacity
-            style={[styles.navButton, styles.nextButton]}
-            onPress={handleNext}
-          >
-            <Text style={styles.buttonText}>
-              {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
-            </Text>
-            <FontAwesome6 name="arrow-right-long" size={24} color={theme.text} />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          style={[styles.navButton, styles.nextButton]}
+          onPress={handleNext}
+        >
+          <Text style={styles.buttonText}>
+            {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+          </Text>
+          <FontAwesome6 name="arrow-right-long" size={24} color={theme.text} />
+        </TouchableOpacity>
       </View>
     </View>
   );

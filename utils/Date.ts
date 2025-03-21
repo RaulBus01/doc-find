@@ -51,3 +51,4 @@ export const formatDate = (dateString: string): string => {
     return 'Invalid date';
   }
 };
+

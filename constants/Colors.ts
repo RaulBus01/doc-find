@@ -16,7 +16,24 @@ export const Colors = {
     icon: '#b5cbb7',
     tabIconDefault: '#4c414c',
     tabIconSelected: '#BDB99D',
-    red:"#af1222"
+    red:"#af1222",
+    //Additional colors for the app
+    cardBackground: 'rgba(255, 255, 255, 0.38)',
+    pressedBackground: 'rgba(255, 255, 255, 0.05)',
+    separator: 'rgba(255, 255, 255, 0.1)',
+    avatarBackground: 'rgba(255, 255, 255, 0.2)',
+    profileActionBackground: 'rgba(255, 255, 255, 0.15)',
+
+    //Colors for icons 
+
+    BlueIconBackground: 'rgba(64, 150, 255, 0.15)',
+    VioletIconBackground: 'rgba(138, 92, 246, 0.15)',
+    GreenIconBackground: 'rgba(52, 211, 153, 0.15)',
+    RedIconBackground: 'rgba(239, 68, 68, 0.15)',
+    YellowIconBackground: 'rgba(251, 191, 36, 0.15)',
+    LightBlueIconBackground: 'rgba(59, 130, 246, 0.15)',
+    LightVioletIconBackground: 'rgba(124, 58, 237, 0.15)',
+
   },
   dark: {
     text: '#e4e4e4',  
@@ -31,6 +48,22 @@ export const Colors = {
     icon: '#7a867a', 
     tabIconDefault: '#a8a8a8',
     tabIconSelected: '#cfcfb5',
-    red: "#d9534f"  
+    red: "#d9534f",  
+
+    //Additional colors for the app
+    cardBackground: 'rgba(255, 255, 255, 0.1)',
+    pressedBackground: 'rgba(255, 255, 255, 0.05)',
+    separator: 'rgba(255, 255, 255, 0.1)',
+    avatarBackground: 'rgba(255, 255, 255, 0.2)',
+    profileActionBackground: 'rgba(255, 255, 255, 0.15)',
+
+    //Colors for icons
+    BlueIconBackground: 'rgba(64, 150, 255, 0.15)',
+    VioletIconBackground: 'rgba(138, 92, 246, 0.15)',
+    GreenIconBackground: 'rgba(52, 211, 153, 0.15)',
+    RedIconBackground: 'rgba(239, 68, 68, 0.15)',
+    YellowIconBackground: 'rgba(251, 191, 36, 0.15)',
+    LightBlueIconBackground: 'rgba(59, 130, 246, 0.15)',
+    LightVioletIconBackground: 'rgba(124, 58, 237, 0.15)',
   },
 };
