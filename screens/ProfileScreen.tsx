@@ -111,6 +111,12 @@ const ProfileScreen = () => {
                 <Text style={styles.metaText}>{profileData.age} years</Text>
               </View>
             </View>
+              <View style={styles.profileActions}>
+                        <TouchableOpacity style={styles.editProfileButton} onPress={() => console.log("Edit profile")}>
+                          <Ionicons name="pencil" size={16} color={theme.text} />
+                          <Text style={styles.editProfileText}>Edit Profile</Text>
+                        </TouchableOpacity>
+              </View>
           </View>
           
           {/* Health Indicators */}
@@ -253,6 +259,25 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   profileAvatarContainer: {
     marginBottom: 10,
+  },
+  profileActions: {
+    marginTop: 20,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  editProfileButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.profileActionBackground,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+  },
+  editProfileText: {
+    color: theme.text,
+    marginLeft: 6,
+    fontSize: 14,
+    fontFamily: 'Roboto-Medium',
   },
   profileAvatar: {
     width: 100,

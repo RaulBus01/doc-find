@@ -96,12 +96,7 @@ export default function Account() {
             </View>
           </View>
           
-          <View style={styles.profileActions}>
-            <TouchableOpacity style={styles.editProfileButton} onPress={() => console.log("Edit profile")}>
-              <Ionicons name="pencil" size={16} color={theme.text} />
-              <Text style={styles.editProfileText}>Edit Profile</Text>
-            </TouchableOpacity>
-          </View>
+        
         </Animated.View>
         
         <Animated.ScrollView
@@ -316,24 +311,7 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     color: theme.text,
     opacity: 0.7,
   },
-  profileActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  editProfileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.profileActionBackground,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  editProfileText: {
-    color: theme.text,
-    marginLeft: 6,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-  },
+  
   scrollContent: {
     paddingHorizontal: 20,
     paddingBottom: BOTTOM_TAB_HEIGHT + 20,

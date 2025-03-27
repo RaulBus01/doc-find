@@ -1,7 +1,5 @@
 import { useTheme } from "@/context/ThemeContext";
-import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
-import { View,Text } from "react-native";
 
 export default function ProfileLayout() {
   const {theme} = useTheme();
