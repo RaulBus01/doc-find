@@ -1,79 +1,83 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { useDatabase } from '@/hooks/useDatabase'
-import { healthIndicators, profiles } from '@/database/schema'
-import { eq } from 'drizzle-orm'
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useTheme } from '@/context/ThemeContext'
-import { LinearGradient } from 'expo-linear-gradient'
-import { Ionicons, FontAwesome5, FontAwesome } from '@expo/vector-icons'
-import Animated, { useAnimatedRef } from 'react-native-reanimated'
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useDatabase } from "@/hooks/useDatabase";
+import { healthIndicators, profiles } from "@/database/schema";
+import { eq } from "drizzle-orm";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { useTheme } from "@/context/ThemeContext";
+import { Ionicons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import Animated, { useAnimatedRef } from "react-native-reanimated";
+import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
 
 const ProfileScreen = () => {
-  const {id} = useLocalSearchParams()
-  const [profileId, setProfileId] = useState(id)
-  const drizzleDB = useDatabase()
-  const [profileData, setProfileData] = useState<any>(null)
-  const [healthData, setHealthData] = useState<any>(null)
-  const router = useRouter()
-  
+  const { id } = useLocalSearchParams();
+  const [profileId, setProfileId] = useState(id);
+  const drizzleDB = useDatabase();
+  const [profileData, setProfileData] = useState<any>(null);
+  const [healthData, setHealthData] = useState<any>(null);
+  const router = useRouter();
+
   useEffect(() => {
     const fetchProfile = async () => {
-      if (!profileId) return
-      
+      if (!profileId) return;
+
       // Fetch profile data
       const profile = await drizzleDB
         .select()
         .from(profiles)
         .where(eq(profiles.id, parseInt(profileId as string, 10)))
-        .execute()
-      
+        .execute();
+
       if (profile && profile.length > 0) {
-        setProfileData(profile[0])
-        
+        setProfileData(profile[0]);
+
         // Fetch health indicators
         const health = await drizzleDB
           .select()
           .from(healthIndicators)
-          .where(eq(healthIndicators.profile_id, parseInt(profileId as string, 10)))
-          .execute()
-          
+          .where(
+            eq(healthIndicators.profileId, parseInt(profileId as string, 10))
+          )
+          .execute();
+
         if (health && health.length > 0) {
-          setHealthData(health[0])
+          setHealthData(health[0]);
         }
       }
-    }
-    
-    fetchProfile()
-  }, [profileId])
-  
-  const { top, bottom } = useSafeAreaInsets()
-  const { theme } = useTheme()
-  const styles = getStyles(theme)
-  const scrollRef = useAnimatedRef<Animated.ScrollView>()
-  
+    };
+
+    fetchProfile();
+  }, [profileId]);
+
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
+  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+
   const handleBack = () => {
-    router.back()
-  }
-  
+    router.back();
+  };
+
   if (!profileData) {
     return (
       <SafeAreaView style={styles.container}>
         <Text style={styles.loadingText}>Loading profile...</Text>
       </SafeAreaView>
-    )
+    );
   }
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      <LinearGradient
-        colors={[theme.textlight, theme.tint, theme.mediumbackground]}
-        locations={[0, 0.44, 0.90]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.gradient}
-      >
+    
         {/* Header */}
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -81,7 +85,7 @@ const ProfileScreen = () => {
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Profile Details</Text>
         </View>
-        
+
         <Animated.ScrollView
           ref={scrollRef}
           scrollEventThrottle={16}
@@ -98,104 +102,109 @@ const ProfileScreen = () => {
             <Text style={styles.profileName}>{profileData.fullname}</Text>
             <View style={styles.profileMeta}>
               <View style={styles.metaItem}>
-                <FontAwesome5 
-                  name={profileData.gender === "Male" ? "mars" : "venus"} 
-                  size={16} 
-                  color={theme.text} 
+                <FontAwesome5
+                  name={profileData.gender === "Male" ? "mars" : "venus"}
+                  size={16}
+                  color={theme.text}
                 />
                 <Text style={styles.metaText}>{profileData.gender}</Text>
               </View>
               <View style={styles.metaDivider} />
               <View style={styles.metaItem}>
-                <Ionicons name="calendar-outline" size={16} color={theme.text} />
+                <Ionicons
+                  name="calendar-outline"
+                  size={16}
+                  color={theme.text}
+                />
                 <Text style={styles.metaText}>{profileData.age} years</Text>
               </View>
             </View>
-              <View style={styles.profileActions}>
-                        <TouchableOpacity style={styles.editProfileButton} onPress={() => console.log("Edit profile")}>
-                          <Ionicons name="pencil" size={16} color={theme.text} />
-                          <Text style={styles.editProfileText}>Edit Profile</Text>
-                        </TouchableOpacity>
-              </View>
+            <View style={styles.profileActions}>
+              <TouchableOpacity
+                style={styles.editProfileButton}
+                onPress={() => console.log("Edit profile")}
+              >
+                <Ionicons name="pencil" size={16} color={theme.text} />
+                <Text style={styles.editProfileText}>Edit Profile</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-          
+
           {/* Health Indicators */}
           <View style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Health Indicators</Text>
             {healthData && (
               <>
-                <View style={styles.infoRow}>
-                  <View style={styles.infoIconContainer}>
-                    <FontAwesome5 name="smoking" size={18} color={theme.text} />
+                {Object.entries(healthIndicatorConfig).map(([key, config]) => (
+                  <View key={key} style={styles.infoRow}>
+                    <View style={styles.infoIconContainer}>
+                      <FontAwesome5
+                        name={config.icon}
+                        size={20}
+                        color={theme.text}
+                      />
+                    </View>
+                    <View style={styles.infoContent}>
+                      <Text style={styles.infoLabel}>
+                        {config.label}
+                      </Text>
+                      <Text style={styles.infoValue}>
+                        {healthData[key]} 
+                      </Text>
+                    </View>
                   </View>
-                  <View style={styles.infoContent}>
-                    <Text style={styles.infoLabel}>Smoker</Text>
-                    <Text style={styles.infoValue}>{healthData.smoker}</Text>
-                  </View>
-                </View>
-                
-                <View style={styles.infoRow}>
-                  <View style={styles.infoIconContainer}>
-                    <FontAwesome5 name="heartbeat" size={18} color={theme.text} />
-                  </View>
-                  <View style={styles.infoContent}>
-                    <Text style={styles.infoLabel}>Hypertensive</Text>
-                    <Text style={styles.infoValue}>{healthData.hypertensive}</Text>
-                  </View>
-                </View>
-                
-                <View style={styles.infoRow}>
-                  <View style={styles.infoIconContainer}>
-                    <FontAwesome5 name="syringe" size={18} color={theme.text} />
-                  </View>
-                  <View style={styles.infoContent}>
-                    <Text style={styles.infoLabel}>Diabetic</Text>
-                    <Text style={styles.infoValue}>{healthData.diabetic}</Text>
-                  </View>
-                </View>
+                ))}
               </>
             )}
           </View>
-          
+
           {/* Action Buttons */}
           <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={[styles.actionButton, styles.medicationsButton]}
-              onPress={() => router.push(`/(profiles)/medications/${profileId}`)}
+              onPress={() =>
+                router.push(`/(profiles)/(medications)/${profileId}`)
+              }
             >
               <FontAwesome5 name="pills" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Medications</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.actionButton, styles.allergiesButton]}
-              onPress={() => router.push(`/(profiles)/allergies/${profileId}`)}
+              onPress={() => router.push(`/(profiles)/(allergies)/${profileId}`)}
             >
               <FontAwesome5 name="allergies" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Allergies</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.actionButton, styles.historyButton]}
-              onPress={() => router.push(`/(profiles)/medicalhistory/${profileId}`)}
+              onPress={() =>
+                router.push(`/(profiles)/(medicalhistory)/${profileId}`)
+              }
             >
               <FontAwesome5 name="file-medical" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Medical History</Text>
             </TouchableOpacity>
           </View>
-          
+
           {/* Quick Info Cards */}
           <View style={styles.quickInfoSection}>
             <View style={styles.quickInfoCard}>
               <View style={styles.quickInfoHeader}>
-                <FontAwesome5 name="calendar-check" size={16} color={theme.text} />
+                <FontAwesome5
+                  name="calendar-check"
+                  size={16}
+                  color={theme.text}
+                />
                 <Text style={styles.quickInfoTitle}>Created</Text>
               </View>
               <Text style={styles.quickInfoValue}>
                 {new Date(profileData.created_at).toLocaleDateString()}
               </Text>
             </View>
-            
+
             <View style={styles.quickInfoCard}>
               <View style={styles.quickInfoHeader}>
                 <FontAwesome5 name="edit" size={16} color={theme.text} />
@@ -207,209 +216,206 @@ const ProfileScreen = () => {
             </View>
           </View>
         </Animated.ScrollView>
-      </LinearGradient>
+
     </SafeAreaView>
-  )
-}
+  );
+};
 
 // Update the styles in the getStyles function
 
-const getStyles = (theme: any) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.textlight,
-  },
-  loadingText: {
-    color: theme.text,
-    fontSize: 16,
-    textAlign: 'center',
-    marginTop: 20,
-  },
-  gradient: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-  },
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.separator,
-  },
-  backButton: {
-    padding: 5,
-  },
-  headerTitle: {
-    flex: 1,
-    color: theme.text,
-    fontSize: 20,
-    fontFamily: 'Roboto-Bold',
-    textAlign: 'center',
-    marginRight: 30, // To balance with the back button
-  },
-  scrollContent: {
-    paddingBottom: 30,
-  },
-  profileHeaderCard: {
-    alignItems: 'center',
-    paddingVertical: 20,
-    marginBottom: 20,
-  },
-  profileAvatarContainer: {
-    marginBottom: 10,
-  },
-  profileActions: {
-    marginTop: 20,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  editProfileButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.profileActionBackground,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  editProfileText: {
-    color: theme.text,
-    marginLeft: 6,
-    fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-  },
-  profileAvatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: theme.avatarBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  profileName: {
-    color: theme.text,
-    fontSize: 24,
-    fontFamily: 'Roboto-Bold',
-    marginBottom: 5,
-  },
-  profileMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-  },
-  metaText: {
-    color: theme.text,
-    fontSize: 14,
-    marginLeft: 5,
-  },
-  metaDivider: {
-    width: 1,
-    height: 16,
-    backgroundColor: theme.separator,
-  },
-  sectionCard: {
-    backgroundColor: theme.cardBackground,
-    borderRadius: 15,
-    padding: 15,
-    marginHorizontal: 15,
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    color: theme.text,
-    fontSize: 18,
-    fontFamily: 'Roboto-Bold',
-    marginBottom: 15,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  infoIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: theme.profileActionBackground,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    color: theme.text,
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  infoValue: {
-    color: theme.text,
-    fontSize: 16,
-    fontFamily: 'Roboto-Bold',
-  },
-  actionButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-    marginBottom: 20,
-  },
-  actionButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginHorizontal: 5,
-  },
-  medicationsButton: {
-    backgroundColor: theme.BlueIconBackground,
-  },
-  allergiesButton: {
-    backgroundColor: theme.RedIconBackground,
-  },
-  historyButton: {
-    backgroundColor: theme.GreenIconBackground,
-  },
-  actionButtonText: {
-    color: theme.text,
-    marginLeft: 5,
-    fontSize: 12,
-    fontFamily: 'Roboto-Bold',
-  },
-  quickInfoSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 15,
-  },
-  quickInfoCard: {
-    backgroundColor: theme.cardBackground,
-    borderRadius: 12,
-    padding: 12,
-    flex: 1,
-    marginHorizontal: 5,
-  },
-  quickInfoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  quickInfoTitle: {
-    color: theme.text,
-    fontSize: 14,
-    opacity: 0.7,
-    marginLeft: 5,
-  },
-  quickInfoValue: {
-    color: theme.text,
-    fontSize: 16,
-    fontFamily: 'Roboto-Bold',
-  }
-});
+const getStyles = (theme: any) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.textlight,
+    },
+    loadingText: {
+      color: theme.text,
+      fontSize: 16,
+      textAlign: "center",
+      marginTop: 20,
+    },
+
+    headerContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 15,
+      paddingHorizontal: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.separator,
+    },
+    backButton: {
+      padding: 5,
+    },
+    headerTitle: {
+      flex: 1,
+      color: theme.text,
+      fontSize: 20,
+      fontFamily: "Roboto-Bold",
+      textAlign: "center",
+      marginRight: 30, // To balance with the back button
+    },
+    scrollContent: {
+      paddingBottom: 30,
+    },
+    profileHeaderCard: {
+      alignItems: "center",
+      paddingVertical: 20,
+      marginBottom: 20,
+    },
+    profileAvatarContainer: {
+      marginBottom: 10,
+    },
+    profileActions: {
+      marginTop: 20,
+      flexDirection: "row",
+      justifyContent: "flex-start",
+    },
+    editProfileButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.profileActionBackground,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+    },
+    editProfileText: {
+      color: theme.text,
+      marginLeft: 6,
+      fontSize: 14,
+      fontFamily: "Roboto-Medium",
+    },
+    profileAvatar: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      backgroundColor: theme.cardBackground,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    profileName: {
+      color: theme.text,
+      fontSize: 24,
+      fontFamily: "Roboto-Bold",
+      marginBottom: 5,
+    },
+    profileMeta: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    metaItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      paddingHorizontal: 10,
+    },
+    metaText: {
+      color: theme.text,
+      fontSize: 14,
+      marginLeft: 5,
+    },
+    metaDivider: {
+      width: 1,
+      height: 16,
+      backgroundColor: theme.separator,
+    },
+    sectionCard: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 15,
+      padding: 15,
+      marginHorizontal: 15,
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      color: theme.text,
+      fontSize: 18,
+      fontFamily: "Roboto-Bold",
+      marginBottom: 15,
+    },
+    infoRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 12,
+    },
+    infoIconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.profileActionBackground,
+      justifyContent: "center",
+      alignItems: "center",
+      marginRight: 10,
+    },
+    infoContent: {
+      flex: 1,
+    },
+    infoLabel: {
+      color: theme.text,
+      fontSize: 14,
+      opacity: 0.7,
+    },
+    infoValue: {
+      color: theme.text,
+      fontSize: 16,
+      fontFamily: "Roboto-Bold",
+    },
+    actionButtonsContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingHorizontal: 15,
+      marginBottom: 20,
+    },
+    actionButton: {
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      flex: 1,
+      paddingVertical: 12,
+      borderRadius: 8,
+      marginHorizontal: 5,
+    },
+    medicationsButton: {
+      backgroundColor: theme.BlueIconBackground,
+    },
+    allergiesButton: {
+      backgroundColor: theme.RedIconBackground,
+    },
+    historyButton: {
+      backgroundColor: theme.GreenIconBackground,
+    },
+    actionButtonText: {
+      color: theme.text,
+      marginLeft: 5,
+      fontSize: 12,
+      fontFamily: "Roboto-Bold",
+    },
+    quickInfoSection: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingHorizontal: 15,
+    },
+    quickInfoCard: {
+      backgroundColor: theme.cardBackground,
+      borderRadius: 12,
+      padding: 12,
+      flex: 1,
+      marginHorizontal: 5,
+    },
+    quickInfoHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      marginBottom: 5,
+    },
+    quickInfoTitle: {
+      color: theme.text,
+      fontSize: 14,
+      opacity: 0.7,
+      marginLeft: 5,
+    },
+    quickInfoValue: {
+      color: theme.text,
+      fontSize: 16,
+      fontFamily: "Roboto-Bold",
+    },
+  });
 
 export default ProfileScreen;

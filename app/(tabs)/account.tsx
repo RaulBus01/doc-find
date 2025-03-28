@@ -20,7 +20,6 @@ import { useToken } from "@/context/TokenContext";
 import { User } from "@/interface/Interface";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { secureGetValueFor } from "@/utils/SecureStorage";
 import { Switch } from "react-native-gesture-handler";
@@ -75,13 +74,7 @@ export default function Account() {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      <LinearGradient
-        colors={[theme.textlight, theme.tint, theme.mediumbackground]}
-        locations={[0, 0.44, 0.90]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.gradient}
-      >
+  
         {/* Header Profile Section */}
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <View style={styles.profileHeader}>
@@ -260,7 +253,7 @@ export default function Account() {
           
         
         </Animated.ScrollView>
-      </LinearGradient>
+     
     </SafeAreaView>
   );
 }

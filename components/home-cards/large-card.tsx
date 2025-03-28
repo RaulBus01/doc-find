@@ -1,4 +1,4 @@
-import {Text, StyleSheet,TouchableHighlight } from "react-native";
+import {Text, StyleSheet,TouchableHighlight, View } from "react-native";
 import React from "react";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,16 +21,11 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
          underlayColor="rgb(242, 250, 169)"
          style={styles.container}
        >
-         <LinearGradient
-           style={styles.gradientContainer}
-           colors={[color, theme.textlight]}
-           start={[0, 0]}
-           end={[1, 1]}
-         >
+      <View style={[styles.cardContainer, {backgroundColor: color}]}>
         <Text style={styles.text}>{text}</Text>
         <FontAwesome5 name={icon.toLowerCase()} size={28} color={theme.text} />
-       
-       </LinearGradient>
+        </View>
+        
          </TouchableHighlight>
   );
 };
@@ -46,19 +41,20 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: 120,
     borderRadius: 25,
     marginHorizontal: 5,
-    elevation: 5,
+   
   },
-  gradientContainer: {
-    flexDirection: "column",
+  cardContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent",
-    width: 160,
-    height: 120,
     borderRadius: 25,
-    gap: 10,
-    elevation: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: "100%",
+    height: "100%",
+
   },
+ 
   text: {
     fontSize: 14,
     fontFamily: "Roboto-Medium",

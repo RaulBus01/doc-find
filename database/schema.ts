@@ -1,4 +1,5 @@
-import { sqliteTable, text, integer, primaryKey,foreignKey } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, primaryKey, foreignKey } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 
 // Profiles table
@@ -22,12 +23,9 @@ export const medications = sqliteTable('medications', {
 // Junction table for profile medications (many-to-many)
 export const profileMedications = sqliteTable('profile_medications', {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    profile_id: integer("profile_id").references(() => profiles.id, { onDelete: 'cascade' }).notNull(),
-    medication_id: integer("medication_id").notNull().references(() => medications.id, { onDelete: 'cascade' }),
-    dosage: text("dosage"),
-    frequency: text("frequency"),
-    start_date: text("start_date"),
-    end_date: text("end_date"),
+    profileId: integer("profile_id").references(() => profiles.id, { onDelete: 'cascade' }).notNull(),
+    medicationId: integer("medication_id").notNull().references(() => medications.id, { onDelete: 'cascade' }),
+    permanent: integer("permanent").notNull().default(0),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
 });
 
@@ -42,8 +40,8 @@ export const allergies = sqliteTable('allergies', {
 // Junction table for profile allergies (many-to-many)
 export const profileAllergies = sqliteTable('profile_allergies', {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    profile_id: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
-    allergy_id: integer("allergy_id").notNull().references(() => allergies.id, { onDelete: 'cascade' }),
+    profileId: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+    allergyId: integer("allergy_id").notNull().references(() => allergies.id, { onDelete: 'cascade' }),
     severity: text("severity"),
     reaction: text("reaction"),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
@@ -52,7 +50,7 @@ export const profileAllergies = sqliteTable('profile_allergies', {
 // Medical history entries
 export const medicalHistory = sqliteTable('medical_history', {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    profile_id: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
+    profileId: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
     condition: text("condition").notNull(),
     diagnosis_date: text("diagnosis_date"),
     treatment: text("treatment"),
@@ -63,13 +61,30 @@ export const medicalHistory = sqliteTable('medical_history', {
 });
 export const healthIndicators = sqliteTable('health_indicators', {
     id: integer("id").primaryKey({ autoIncrement: true }),
-    profile_id: integer("profile_id").references(() => profiles.id, { onDelete: 'cascade' }).notNull(),
+    profileId: integer("profile_id").references(() => profiles.id, { onDelete: 'cascade' }).notNull(),
     diabetic: text("diabetic").notNull(),
     hypertensive: text("hypertensive").notNull(),
     smoker: text("smoker").notNull(),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
     updated_at: integer("updated_at").notNull().default(sql`(current_timestamp)`),
 });
+
+// Define relations for profileMedications
+export const profileMedicationsRelations = relations(profileMedications, ({ one }) => ({
+  profile: one(profiles, {
+    fields: [profileMedications.profileId],
+    references: [profiles.id],
+  }),
+  medication: one(medications, {
+    fields: [profileMedications.medicationId],
+    references: [medications.id],
+  }),
+}));
+
+// Also add the reverse relations on medications
+export const medicationsRelations = relations(medications, ({ many }) => ({
+  profileMedications: many(profileMedications),
+}));
 
 // Export types for TypeScript type safety
 export type Profile = typeof profiles.$inferSelect;

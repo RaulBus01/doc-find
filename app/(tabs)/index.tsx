@@ -14,10 +14,8 @@ import { useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
 import { getChats } from "@/utils/DatabaseAPI";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
-import { useDatabase } from "@/hooks/useDatabase";
-import {  profiles } from "@/database/schema";
+
 
 
 const Home = () => {
@@ -177,42 +175,31 @@ const Home = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-    <LinearGradient
-      colors={[theme.darkbackground,theme.mediumbackground,theme.background,theme.textlight]}
-      locations={[0, 0.35, 0.56, 1]} 
-      start={{ x: 0.5, y: 0 }} 
-      end={{ x: 0.5, y: 1 }}
-      style={{flex: 1}} 
-    >
-      <LinearGradient 
-        style={styles.headerContainer}
-        colors={[theme.textlight,theme.tint,theme.mediumbackground]}
-        locations={[0, 0.44, 0.90]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        >
+
+      <View style={styles.headerContainer}>
         <Text style={styles.header}>Welcome</Text>
-        </LinearGradient>
+        </View>
       <ScrollView nestedScrollEnabled={true} style={{ flex: 1 }}>
         <ProfileComponent />
         <SymptomsComponent />
         <ChatsComponent />
       </ScrollView>
-    </LinearGradient>
+
     </SafeAreaView>
   );
 };
 const getStyles = (theme: any) => StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.background,
 
   },
   headerContainer: {
     justifyContent: "center",
-    backgroundColor: theme.tint,
+    backgroundColor:theme.cardBackground,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    elevation: 2
+    
   },
   header: {
     fontSize: 32,

@@ -10,6 +10,7 @@ import m0005 from './0005_needy_korg.sql';
 import m0006 from './0006_faithful_silver_sable.sql';
 import m0007 from './0007_special_hellion.sql';
 import m0008 from './0008_bouncy_marvel_zombies.sql';
+import m0009 from './0009_funny_invisible_woman.sql';
 
   export default {
     journal,
@@ -22,7 +23,8 @@ m0004,
 m0005,
 m0006,
 m0007,
-m0008
+m0008,
+m0009
     }
   }
   

@@ -19,12 +19,13 @@
     "@gorhom/bottom-sheet": "^5.1.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
+    "@react-native-picker/picker": "2.9.0",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
     "@shopify/flash-list": "1.7.3",
     "babel-plugin-inline-import": "^3.0.0",
     "dotenv": "^16.4.7",
-    "drizzle-orm": "^0.40.0",
+    "drizzle-orm": "^0.40.1",
     "expo": "^52.0.35",
     "expo-asset": "~11.0.3",
     "expo-blur": "~14.0.3",
@@ -59,7 +60,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "@react-native-picker/picker": "2.9.0"
+    "toastify-react-native": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

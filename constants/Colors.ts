@@ -1,6 +1,6 @@
 export const Colors = {
   light: {
-    text: '#4c414c',
+    text: '#264653',
     textlight: '#FFFFFF',
     border: '#818479',
     background: '#e4e9b2',
@@ -14,11 +14,11 @@ export const Colors = {
     tabIconSelected: '#BDB99D',
     red:"#af1222",
     //Additional colors for the app
-    cardBackground: 'rgba(255, 255, 255, 0.38)',
+    cardBackground: 'rgba(141, 141, 141, 0.18)',
     pressedBackground: 'rgba(36, 29, 29, 0.05)',
     separator: 'rgba(255, 255, 255, 0.1)',
-    avatarBackground: 'rgba(255, 255, 255, 0.2)',
-    profileActionBackground: 'rgba(255, 255, 255, 0.15)',
+    avatarBackground: 'rgba(255, 255, 255, 0.55)',
+    profileActionBackground: 'rgba(255, 255, 255, 0.53)',
 
     //Colors for icons 
 

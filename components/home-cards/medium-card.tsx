@@ -1,4 +1,4 @@
-import {Text, StyleSheet,TouchableHighlight } from "react-native";
+import {Text, StyleSheet,TouchableHighlight, View } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -21,15 +21,10 @@ const MediumCard = ({ text, icon, color, onPress }: MediumCardProps) => {
       underlayColor="rgb(242, 250, 169)"
       style={styles.container}
     >
-      <LinearGradient
-        style={styles.gradientContainer}
-        colors={[color, theme.textlight]}
-        start={[0, 0]}
-        end={[1, 1]}
-      >
+     <View style={[styles.cardContainer, {backgroundColor: color}]}>
         <Text style={styles.text}>{text}</Text>
         <Ionicons name={icon as any} size={24} color={theme.text} />
-      </LinearGradient>
+      </View>
     </TouchableHighlight>
   );
 };
@@ -45,18 +40,17 @@ const getStyles = (theme: any) => StyleSheet.create({
     height: 100,
     borderRadius: 20,
     marginHorizontal: 5,
-    elevation: 5,
+
   },
-  gradientContainer:{
-    flexDirection: "column",
+  cardContainer: {
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "transparent",
-    width: 130,
-    height: 100,
     borderRadius: 20,
-    elevation: 5,
-    gap: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: "100%",
+    height: "100%",
   },
   text: {
     textAlign: "center",

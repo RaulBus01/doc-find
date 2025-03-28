@@ -15,7 +15,7 @@ import { SQLiteProvider, openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-
+import ToastManager from "toastify-react-native";
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -74,41 +74,46 @@ const InitialLayout = () => {
 
   return (
     <>
-    <StatusBar animated={true} backgroundColor={theme.textlight}  style={isDark ? "light" : "dark"} />
+      <ToastManager
+        theme={isDark ? "dark" : "light"}
+        showProgressBar={false}
+        style={{ width: "100%", height: "100px",elevation: 0 }}
+        animationIn={"fadeIn"}
+        animationOut="fadeOut"
+        animationStyle={"upInUpOut"}
+      />
+      <StatusBar
+        animated={true}
+        backgroundColor={theme.textlight}
+        style={isDark ? "light" : "dark"}
+      />
       <Stack
         screenOptions={{
           headerShown: false,
-          animation: "slide_from_right",
         }}
-        >
+      >
         <Stack.Screen
           name="index"
           options={{
             headerShown: false,
-            gestureEnabled: false,
           }}
-          />
-          <Stack.Screen name="login" 
-          options={
-            { headerShown: false, gestureEnabled: false, }
-          }/>
+        />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
         <Stack.Screen
           name="(tabs)"
           options={{
             headerShown: false,
-            gestureEnabled: false,
           }}
-          />
+        />
         <Stack.Screen
           name="(profiles)"
           options={{
             headerShown: false,
-            gestureEnabled: false,
+            animation: "slide_from_left",
           }}
-          />
+        />
       </Stack>
     </>
-
   );
 };
 
@@ -124,7 +129,6 @@ const RootLayout = () => {
     throw new Error("Auth0 configuration is missing");
   }
 
-
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
       <ThemeProvider>
@@ -138,7 +142,6 @@ const RootLayout = () => {
               <BottomSheetModalProvider>
                 <TokenProvider>
                   <UserDataProvider>
-       
                     <InitialLayout />
                   </UserDataProvider>
                 </TokenProvider>

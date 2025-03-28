@@ -13,7 +13,6 @@ import { desc, eq, sql } from "drizzle-orm";
 import { useTheme } from "@/context/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   Ionicons,
   FontAwesome5,
@@ -54,7 +53,7 @@ const HistoryProfile = () => {
       const health = await drizzleDB
         .select()
         .from(healthIndicators)
-        .where(eq(healthIndicators.profile_id, p.id))
+        .where(eq(healthIndicators.profileId, p.id))
         .execute();
 
       if (health && health.length > 0) {
@@ -100,13 +99,6 @@ const HistoryProfile = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-      <LinearGradient
-        colors={[theme.textlight, theme.tint, theme.mediumbackground]}
-        locations={[0, 0.44, 0.9]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-        style={styles.gradient}
-      >
         <View style={styles.header}>
           <View>
             <Text style={styles.headerTitle}>Profiles</Text>
@@ -215,15 +207,17 @@ const HistoryProfile = () => {
                         <View style={styles.healthIndicators}>
                           {Object.entries(healthIndicatorConfig).map(
                             ([key, config]) => (
-                              <View
+                                <View
                                 key={key}
                                 style={[
                                   styles.indicator,
                                   healthData[profile.id][key] === "Yes"
-                                    ? styles.indicatorActive
-                                    : {},
+                                  ? styles.indicatorActive
+                                  : healthData[profile.id][key] === "I used to"
+                                    ? styles.indicatorWarning
+                                  : {},
                                 ]}
-                              >
+                                >
                                 <FontAwesome5
                                   name={config.icon}
                                   size={14}
@@ -232,7 +226,7 @@ const HistoryProfile = () => {
                                 <Text style={styles.indicatorText}>
                                   {config.label}
                                 </Text>
-                              </View>
+                                </View>
                             )
                           )}
                         </View>
@@ -264,7 +258,7 @@ const HistoryProfile = () => {
           onDelete={handleDelete}
           ref={bottomSheetModalRef}
         />
-      </LinearGradient>
+    
     </SafeAreaView>
   );
 };
@@ -275,11 +269,7 @@ const getStyles = (theme: any) =>
       flex: 1,
       backgroundColor: theme.textlight,
     },
-    gradient: {
-      flex: 1,
-      width: "100%",
-      height: "100%",
-    },
+  
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -366,7 +356,7 @@ const getStyles = (theme: any) =>
       width: 50,
       height: 50,
       borderRadius: 25,
-      backgroundColor: theme.avatarBackground,
+      backgroundColor: theme.cardBackground,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 12,
@@ -420,6 +410,9 @@ const getStyles = (theme: any) =>
     },
     indicatorActive: {
       backgroundColor: theme.RedIconBackground,
+    },
+    indicatorWarning: {
+      backgroundColor: theme.YellowIconBackground,
     },
     indicatorText: {
       color: theme.text,

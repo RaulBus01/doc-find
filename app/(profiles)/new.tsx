@@ -244,16 +244,13 @@ const NewProfile = () => {
     // Handle form submission
    try{
     const {diabetic,hypertensive,smoker,...profileData} = formData;
-    
-    // Convert age string to a number (timestamp) for database storage
-
-    
+  
     await drizzleDB.transaction(async (tx)=>{
       const newProfile = await tx.insert(profiles).values(profileData).returning({ id: profiles.id }).execute();
       
       const newProfileId = newProfile[0].id;
       await tx.insert(healthIndicators).values({
-        profile_id:newProfileId,
+        profileId:newProfileId,
         diabetic,
         hypertensive,
         smoker
