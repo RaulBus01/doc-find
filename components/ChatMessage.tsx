@@ -3,9 +3,8 @@ import {
   Text,
   StyleSheet,
   Image,
-  Touchable,
-  TouchableOpacity,
 } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import React from "react";
 
 import { Ionicons } from "@expo/vector-icons";
@@ -66,15 +65,15 @@ const ChatMessage = ({
         {isAI ? (
           id !== "welcome" && (
           <View style={styles.footerButtons}>
-            <TouchableOpacity
-              activeOpacity={0.2}
+            <Pressable
+              
               onPress={handleCopyToClipboard}
             >
               <Ionicons name="copy" size={20} color={theme.text} />
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.2}>
+            </Pressable>
+            <Pressable >
               <Ionicons name="refresh" size={20} color={theme.text}/>
-            </TouchableOpacity>
+            </Pressable>
           </View>
           )
         ) : null}

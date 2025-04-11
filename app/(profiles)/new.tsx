@@ -2,10 +2,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   TextInput,
-  Platform,
 } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import { Picker } from '@react-native-picker/picker';
 import React, { useState, useRef } from "react";
 import { LinearGradient } from "expo-linear-gradient";
@@ -74,7 +73,7 @@ const NewProfile = () => {
       component: (
         <View style={styles.choiceContainer}>
           {["Male", "Female"].map((gender) => (
-            <TouchableOpacity
+            <Pressable
               key={gender}
               style={[
                 styles.genderButton,
@@ -88,7 +87,7 @@ const NewProfile = () => {
                 styles.genderText,
                 formData.gender === gender && styles.selectedGenderText
               ]}>{gender}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
       ),
@@ -132,7 +131,7 @@ const NewProfile = () => {
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I used to"].map((choice) => (
-          <TouchableOpacity
+          <Pressable
             key={choice}
             style={[
               styles.genderButton,
@@ -147,7 +146,7 @@ const NewProfile = () => {
               styles.genderText,
               formData.smoker === choice && styles.selectedGenderText
             ]}>{choice}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     ),
@@ -160,7 +159,7 @@ const NewProfile = () => {
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I don't know"].map((choice) => (
-          <TouchableOpacity
+          <Pressable
             key={choice}
             style={[
               styles.genderButton,
@@ -175,7 +174,7 @@ const NewProfile = () => {
               styles.genderText,
               formData.hypertensive === choice && styles.selectedGenderText
             ]}>{choice}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     ),
@@ -188,7 +187,7 @@ const NewProfile = () => {
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I don't know"].map((choice) => (
-          <TouchableOpacity
+          <Pressable
             key={choice}
             style={[
               styles.genderButton,
@@ -202,7 +201,7 @@ const NewProfile = () => {
               styles.genderText,
               formData.diabetic === choice && styles.selectedGenderText
             ]}>{choice}</Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     ),
@@ -294,9 +293,9 @@ const NewProfile = () => {
         end={{ x: 0.5, y: 1 }}
       >
         <Text style={styles.header}>Add Profile</Text>
-        <TouchableOpacity onPress={handleRoutingBack} style={styles.backButton}>
+        <Pressable onPress={handleRoutingBack} style={styles.backButton}>
           <Ionicons name="close" size={24} color={theme.text} />
-        </TouchableOpacity>
+        </Pressable>
       </LinearGradient>
       <MultiStepForm
         steps={steps}

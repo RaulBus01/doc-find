@@ -1,4 +1,5 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
+import { Pressable } from 'react-native-gesture-handler'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
@@ -14,10 +15,10 @@ const BottomSheetModalButton: React.FC<BottomSheetModalButtonProps> = ({ title, 
     const {theme} = useTheme();
     const styles = getStyles(theme);
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.6} style={styles.container}>
+    <Pressable onPress={onPress} style={styles.container}>
             <Ionicons name={icon as any} size={28} style={title === "Delete" ? styles.iconDelete : styles.icon} />
             <Text style={title === "Delete" ? styles.textDelete : styles.text}>{title}</Text>
-    </TouchableOpacity>
+    </Pressable>
   )
 }
 const getStyles = (theme: any) => StyleSheet.create({

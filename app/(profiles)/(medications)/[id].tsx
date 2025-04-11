@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, FlatList, Keyboard, Switch } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -182,9 +183,9 @@ export default function MedicationScreen() {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.headerTitle}>Medications</Text>
         <View style={{ width: 30 }} />
       </View>
@@ -212,9 +213,9 @@ export default function MedicationScreen() {
                   {medication.permanent === 1 ? "Take daily" : "As needed"}
                 </Text>
               </View>
-              <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteMedication(medication.medicationId)}>
+              <Pressable style={styles.deleteButton} onPress={handleDeleteMedication(medication.medicationId)}>
                 <Ionicons name="trash-outline" size={20} color={theme.text + '80'} />
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
           ))
         ) : (
@@ -240,13 +241,13 @@ export default function MedicationScreen() {
             {
               
             suggestedMedications.map((med) => (
-              <TouchableOpacity
+              <Pressable
                 key={med.id}
                 style={styles.suggestionItem}
                 onPress={() => selectMedication(med)}
               >
                 <Text style={styles.suggestionText}>{med.name}</Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
             
           </Animated.View>
@@ -283,14 +284,14 @@ export default function MedicationScreen() {
           />
         </View>
         
-        <TouchableOpacity 
+        <Pressable 
           style={styles.addButton} 
           onPress={handleAddMedication}
-          activeOpacity={0.8}
+          
         >
           <Ionicons name="add" size={22} color="#fff" />
           <Text style={styles.addButtonText}>Add Medication</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </SafeAreaView>
   );

@@ -1,7 +1,7 @@
-import {Text, StyleSheet,TouchableHighlight, View } from "react-native";
+import {Text, StyleSheet, View } from "react-native";
 import React from "react";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
 
 interface LargeCardProps {
@@ -15,10 +15,8 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
    const { theme } = useTheme();
     const styles = getStyles(theme);
   return (
-    <TouchableHighlight
+    <Pressable
          onPress={onPress}
-         activeOpacity={0.8}
-         underlayColor="rgb(242, 250, 169)"
          style={styles.container}
        >
       <View style={[styles.cardContainer, {backgroundColor: color}]}>
@@ -26,7 +24,7 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
         <FontAwesome5 name={icon.toLowerCase()} size={28} color={theme.text} />
         </View>
         
-         </TouchableHighlight>
+         </Pressable>
   );
 };
 

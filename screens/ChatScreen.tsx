@@ -1,7 +1,7 @@
 import { View, Text, SafeAreaView, StyleSheet, FlatList, Keyboard } from 'react-native';
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import MessageBar from '../components/ChatMessageBar';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Pressable } from 'react-native-gesture-handler';
 import { useEffect, useRef, useState } from 'react';
 import ChatMessage from '../components/ChatMessage';
 import { Message } from '@/interface/Interface';
@@ -157,20 +157,20 @@ const ChatScreen = () => {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>AI Assistant</Text>
         <View style={styles.headerIcons}>
-          <TouchableOpacity
+          <Pressable
             style={styles.iconButton}
             onPress={() => handleRoute('history')}
           >
             <FontAwesome name="history" size={24} color={theme.text} />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={styles.iconButton}
             disabled={chatIdRef.current ? false : true}
             
             onPress={() => handleRoute('new')}
           >
             <Entypo name="new-message" size={24} color={chatIdRef.current ? theme.text : '#918F86' } />
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </View>
 

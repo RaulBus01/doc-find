@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet} from 'react-native';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
+import { Pressable } from 'react-native-gesture-handler';
+
 
 interface Step {
   key: string;
@@ -87,14 +89,14 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
       </View>
 
       <View style={styles.backButtonContainer}>
-        <TouchableOpacity
+        <Pressable
           style={[styles.backButton, currentStep === 0 && styles.hiddenButton]}
           onPress={handleBack}
           disabled={currentStep === 0}
         >
           <Ionicons name="chevron-up-circle" size={24} color={theme.text} />
           <Text style={styles.buttonText}>Back</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Step Content */}
@@ -106,7 +108,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
 
       {/* Navigation Buttons - Always show the Next button */}
       <View style={styles.navigationContainer}>
-        <TouchableOpacity
+        <Pressable
           style={[styles.navButton, styles.nextButton]}
           onPress={handleNext}
         >
@@ -114,7 +116,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
             {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
           </Text>
           <FontAwesome6 name="arrow-right-long" size={24} color={theme.text} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

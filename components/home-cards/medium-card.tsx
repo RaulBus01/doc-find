@@ -1,8 +1,9 @@
-import {Text, StyleSheet,TouchableHighlight, View } from "react-native";
+import {Text, StyleSheet, View } from "react-native";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
+import { Pressable } from "react-native-gesture-handler";
+
 
 interface MediumCardProps {
   text: string;
@@ -15,17 +16,15 @@ const MediumCard = ({ text, icon, color, onPress }: MediumCardProps) => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   return (
-    <TouchableHighlight
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.8}
-      underlayColor="rgb(242, 250, 169)"
       style={styles.container}
     >
      <View style={[styles.cardContainer, {backgroundColor: color}]}>
         <Text style={styles.text}>{text}</Text>
         <Ionicons name={icon as any} size={24} color={theme.text} />
       </View>
-    </TouchableHighlight>
+    </Pressable>
   );
 };
 

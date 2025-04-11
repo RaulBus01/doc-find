@@ -2,8 +2,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -12,10 +10,10 @@ import { healthIndicators, profiles } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import {
   SafeAreaView,
-  useSafeAreaInsets,
 } from "react-native-safe-area-context";
+import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
-import { Ionicons, FontAwesome5, FontAwesome } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
 
@@ -80,9 +78,9 @@ const ProfileScreen = () => {
     
         {/* Header */}
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <Pressable onPress={handleBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={theme.text} />
-          </TouchableOpacity>
+          </Pressable>
           <Text style={styles.headerTitle}>Profile Details</Text>
         </View>
 
@@ -120,13 +118,13 @@ const ProfileScreen = () => {
               </View>
             </View>
             <View style={styles.profileActions}>
-              <TouchableOpacity
+              <Pressable
                 style={styles.editProfileButton}
                 onPress={() => console.log("Edit profile")}
               >
                 <Ionicons name="pencil" size={16} color={theme.text} />
                 <Text style={styles.editProfileText}>Edit Profile</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
 
@@ -160,7 +158,7 @@ const ProfileScreen = () => {
 
           {/* Action Buttons */}
           <View style={styles.actionButtonsContainer}>
-            <TouchableOpacity
+            <Pressable
               style={[styles.actionButton, styles.medicationsButton]}
               onPress={() =>
                 router.push(`/(profiles)/(medications)/${profileId}`)
@@ -168,17 +166,17 @@ const ProfileScreen = () => {
             >
               <FontAwesome5 name="pills" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Medications</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={[styles.actionButton, styles.allergiesButton]}
               onPress={() => router.push(`/(profiles)/(allergies)/${profileId}`)}
             >
               <FontAwesome5 name="allergies" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Allergies</Text>
-            </TouchableOpacity>
+            </Pressable>
 
-            <TouchableOpacity
+            <Pressable
               style={[styles.actionButton, styles.historyButton]}
               onPress={() =>
                 router.push(`/(profiles)/(medicalhistory)/${profileId}`)
@@ -186,7 +184,7 @@ const ProfileScreen = () => {
             >
               <FontAwesome5 name="file-medical" size={20} color={theme.text} />
               <Text style={styles.actionButtonText}>Medical History</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Quick Info Cards */}

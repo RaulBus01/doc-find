@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { View, TextInput, StyleSheet, Keyboard } from "react-native";
+import {  TextInput, Keyboard,Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ChatMessageBarStyle from "./ChatMessageBarStyle";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,15 +8,14 @@ import {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
   WithSpringConfig,
   withTiming,
 } from "react-native-reanimated";
-import { TouchableOpacity } from "react-native-gesture-handler";
+
 import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 
-const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+const ATouchableOpacity = Animated.createAnimatedComponent(Pressable);
 
 type Props = {
   onModalPress: () => void;
@@ -152,30 +151,30 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
         <Animated.View
           style={[styles.buttonView, buttonContainerStyle]}
         >
-          <TouchableOpacity
+          <Pressable
             onPress={() => {
               collapseItems();
               console.log("Camera");
             }}
           >
             <Ionicons name="camera-outline" size={26} color={theme.text}/>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               collapseItems();
               console.log("Gallery");
             }}
           >
             <Ionicons name="image-outline" size={26} color={theme.text} />
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             onPress={() => {
               collapseItems();
               console.log("Document");
             }}
           >
             <Ionicons name="document-outline" size={26} color={theme.text} />
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
 
         <Animated.View style={[styles.textAreaView, textAreaAnimatedStyle]}>
@@ -196,9 +195,9 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
           </Animated.View>
 
           <Animated.View style={styles.bottomIcons}>
-            <TouchableOpacity onPress={() => { }}>
+            <Pressable onPress={() => { }}>
               <Ionicons name="mic" size={26} color={theme.text}/>
-            </TouchableOpacity>
+            </Pressable>
         
             {!isSendDisabled && (
               <Ionicons

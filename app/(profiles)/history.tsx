@@ -2,10 +2,9 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableHighlight,
-  Alert,
-  TouchableOpacity,
+  Alert
 } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDatabase } from "@/hooks/useDatabase";
 import { healthIndicators, profiles } from "@/database/schema";
@@ -114,13 +113,13 @@ const HistoryProfile = () => {
               Manage your health profiles
             </Text>
           </View>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddProfile}>
+          <Pressable style={styles.addButton} onPress={handleAddProfile}>
             <MaterialCommunityIcons
               name="account-plus"
               size={32}
               color={theme.text}
             />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <Animated.ScrollView
@@ -141,21 +140,20 @@ const HistoryProfile = () => {
                 <Text style={styles.emptySubtext}>
                   Create a profile to get started
                 </Text>
-                <TouchableOpacity
+                <Pressable
                   style={styles.createButton}
                   onPress={handleAddProfile}
                 >
                   <Text style={styles.createButtonText}>Create Profile</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             ) : (
               profilesData.map((profile) => (
                 <View style={styles.profileCardWrapper} key={profile.id}>
-                  <TouchableHighlight
+                  <Pressable
                     style={styles.profileTouchable}
                     onPress={() => onProfilePress(profile.id.toString())}
-                    activeOpacity={0.8}
-                    underlayColor="rgba(255,255,255,0.1)"
+                   
                   >
                     <View style={styles.profileCard}>
                       <View style={styles.profileHeader}>
@@ -196,7 +194,7 @@ const HistoryProfile = () => {
                             </View>
                           </View>
                         </View>
-                        <TouchableOpacity
+                        <Pressable
                           style={styles.moreButton}
                           onPress={() =>
                             handleOpenBottomSheet(profile.id.toString())
@@ -207,7 +205,7 @@ const HistoryProfile = () => {
                             size={20}
                             color={theme.text}
                           />
-                        </TouchableOpacity>
+                        </Pressable>
                       </View>
 
                       {/* Health Indicators */}
@@ -255,7 +253,7 @@ const HistoryProfile = () => {
                         </View>
                       </View>
                     </View>
-                  </TouchableHighlight>
+                  </Pressable>
                 </View>
               ))
             )}

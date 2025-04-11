@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -14,7 +14,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useAuth0 } from "react-native-auth0";
 import { router } from "expo-router";
-import { deleteItemAsync } from "expo-secure-store";
 import { useToken } from "@/context/TokenContext";
 import { User } from "@/interface/Interface";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
@@ -107,7 +106,7 @@ export default function Account() {
             
             <View style={styles.optionCard}>
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={() => console.log("Email")}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -124,7 +123,7 @@ export default function Account() {
               <View style={styles.separator} />
               
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={() => console.log("Password")}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -140,10 +139,10 @@ export default function Account() {
               
               <View style={styles.separator} />
               
-              <TouchableOpacity
-                style={[styles.option, {paddingVertical: 14}]}
+              <Pressable
+                style={styles.option}
                 onPress={() => router.push('/(profiles)/history')}
-                activeOpacity={0.8}
+                android_ripple={{color: theme.pressedBackground}}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.GreenIconBackground}]}>
                   <FontAwesome5 name="user-friends" size={18} color={theme.text} />
@@ -153,7 +152,7 @@ export default function Account() {
                   <Text style={styles.optionSubtitle}>Manage your health profiles</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
-              </TouchableOpacity> 
+              </Pressable> 
             </View>
           </View>
           
@@ -163,7 +162,7 @@ export default function Account() {
             
             <View style={styles.optionCard}>
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={() => console.log("Notifications")}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -180,7 +179,7 @@ export default function Account() {
               <View style={styles.separator} />
               
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={handleChangeTheme}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -211,7 +210,7 @@ export default function Account() {
             
             <View style={styles.optionCard}>
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={() => console.log("About")}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -228,7 +227,7 @@ export default function Account() {
               <View style={styles.separator} />
               
               <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+                style={styles.option}
                 onPress={() => console.log("Terms of Use")}
                 android_ripple={{color: theme.pressedBackground}}
               >
@@ -245,14 +244,14 @@ export default function Account() {
           </View>
           
           {/* Logout */}
-          <TouchableOpacity 
+          <Pressable 
             style={styles.logoutButton}
             onPress={onLogout}
-            activeOpacity={0.8}
+            android_ripple={{color: theme.pressedBackground}}
           >
             <Ionicons name="log-out" size={18} color="#fff" />
             <Text style={styles.logoutText}>Log Out</Text>
-          </TouchableOpacity>
+          </Pressable>
           
         
         </Animated.ScrollView>
@@ -329,15 +328,14 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
    
   },
   option: {
+  
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 16,
     zIndex: 100,
   },
-  optionPressed: {
-    backgroundColor: theme.pressedBackground,
-  },
+
   optionIcon: {
     width: 40,
     height: 40,

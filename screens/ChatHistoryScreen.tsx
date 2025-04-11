@@ -10,7 +10,7 @@ import {
   FlatList,
   StyleSheet,
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomBottomSheetModal, {
   Ref,
@@ -118,12 +118,12 @@ const ChatHistoryScreen = () => {
           <Text style={{ textAlign: "center", padding: 20, color: theme.text }}>
             No chats found
           </Text>
-          <TouchableOpacity
+          <Pressable
             style={styles.button}
             onPress={() => router.push("/new")}
           >
             <Text style={{ color: theme.text }}>Start a new chat</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       )}
 

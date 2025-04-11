@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text,StyleSheet } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import { Entypo } from "@expo/vector-icons";
 import { formatDate } from "../utils/Date";
 import { useTheme } from "@/context/ThemeContext";
@@ -29,7 +30,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   };
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={handlePress}
       style={styles.container}
       onLongPress={() => handleModal(id)}
@@ -39,11 +40,11 @@ const ChatItem: React.FC<ChatItemProps> = ({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.date}>{formatDate(updatedAt)}</Text>
         </View>
-        <TouchableOpacity onPress={() => handleModal(id)}>
+        <Pressable onPress={() => handleModal(id)}>
           <Entypo name="dots-three-vertical" size={22} color={theme.text} />
-        </TouchableOpacity>
+        </Pressable>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

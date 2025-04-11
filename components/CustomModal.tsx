@@ -1,8 +1,8 @@
 import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
-import { Modal, StyleSheet, Text, View,  TouchableOpacity} from 'react-native';
+import { Modal, StyleSheet, Text, View} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-
+import { Pressable } from 'react-native-gesture-handler';
 interface CustomModalProps {
   modalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,20 +36,20 @@ const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible
               <Text style={styles.modalTitle}>{modalTitle}</Text>
               <Text style={styles.modalText}>{modalMessage}</Text>
               <View style={styles.buttonContainer}>
-              <TouchableOpacity
+              <Pressable
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
                 <Text style={styles.textStyle}>Cancel </Text>
 
-              </TouchableOpacity>
-              <TouchableOpacity
+              </Pressable>
+              <Pressable
                 style={[styles.button, styles.buttonOpen]}
                 onPress={() => {
                   setModalVisible(!modalVisible);
                   if (onConfirmed) onConfirmed();
                 }}>
                 <Text style={styles.textStyle}>Confirm</Text>
-              </TouchableOpacity>
+              </Pressable>
               </View>
             </View>
           </View>

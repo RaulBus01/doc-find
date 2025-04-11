@@ -1,5 +1,6 @@
-import {StyleSheet, TouchableOpacity } from 'react-native'
+import {StyleSheet } from 'react-native'
 import React, { useEffect } from 'react'
+import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
@@ -35,9 +36,8 @@ const TabBarButton = (props) => {
     )
 
     return (
-    <TouchableOpacity style={styles.container} onPress={props.onPress}
+    <Pressable style={styles.container} onPress={props.onPress}
     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
-    activeOpacity={0.8}
     >
         <Animated.View style={{...animatedIcon}}>
 
@@ -46,7 +46,7 @@ const TabBarButton = (props) => {
         <Animated.Text style={[styles.text,animatedText]}>
             {label}
         </Animated.Text>
-    </TouchableOpacity>
+    </Pressable>
     
   )
 }

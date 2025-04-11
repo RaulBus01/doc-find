@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import {
   View,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Animated,
   Keyboard,
 } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -77,12 +77,12 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
       />
       
       {searchText.length > 0 && (
-        <TouchableOpacity 
+        <Pressable 
           style={styles.clearButton}
           onPress={clearSearch}
         >
           <Ionicons name="close-circle" size={20} color={theme.text} />
-        </TouchableOpacity>
+        </Pressable>
       )}
     </Animated.View>
   );
