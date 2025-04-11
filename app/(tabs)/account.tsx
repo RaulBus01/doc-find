@@ -5,7 +5,7 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { Pressable, ScrollView } from "react-native-gesture-handler";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -74,6 +74,7 @@ export default function Account() {
     };
   });
 
+
   return (
     <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
   
@@ -94,7 +95,7 @@ export default function Account() {
         
         </Animated.View>
         
-        <Animated.ScrollView
+        <ScrollView
           ref={scrollRef}
           scrollEventThrottle={16}
           contentContainerStyle={styles.scrollContent}
@@ -107,8 +108,8 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Email")}
-                android_ripple={{color: theme.pressedBackground}}
+                onPress={() => console.log("Edit Profile")} // Changed from onPressIn
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.BlueIconBackground}]}>
                   <Ionicons name="mail" size={20} color={theme.text} />
@@ -124,8 +125,8 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Password")}
-                android_ripple={{color: theme.pressedBackground}}
+                onPress={() => console.log("Change Password")} // Changed from onPressIn
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.VioletIconBackground}]}>
                   <Ionicons name="lock-closed" size={20} color={theme.text} />
@@ -163,8 +164,8 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Notifications")}
-                android_ripple={{color: theme.pressedBackground}}
+                onPress={() => console.log("Notifications")} // Changed from onPressIn
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.RedIconBackground}]}>
                   <Ionicons name="notifications" size={20} color={theme.text} />
@@ -180,8 +181,7 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={handleChangeTheme}
-                android_ripple={{color: theme.pressedBackground}}
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.YellowIconBackground}]}>
                   <Ionicons name={isDark ? 'moon' : 'sunny'} size={20} color={theme.text} />
@@ -211,8 +211,8 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("About")}
-                android_ripple={{color: theme.pressedBackground}}
+                onPress={() => console.log("About")} // Changed from onPressIn
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightBlueIconBackground}]}>
                   <Ionicons name="information-circle" size={20} color={theme.text} />
@@ -228,8 +228,8 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Terms of Use")}
-                android_ripple={{color: theme.pressedBackground}}
+                onPress={() => console.log("Terms of Use")} // Changed from onPressIn
+                android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightVioletIconBackground}]}>
                   <Ionicons name="document-text" size={20} color={theme.text} />
@@ -245,16 +245,19 @@ export default function Account() {
           
           {/* Logout */}
           <Pressable 
-            style={styles.logoutButton}
-            onPress={onLogout}
-            android_ripple={{color: theme.pressedBackground}}
+            style={({ pressed }) => [
+              styles.logoutButton,
+              pressed ? styles.logoutButtonPressed : null,
+            ]}
+            onPressIn={onLogout}
+            android_ripple={{ color: theme.pressedBackground }}
           >
             <Ionicons name="log-out" size={18} color="#fff" />
             <Text style={styles.logoutText}>Log Out</Text>
           </Pressable>
           
         
-        </Animated.ScrollView>
+        </ScrollView>
      
     </SafeAreaView>
   );
@@ -267,6 +270,18 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
   },
   gradient: {
     flex: 1,
+  },
+  pressable: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'mediumpurple',
+    borderWidth: StyleSheet.hairlineWidth,
+  },
+  highlight: {
+    width: 120,
+    height: 120,
+    backgroundColor: 'red',
+    borderWidth: StyleSheet.hairlineWidth,
   },
   header: {
     paddingHorizontal: 20,
@@ -328,14 +343,19 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
    
   },
   option: {
-  
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 16,
-    zIndex: 100,
+    backgroundColor: 'transparent', // Ensure base style has no conflicting background
   },
-
+  optionPressed: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    backgroundColor: theme.pressedBackground, // Apply the background color
+  },
   optionIcon: {
     width: 40,
     height: 40,
@@ -372,6 +392,16 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.red || '#F43F5E',
+    borderRadius: 16,
+    paddingVertical: 14,
+    marginTop: 16,
+    marginBottom: 16,
+  },
+  logoutButtonPressed: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: theme.red ? theme.red + 'CC' : '#F43F5E' + 'CC', // Example: Add opacity or use a darker shade
     borderRadius: 16,
     paddingVertical: 14,
     marginTop: 16,
