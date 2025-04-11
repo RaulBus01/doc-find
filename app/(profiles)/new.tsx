@@ -16,6 +16,7 @@ import { useRouter } from "expo-router";
 import { healthIndicators, ProfileInput, profiles } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import { useDatabase } from '@/hooks/useDatabase';
+import { useUserData } from "@/context/UserDataContext";
 
 
 // Reusable Choice Component
@@ -28,6 +29,7 @@ const NewProfile = () => {
   const handleRoutingBack = () => {
     router.back();
   };
+  const {userId} = useUserData();
 
   const drizzleDB = useDatabase();
   const pickerRef = useRef(null);
@@ -244,13 +246,16 @@ const NewProfile = () => {
     // Handle form submission
    try{
     const {diabetic,hypertensive,smoker,...profileData} = formData;
+
+    const profileToInsert = { ...profileData, auth0Id:userId as string}; 
   
     await drizzleDB.transaction(async (tx)=>{
-      const newProfile = await tx.insert(profiles).values(profileData).returning({ id: profiles.id }).execute();
+      const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
       
       const newProfileId = newProfile[0].id;
       await tx.insert(healthIndicators).values({
-        profileId:newProfileId,
+        profileId: newProfileId,
+
         diabetic,
         hypertensive,
         smoker

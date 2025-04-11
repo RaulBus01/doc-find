@@ -33,7 +33,6 @@ export default function Account() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const { theme, toggleTheme,isDark } = useTheme();
-  console.log(isDark);
   const styles = getStyles(theme,isDark);
 
   const handleChangeTheme = () => {
@@ -57,10 +56,13 @@ export default function Account() {
   }, []);
 
   const onLogout = async () => {
+    console.log("Logging out...");
     try {
       await clearSession();
       await deleteItemAsync("accessToken");
+      console.log("Token deleted successfully");
       router.replace("/login");
+
     } catch (e) {
       console.error(e);
     }

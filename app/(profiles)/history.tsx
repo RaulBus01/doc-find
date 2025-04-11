@@ -24,6 +24,7 @@ import CustomBottomSheetModal, {
 } from "@/components/CustomBottomSheetModal";
 import { formatDate } from "@/utils/Date";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
+import { useUserData } from "@/context/UserDataContext";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -37,12 +38,15 @@ const HistoryProfile = () => {
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
     null
   );
+  const {userId} = useUserData();
+
 
   const fetchProfiles = async () => {
     console.log("Fetching profiles");
     const profile = await drizzleDB
       .select()
       .from(profiles)
+      .where(eq(profiles.auth0Id, userId as string))
       .orderBy(desc(profiles.created_at))
       .execute();
     setProfilesData(profile);

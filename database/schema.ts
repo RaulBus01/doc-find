@@ -5,6 +5,7 @@ import { sql } from 'drizzle-orm';
 // Profiles table
 export const profiles = sqliteTable('profiles', {
     id: integer("id").primaryKey({ autoIncrement: true }),
+    auth0Id: text("auth0Id").notNull(),
     fullname: text("fullname").unique().notNull(),
     gender: text("gender").notNull(),
     age: integer("age").notNull(),
