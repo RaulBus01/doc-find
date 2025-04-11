@@ -3,7 +3,8 @@ import { secureSave, secureSaveObject } from '../utils/SecureStorage';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, Text} from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { Credentials, useAuth0 } from 'react-native-auth0';
 import { ApiCall } from '@/utils/ApiCall';
 
@@ -36,7 +37,6 @@ const Page = () => {
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
       if (!authResult) return;
-      // console.log(authResult);
       secureSave('accessToken', authResult.accessToken);
       ApiCall.post('/user/signup', authResult.accessToken, {}).then((res) => {
         secureSaveObject('user', res);
@@ -56,10 +56,10 @@ return (
      
     <CustomCarousel data={data} width={width} />
     <View style={styles.footer}>
-      <TouchableOpacity onPress={onLogin} style={styles.loginButton}>
+      <Pressable onPress={onLogin} style={styles.loginButton}>
         <Text> Continue to Login </Text>
         <FontAwesome6 name="arrow-right-long" size={24} color="black" />
-      </TouchableOpacity>
+      </Pressable>
     </View>
 
 

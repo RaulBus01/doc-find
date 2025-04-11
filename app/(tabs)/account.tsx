@@ -4,9 +4,8 @@ import {
   Text,
   Image,
   StyleSheet,
-  Pressable,
-  TouchableOpacity,
 } from "react-native";
+import { Pressable, TouchableOpacity } from "react-native-gesture-handler";
 import Animated, {
   interpolate,
   useAnimatedRef,
@@ -23,12 +22,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
 import { secureGetValueFor } from "@/utils/SecureStorage";
 import { Switch } from "react-native-gesture-handler";
+import { useUserData } from "@/context/UserDataContext";
 
 const BOTTOM_TAB_HEIGHT = 50;
 
 export default function Account() {
   const { clearSession } = useAuth0();
-  const { token } = useToken();
+  const { clearToken } = useToken();
+  const { clearUserData } = useUserData();
+
   const [user, setUser] = useState<User | null>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -59,12 +61,11 @@ export default function Account() {
     console.log("Logging out...");
     try {
       await clearSession();
-      await deleteItemAsync("accessToken");
-      console.log("Token deleted successfully");
+      await clearToken();
+      await clearUserData(); // Make sure this has await
       router.replace("/login");
-
     } catch (e) {
-      console.error(e);
+      console.error("Error during logout:", e);
     }
   };
 
@@ -139,10 +140,10 @@ export default function Account() {
               
               <View style={styles.separator} />
               
-              <Pressable 
-                style={({pressed}) => [styles.option, pressed && styles.optionPressed]}
+              <TouchableOpacity
+                style={[styles.option, {paddingVertical: 14}]}
                 onPress={() => router.push('/(profiles)/history')}
-                android_ripple={{color: theme.pressedBackground}}
+                activeOpacity={0.8}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.GreenIconBackground}]}>
                   <FontAwesome5 name="user-friends" size={18} color={theme.text} />
@@ -152,7 +153,7 @@ export default function Account() {
                   <Text style={styles.optionSubtitle}>Manage your health profiles</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
-              </Pressable>
+              </TouchableOpacity> 
             </View>
           </View>
           
@@ -332,6 +333,7 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 16,
+    zIndex: 100,
   },
   optionPressed: {
     backgroundColor: theme.pressedBackground,

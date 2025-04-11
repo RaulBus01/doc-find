@@ -73,8 +73,8 @@ const ChatScreen = () => {
 
       if(!userId || !token)
       {
-  
-        throw new Error('Chat id, user id or token not found');
+        console.error("Error",userId,token);
+        return;
       }
       const messageContent = message.trim();
       if (chatIdRef.current){        

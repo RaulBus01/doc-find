@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { secureGetValueFor } from '../utils/SecureStorage';
+import { secureDeleteValue, secureGetValueFor } from '../utils/SecureStorage';
 
 interface UserDataContextType {
     email: string | null;
@@ -9,6 +9,7 @@ interface UserDataContextType {
     isLoading: boolean;
     error: Error | null;
     refreshData: () => Promise<void>;
+    clearUserData: () => Promise<void>;
 }
 
 const UserDataContext = createContext<UserDataContextType>({
@@ -19,6 +20,7 @@ const UserDataContext = createContext<UserDataContextType>({
     isLoading: true,
     error: null,
     refreshData: async () => { },
+    clearUserData: async () => { },
 });
 
 
@@ -34,15 +36,17 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         setIsLoading(true);
         try {
             const userData = await secureGetValueFor("user");
-            // console.log(userData);
+            
             if (userData) {
                 const userJSON = await JSON.parse(userData);
+                
                 setEmail(userJSON.email);
                 setUsername(userJSON.username);
                 setUserId(userJSON.id);
                 setPicture(userJSON.picture);
                 setError(null);
             }
+            
         } catch (e: any) {
             setError(e);
             setEmail(null);
@@ -53,12 +57,29 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             setIsLoading(false);
         }
     }
+    const clearUserData = async () => {
+        try {
+            await secureDeleteValue("user");
+            setEmail(null);
+            setUsername(null);
+            setUserId(null);
+            setPicture(null);
+            setError(null);
+        } catch (e: any) {
+            setError(e);
+        }finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         refreshData();
     }, []);
 
+    console.log("UserDataProvider", { email, username, userId, picture, isLoading, error });
+
     return (
-        <UserDataContext.Provider value={{ email, username, userId, picture, isLoading, error, refreshData }}>
+        <UserDataContext.Provider value={{ email, username, userId, picture, isLoading, error, refreshData,clearUserData }}>
             {children}
         </UserDataContext.Provider>
     );

@@ -39,10 +39,12 @@ const HistoryProfile = () => {
     null
   );
   const {userId} = useUserData();
+  console.log("User ID:", userId);
+ 
 
 
   const fetchProfiles = async () => {
-    console.log("Fetching profiles");
+    console.log("Fetching profiles...", userId);
     const profile = await drizzleDB
       .select()
       .from(profiles)
@@ -68,8 +70,10 @@ const HistoryProfile = () => {
   };
 
   useEffect(() => {
-    fetchProfiles();
-  }, []);
+    if (userId) {
+      fetchProfiles();
+    }
+  }, [userId]);
 
   const onProfilePress = (id: string) => {
     router.push(`/(profiles)/${id}`);

@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { secureGetValueFor } from '../utils/SecureStorage';
+import { secureDeleteValue, secureGetValueFor } from '../utils/SecureStorage';
 
 interface TokenContextType {
   token: string | null;
   isLoading: boolean;
   error: Error | null;
   refreshToken: () => Promise<void>;
+  clearToken: () => Promise<void>;
 }
 
 const TokenContext = createContext<TokenContextType>({
@@ -13,6 +14,7 @@ const TokenContext = createContext<TokenContextType>({
   isLoading: true,
   error: null,
   refreshToken: async () => {},
+  clearToken: async () => {},
 });
 
 export const TokenProvider = ({ children }: { children: ReactNode }) => {
@@ -34,12 +36,24 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const clearToken = async () => {
+    try{
+      await secureDeleteValue("accessToken");
+      setToken(null);
+      setError(null);
+
+    }catch(e:any){
+      setError(e);
+    }
+  }
+
+
   useEffect(() => {
     refreshToken();
   }, []);
 
   return (
-    <TokenContext.Provider value={{ token, isLoading, error, refreshToken }}>
+    <TokenContext.Provider value={{ token, isLoading, error, refreshToken,clearToken }}>
       {children}
     </TokenContext.Provider>
   );

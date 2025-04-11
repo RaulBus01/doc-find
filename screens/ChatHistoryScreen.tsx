@@ -9,9 +9,8 @@ import {
   SafeAreaView,
   FlatList,
   StyleSheet,
-  TouchableOpacity,
-  Pressable,
 } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomBottomSheetModal, {
   Ref,

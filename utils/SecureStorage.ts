@@ -4,14 +4,15 @@ async function secureSave(key: string, value: string) {
   await SecureStore.setItemAsync(key, value);
 }
 
-async function secureSaveObject(key: string, data: any) {
-  try {
-    const userString = JSON.stringify(data);
-    await SecureStore.setItemAsync(key, userString);
-  } catch (error) {
-    console.error('Error saving user object:', error);
-  }
+export async function secureSaveObject(key: string, value: any): Promise<void> {
+  // Ensure value is properly converted to a string
+  const valueToStore = typeof value === 'string' 
+    ? value 
+    : JSON.stringify(value);
+    
+  return await SecureStore.setItemAsync(key, valueToStore);
 }
+
 async function secureGetValueFor(key: string) {
   let result = await SecureStore.getItemAsync(key);
   if (result) {
@@ -21,9 +22,8 @@ async function secureGetValueFor(key: string) {
   }
 }
 
-async function deleteValue(key: string) {
-  await SecureStore.deleteItemAsync(key);
+async function secureDeleteValue(key: string) {
+  return await SecureStore.deleteItemAsync(key);
 }
 
-
-export { secureSave, secureSaveObject, secureGetValueFor, deleteValue};
+export { secureSave, secureGetValueFor, secureDeleteValue};
