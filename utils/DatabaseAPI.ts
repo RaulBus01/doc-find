@@ -52,3 +52,12 @@ export const deleteChat = async (token: string | null, chatId: string) => {
     }
     await ApiCall.delete(`/chat/${chatId}`, token);
 }
+
+export const generateChatTitle = async (token: string | null, chatId: string) => {
+    if (!token) {
+        throw new Error("No token available");
+    }
+
+        const chatTitle = await ApiCall.post(`/chat/${chatId}/generateChatTitle`, token, {});
+        return chatTitle;
+}

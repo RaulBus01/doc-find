@@ -8,7 +8,7 @@ import { Message } from '@/interface/Interface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useToken } from '@/context/TokenContext';
-import { addChat, addMessage, getMessages } from '@/utils/DatabaseAPI';
+import { addChat, addMessage, generateChatTitle, getMessages } from '@/utils/DatabaseAPI';
 import { useUserData } from '@/context/UserDataContext';
 import { streamModelResponse } from '@/utils/Model';
 import { welcomeMessages } from '@/constants/WelcomeMessages';
@@ -141,6 +141,15 @@ const ChatScreen = () => {
       setMessages(prev => prev.map(msg => 
         msg.id === aiMessageId ? savedAIMessage : msg
     ));
+     
+      const newTitle = await generateChatTitle(token, chatIdRef.current);
+      if (newTitle) {
+        console.log('New title:', newTitle);
+      }
+
+     
+
+
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
