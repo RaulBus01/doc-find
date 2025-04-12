@@ -4,6 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native-gesture-handler';
+import { ThemeColors } from '@/constants/Colors';
 
 
 interface Step {
@@ -100,7 +101,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
       </View>
 
       {/* Step Content */}
-      <Animated.View style={[styles.contentContainer, contentAnimatedStyle, {marginTop: currentStep * 15}]}>
+      <Animated.View style={[styles.contentContainer, contentAnimatedStyle, ]}>
         {/* Step Title */}
         <Text style={styles.stepTitle}>{steps[currentStep]?.title}</Text>
         {steps[currentStep]?.component}
@@ -122,7 +123,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
@@ -137,15 +138,16 @@ const getStyles = (theme: any) => StyleSheet.create({
     marginBottom: 20,
   },
   progressBar: {
-    height: 4,
-    backgroundColor: theme.darkbackground,
-    borderRadius: 2,
+    height: 6, // Slightly taller
+    backgroundColor: 'rgba(0, 0, 0, 0.1)', // More subtle background
+    borderRadius: 3,
     marginBottom: 8,
+    overflow: 'hidden', // Ensure fill doesn't overflow
   },
   progressFill: {
     height: '100%',
-    backgroundColor: theme.tint,
-    borderRadius: 2,
+    backgroundColor: theme.progressColor,
+    borderRadius: 3,
   },
   stepIndicator: {
     color: theme.text,
@@ -183,10 +185,10 @@ const getStyles = (theme: any) => StyleSheet.create({
     borderRadius: 8,
     minWidth: 120,
     alignItems: 'center',
+    justifyContent: 'center', 
   },
   nextButton: {
-    backgroundColor: theme.mediumbackground,
-    
+    backgroundColor: theme.progressColor,
   },
   hiddenButton: {
     opacity: 0,

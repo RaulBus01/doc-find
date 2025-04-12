@@ -19,6 +19,7 @@ import { useRouter } from "expo-router";
 import CustomModal from "@/components/CustomModal";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
+import { ThemeColors } from "@/constants/Colors";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -33,7 +34,7 @@ const ChatHistoryScreen = () => {
 
   useEffect(() => {
     if (!isLoading && !error && token) {
-      getChats(token).then((data) => {
+      getChats(token,10).then((data) => {
         if (data.length > 0) {
           setChatHistory(data);
         }
@@ -41,10 +42,7 @@ const ChatHistoryScreen = () => {
     }
   }, [isLoading, error, token]);
 
-  const ListHeader = () => (
-    <Text style={styles.contentTitle}>Recent Chats</Text>
-  );
-
+ 
   const handlePresentModalPress = useCallback((chatId: string) => {
     setSelectedChatId(chatId);
     bottomSheetModalRef.current?.present();
@@ -86,19 +84,20 @@ const ChatHistoryScreen = () => {
 
   return (
     <SafeAreaView
-      style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}
+      style={[styles.container, {  paddingBottom: bottom }]}
     >
-      <View style={styles.header}>
+      <View style={[styles.header,{ paddingTop: top }]}>
         <Text style={styles.headerTitle}>Chat History</Text>
         <TouchableOpacity
           onPress={() => router.push("/new")}
           style={styles.iconButton}
         >
-          <Ionicons name="add" size={24} color={theme.text} />
+          <Ionicons name="add" size={24} color={theme.textLight ? theme.textLight : theme.text} />
         </TouchableOpacity>
       </View>
 
       <CustomBottomSheetModal
+        index={1}
         onDelete={handleDeleteChat}
         onEdit={handleEditChat}
         ref={bottomSheetModalRef}
@@ -150,24 +149,25 @@ const ChatHistoryScreen = () => {
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.textlight,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 16,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.blue,
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color:theme.text,
+    color: theme.textLight ? theme.textLight : theme.text,
   },
   headerIcons: {
     flexDirection: "row",
@@ -176,6 +176,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   iconButton: {
     padding: 10,
   },
+ 
   contentTitle: {
     fontSize: 16,
     fontWeight: "500",
@@ -192,7 +193,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     justifyContent: "center",
   },
   button: {
-    backgroundColor: theme.tint,
+    backgroundColor: theme.blue,
     paddingVertical: 10,
 
     margin: 15,

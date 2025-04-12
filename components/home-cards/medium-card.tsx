@@ -3,6 +3,7 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/context/ThemeContext";
 import { Pressable } from "react-native-gesture-handler";
+import { ThemeColors } from "@/constants/Colors";
 
 
 interface MediumCardProps {
@@ -28,7 +29,7 @@ const MediumCard = ({ text, icon, color, onPress }: MediumCardProps) => {
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",

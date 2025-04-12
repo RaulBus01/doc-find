@@ -4,8 +4,9 @@ import { Pressable } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons';
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
 
-const TabBarButton = (props) => {
+const TabBarButton = (props: { onLongPress?:any, onPress?: any; isFocused?: any; label?: any; iconDefault?: any; iconFocused?: any; color?: any; }) => {
     const {isFocused, label,iconDefault,iconFocused,color } = props;
     const {theme} = useTheme();
     const styles = getStyles(theme);
@@ -36,7 +37,8 @@ const TabBarButton = (props) => {
     )
 
     return (
-    <Pressable style={styles.container} onPress={props.onPress}
+    <Pressable style={isFocused ? [styles.containerFocused] : styles.container}
+        onPress={() => props.onPress()}
     hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}
     >
         <Animated.View style={{...animatedIcon}}>
@@ -46,16 +48,26 @@ const TabBarButton = (props) => {
         <Animated.Text style={[styles.text,animatedText]}>
             {label}
         </Animated.Text>
+        
     </Pressable>
     
   )
 }
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        borderRadius: 15,
+    },
+    containerFocused: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: theme.pressedBackground,
+        borderRadius: 15,
+        
     },
     text: {
         fontSize: 14,

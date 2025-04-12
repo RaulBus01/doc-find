@@ -3,6 +3,7 @@ import React, { useEffect, useMemo } from 'react';
 import TabBarButton from './TabBarButton';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
 
 type AllowedRoute = {
   name: string;
@@ -86,7 +87,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
           return (
             <TabBarButton
               key={route.key}
-              color={theme.tabIconDefault}
+              color={theme.text}
               isFocused={isFocused}
               label={label}
               iconDefault={matchingRoute.iconDefault}
@@ -100,7 +101,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     bottom: 0,
     position: 'absolute',
@@ -109,9 +110,9 @@ const getStyles = (theme: any) => StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 50,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.tabbarBackground,
     borderTopWidth: 0.5,
-    borderTopColor: theme.tabBorder,
+    borderTopColor: theme.text,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,

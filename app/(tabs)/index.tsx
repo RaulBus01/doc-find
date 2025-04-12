@@ -15,6 +15,7 @@ import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
 import { getChats } from "@/utils/DatabaseAPI";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 
 
@@ -32,11 +33,7 @@ const Home = () => {
     return (
       <View style={{ padding: 10 }}>
         <Text style={[styles.text, { paddingLeft: 10 }]}>Your Profiles</Text>
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          style={styles.horizontalScroll}
-        >
+        <View style={styles.horizontalScroll}>
           <LargeCard
             text={"Add New Profile"}
             icon={"user-plus"}
@@ -49,8 +46,8 @@ const Home = () => {
           color={theme.darkbackground}
           onPress={() => handleRouting("history")}
         />
-          
-        </ScrollView>
+        </View>
+
       </View>
     );
   };
@@ -188,7 +185,7 @@ const Home = () => {
     </SafeAreaView>
   );
 };
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,

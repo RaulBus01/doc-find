@@ -3,6 +3,7 @@ import React from "react";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 interface LargeCardProps {
   text: string;
@@ -28,7 +29,7 @@ const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",

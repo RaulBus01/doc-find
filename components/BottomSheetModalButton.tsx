@@ -3,6 +3,7 @@ import { View, Text, StyleSheet,TouchableOpacity} from 'react-native'
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
 
 
 interface BottomSheetModalButtonProps {
@@ -16,12 +17,12 @@ const BottomSheetModalButton: React.FC<BottomSheetModalButtonProps> = ({ title, 
     const styles = getStyles(theme);
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
-            <Ionicons name={icon as any} size={28} style={title === "Delete" ? styles.iconDelete : styles.icon} />
+            <Ionicons name={icon as any} size={22} style={title === "Delete" ? styles.iconDelete : styles.icon} />
             <Text style={title === "Delete" ? styles.textDelete : styles.text}>{title}</Text>
     </TouchableOpacity>
   )
 }
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
     container:{
         flexDirection:"row",
         justifyContent:"flex-start",

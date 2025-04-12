@@ -31,7 +31,7 @@ const InitialLayout = () => {
   const { theme, isDark } = useTheme();
   const LoadingScreen = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="large" color={theme.tint} />
+      <ActivityIndicator size="large" color={theme.background} />
     </View>
   );
   // Handle font loading error
@@ -84,7 +84,7 @@ const InitialLayout = () => {
       />
       <StatusBar
         animated={true}
-        backgroundColor={theme.textlight}
+        backgroundColor="transparent"
         style={isDark ? "light" : "dark"}
       />
       <Stack

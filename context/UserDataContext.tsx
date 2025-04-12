@@ -4,6 +4,7 @@ import { secureDeleteValue, secureGetValueFor } from '../utils/SecureStorage';
 interface UserDataContextType {
     email: string | null;
     username: string | null;
+    name: string | null;
     userId: string | null;
     picture: string | null;
     isLoading: boolean;
@@ -15,6 +16,7 @@ interface UserDataContextType {
 const UserDataContext = createContext<UserDataContextType>({
     email: null,
     username: null,
+    name: null,
     userId: null,
     picture: null,
     isLoading: true,
@@ -27,6 +29,7 @@ const UserDataContext = createContext<UserDataContextType>({
 export const UserDataProvider = ({ children }: { children: ReactNode }) => {
     const [email, setEmail] = useState<string | null>(null);
     const [username, setUsername] = useState<string | null>(null);
+    const [name, setName] = useState<string | null>(null);
     const [userId, setUserId] = useState<string | null>(null);
     const [picture, setPicture] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -39,9 +42,11 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             
             if (userData) {
                 const userJSON = await JSON.parse(userData);
+          
                 
                 setEmail(userJSON.email);
                 setUsername(userJSON.username);
+                setName(userJSON.givenName + " " + userJSON.familyName);
                 setUserId(userJSON.id);
                 setPicture(userJSON.picture);
                 setError(null);
@@ -51,6 +56,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             setError(e);
             setEmail(null);
             setUsername(null);
+            setName(null);
             setUserId(null);
             setPicture(null);
         } finally {
@@ -63,6 +69,7 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
             setEmail(null);
             setUsername(null);
             setUserId(null);
+            setName(null);
             setPicture(null);
             setError(null);
         } catch (e: any) {
@@ -76,10 +83,10 @@ export const UserDataProvider = ({ children }: { children: ReactNode }) => {
         refreshData();
     }, []);
 
-    console.log("UserDataProvider", { email, username, userId, picture, isLoading, error });
+    
 
     return (
-        <UserDataContext.Provider value={{ email, username, userId, picture, isLoading, error, refreshData,clearUserData }}>
+        <UserDataContext.Provider value={{ email, username, name, userId, picture, isLoading, error, refreshData,clearUserData }}>
             {children}
         </UserDataContext.Provider>
     );

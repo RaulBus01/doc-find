@@ -1,17 +1,16 @@
 
+import { ThemeColors } from "@/constants/Colors";
 import { StyleSheet } from "react-native";
 
 
-const ChatMessageBarStyle = (theme: any) => StyleSheet.create({
+const ChatMessageBarStyle = (theme: ThemeColors) => StyleSheet.create({
 
         contentView : {
           flexDirection: 'row',
           alignItems: 'center',
-          backgroundColor: theme.tint,
-          borderTopLeftRadius:20,
-          borderTopRightRadius:20,
-          borderWidth:1,
-          borderColor:theme.darkbackground,
+          backgroundColor: theme.progressColor,
+          borderTopLeftRadius:25,
+          borderTopRightRadius:25,
           paddingHorizontal: 10,
           paddingVertical: 5,
           

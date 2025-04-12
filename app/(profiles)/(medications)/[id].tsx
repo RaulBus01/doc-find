@@ -11,6 +11,7 @@ import Animated, { useAnimatedRef, FadeIn, FadeOut } from "react-native-reanimat
 import { Ionicons, FontAwesome5, Fontisto } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { Toast } from "toastify-react-native";
+import { ThemeColors } from "@/constants/Colors";
 
 export default function MedicationScreen() {
   // Keep existing state and functions
@@ -272,15 +273,14 @@ export default function MedicationScreen() {
         
         <View style={styles.dosageRow}>
           <View style={styles.dosageTextContainer}>
-            <Fontisto name="drug-pack" size={24} color={theme.tint} />
+            <Fontisto name="drug-pack" size={24} color={theme.text} />
             <Text style={styles.dosageText}>Take daily?</Text>
           </View>
           <Switch
             value={dosage}
             onValueChange={(value) => setDosage(value)}
-            trackColor={{ false: theme.mediumbackground, true: theme.tint }}
+            trackColor={{ false: theme.progressColor, true: theme.blue }}
             thumbColor={theme.background}
-            ios_backgroundColor={theme.mediumbackground}
           />
         </View>
         
@@ -297,7 +297,7 @@ export default function MedicationScreen() {
   );
 }
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.background,
@@ -340,7 +340,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.text,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -373,7 +373,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.text,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
@@ -425,7 +425,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.tint,
+    backgroundColor: theme.text,
     borderRadius: 12,
     paddingVertical: 14,
     marginTop: 4,
@@ -443,19 +443,19 @@ const getStyles = (theme: any) => StyleSheet.create({
     bottom:"120%",
     left: 16,
     right: 16,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.text,
     borderRadius: 16,
     paddingVertical: 8,
     marginBottom: 8,
     zIndex: 100,
     maxHeight: 200,
  
-    borderColor: theme.border,
+    borderColor: theme.text,
   },
   suggestionItem: {
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderTopColor: theme.border,
+    borderTopColor: theme.text,
     borderTopWidth: 1,
 
   },

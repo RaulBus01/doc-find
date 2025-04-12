@@ -4,6 +4,7 @@ import { View, Text,StyleSheet, TouchableOpacity } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import { formatDate } from "../utils/Date";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 interface ChatItemProps {
   id: string;
@@ -47,16 +48,15 @@ const ChatItem: React.FC<ChatItemProps> = ({
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
-    backgroundColor: theme.tint,
+    backgroundColor: theme.cardBackground,
     paddingVertical: 12,
     paddingHorizontal: 16,
     marginVertical: 4,
-    shadowColor: "#000",
-    elevation: 2,
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   contentContainer: {
     backgroundColor: "transparent",

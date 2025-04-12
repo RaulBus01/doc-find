@@ -22,8 +22,9 @@ import { useTheme } from "@/context/ThemeContext";
 import { secureGetValueFor } from "@/utils/SecureStorage";
 import { Switch } from "react-native-gesture-handler";
 import { useUserData } from "@/context/UserDataContext";
+import { ThemeColors } from "@/constants/Colors";
 
-const BOTTOM_TAB_HEIGHT = 50;
+const BOTTOM_TAB_HEIGHT = 80;
 
 export default function Account() {
   const { clearSession } = useAuth0();
@@ -34,7 +35,7 @@ export default function Account() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
   const { theme, toggleTheme,isDark } = useTheme();
-  const styles = getStyles(theme,isDark);
+  const styles = getStyles(theme);
 
   const handleChangeTheme = () => {
     toggleTheme();
@@ -76,7 +77,7 @@ export default function Account() {
 
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
   
         {/* Header Profile Section */}
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
@@ -196,7 +197,7 @@ export default function Account() {
                   value={isDark}
                   onValueChange={handleChangeTheme}
                   thumbColor={theme.text}
-                  trackColor={{ false: theme.mediumbackground, true: theme.tint }}
+                  trackColor={{ false: theme.progressColor, true: theme.progressColor }}
                   style={{ marginLeft: 'auto' }}
                 />
             
@@ -263,14 +264,12 @@ export default function Account() {
   );
 }
 
-const getStyles = (theme: any,isDark:any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.textlight,
+    backgroundColor: theme.background,
   },
-  gradient: {
-    flex: 1,
-  },
+
   pressable: {
     width: 120,
     height: 120,
@@ -284,9 +283,13 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
   },
   header: {
+    backgroundColor: theme.blue,
     paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 24,
+    paddingTop: 32,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+    
+  
   },
   profileHeader: {
     flexDirection: 'row',
@@ -294,9 +297,9 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     marginBottom: 16,
   },
   avatarContainer: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
+    width: 60,
+    height: 60,
+    borderRadius: 50,
     backgroundColor: theme.avatarBackground,
     padding: 3,
     
@@ -313,12 +316,13 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
   profileName: {
     fontSize: 22,
     fontFamily: 'Roboto-Bold',
-    color: theme.text,
+    color: '#f2f2f2',
     marginBottom: 4,
   },
   profileEmail: {
     fontSize: 14,
-    color: theme.text,
+    fontFamily: 'Roboto-Medium',
+    color: '#f2f2f2',
     opacity: 0.7,
   },
   
@@ -347,7 +351,7 @@ const getStyles = (theme: any,isDark:any) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 16,
-    backgroundColor: 'transparent', // Ensure base style has no conflicting background
+    backgroundColor: 'transparent', 
   },
   optionPressed: {
     flexDirection: 'row',

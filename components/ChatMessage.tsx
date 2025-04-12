@@ -10,9 +10,11 @@ import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 interface ChatMessageProps {
   id: string;
+  name: string;
   message: string;
   isAI: boolean;
   picture: string;
@@ -21,6 +23,7 @@ interface ChatMessageProps {
 
 const ChatMessage = ({
   id,
+  name,
   message,
   isAI,
   picture,
@@ -44,7 +47,7 @@ const ChatMessage = ({
       >
         {isAI ? (
           <>
-            <Text style={{color:theme.text}}>Bot</Text>
+            <Text style={{color:theme.text}}>DocAI</Text>
             <Ionicons name="person-circle" size={28} color={theme.text}/>
           </>
         ) : (
@@ -54,7 +57,7 @@ const ChatMessage = ({
             ) : (
               <Image source={{ uri: picture }} style={styles.avatar} />
             )}
-            <Text style={{color:theme.text}}>{isAI ? "Bot" : "User"}</Text>
+            <Text style={{color:theme.text}}>{isAI ? "DocAI" : name}</Text>
           </>
         )}
       </View>
@@ -81,7 +84,7 @@ const ChatMessage = ({
     </View>
   );
 };
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   avatarContainerUser: {
     flexDirection: "row",
     justifyContent: "flex-start",
@@ -98,8 +101,7 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   cardContainer: {
     flexDirection: "column",
-    // justifyContent: 'flex-start',
-    // alignItems: 'flex-start',
+  
     padding: 10,
 
     borderRadius: 10,
@@ -109,7 +111,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: theme.cardBackground,
     padding: 15,
     borderRadius: 20,
   },
@@ -117,7 +119,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 20,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.profileActionBackground,
   },
   footer: {
     marginTop: 10,

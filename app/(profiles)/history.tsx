@@ -24,6 +24,7 @@ import CustomBottomSheetModal, {
 import { formatDate } from "@/utils/Date";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
 import { useUserData } from "@/context/UserDataContext";
+import { ThemeColors } from "@/constants/Colors";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -261,6 +262,7 @@ const HistoryProfile = () => {
         </Animated.ScrollView>
 
         <CustomBottomSheetModal
+          index={0}
           onDelete={handleDelete}
           ref={bottomSheetModalRef}
         />
@@ -269,11 +271,11 @@ const HistoryProfile = () => {
   );
 };
 
-const getStyles = (theme: any) =>
+const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.textlight,
+      backgroundColor: theme.background,
     },
   
     header: {
@@ -333,7 +335,7 @@ const getStyles = (theme: any) =>
     createButton: {
       paddingVertical: 12,
       paddingHorizontal: 24,
-      backgroundColor: theme.tint,
+      backgroundColor: theme.profileActionBackground,
       borderRadius: 25,
       marginTop: 10,
     },
@@ -408,7 +410,7 @@ const getStyles = (theme: any) =>
     indicator: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: theme.profileActionBackground,
+      backgroundColor: theme.GreenIconBackground,
       borderRadius: 15,
       paddingHorizontal: 10,
       paddingVertical: 6,

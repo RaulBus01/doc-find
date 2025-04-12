@@ -1,3 +1,4 @@
+import { ThemeColors } from '@/constants/Colors';
 import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -60,7 +61,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
 
   centeredView: {
     flex: 1,
@@ -77,19 +78,11 @@ const getStyles = (theme: any) => StyleSheet.create({
   modalView: {
 
     margin: 20,
-    backgroundColor: theme.tint,
+    backgroundColor: theme.background,
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    color: theme.text,
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    color: theme.text
   },
   button: {
     borderRadius: 20,
@@ -100,7 +93,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor: theme.red,
   },
   buttonClose: {
-    backgroundColor: theme.background,
+    backgroundColor: theme.blue,
   },
   textStyle: {
     color: theme.text,

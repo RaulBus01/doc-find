@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Colors, ThemeColors } from '@/constants/Colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const THEME_PREFERENCE_KEY = 'userThemePreference';
 
 type ThemeContextType = {
-  theme: any;
+  theme: ThemeColors
   isDark: boolean;
   toggleTheme: () => void;
 };

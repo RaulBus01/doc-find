@@ -16,6 +16,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
+import { ThemeColors } from "@/constants/Colors";
 
 const ProfileScreen = () => {
   const { id } = useLocalSearchParams();
@@ -221,11 +222,11 @@ const ProfileScreen = () => {
 
 // Update the styles in the getStyles function
 
-const getStyles = (theme: any) =>
+const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: theme.textlight,
+      backgroundColor: theme.background,
     },
     loadingText: {
       color: theme.text,

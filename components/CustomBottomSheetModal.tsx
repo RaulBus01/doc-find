@@ -1,4 +1,4 @@
-import { BackHandler, StyleSheet } from "react-native";
+import { BackHandler, StyleSheet, View } from "react-native";
 import React, { forwardRef, useCallback, useEffect, useMemo } from "react";
 import {
   BottomSheetBackdrop,
@@ -8,9 +8,11 @@ import {
 
 import BottomSheetModalButton from "./BottomSheetModalButton";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 export type Ref = BottomSheetModal;
 interface CustomBottomSheetModalProps {
+  index?: number;
   onDelete: () => void;
   onEdit?: () => void;
 }
@@ -18,7 +20,7 @@ interface CustomBottomSheetModalProps {
 const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
   
   (props, ref) => {
-    const { onDelete, onEdit } = props;
+    const { onDelete, onEdit,index } = props;
     const snapPoints = useMemo(() => ["20%", "25%"], []);
     const { theme } = useTheme();
     const styles = getStyles(theme);
@@ -59,7 +61,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
     }, []);
     return (
       <BottomSheetModal
-        index={0}
+        index={index}
         ref={ref}
         backdropComponent={renderBackdrop}
         snapPoints={snapPoints}
@@ -81,7 +83,10 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
               (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
             }}
           />
+          <View style={styles.separator} />
           { onEdit &&
+         
+          
           <BottomSheetModalButton
             title="Edit"
             icon="create-outline"
@@ -90,33 +95,44 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
               (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
             }}
           />
+         
           }
+
         </BottomSheetView>
       </BottomSheetModal>
     );
   }
 );
-const getStyles = (theme: any) =>
+const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
-      backgroundColor: theme.tint,
+      backgroundColor: theme.background,
     },
     handleIndicator: {
-      backgroundColor: theme.tint,
+      backgroundColor: theme.progressColor,
     },
     handle: {
       backgroundColor: theme.background,
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
     },
+    separator:{
+      width: "90%",
+      height: 1,
+      backgroundColor: theme.progressColor,
+      marginVertical: 10,
+      justifyContent: "center",
+      alignSelf: "center",
+    }
+    ,
     content: {
       flex: 1,
       justifyContent: "center",
       flexDirection: "column",
-      backgroundColor: theme.tint,
+      backgroundColor: theme.background,
       paddingBottom: 20,
     },
   });

@@ -9,6 +9,7 @@ import {
 import { Pressable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
@@ -88,7 +89,7 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     position: 'absolute',
     top: 20,
@@ -96,7 +97,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     right: 50,
     width: '75%',
     height: 50,
-    backgroundColor: theme.textlight,
+    backgroundColor: theme.text,
     borderRadius: 12,
     flexDirection: 'row',
     

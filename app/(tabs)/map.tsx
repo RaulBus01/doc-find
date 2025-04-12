@@ -10,7 +10,7 @@ import MapView, { Camera, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "@/constants/Colors";
+import { Colors, ThemeColors } from "@/constants/Colors";
 import { TextInput } from "react-native";
 import CustomSearchBar from "@/components/searchBar/searchBar";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
@@ -134,7 +134,7 @@ export default function Map() {
   );
 }
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
   },

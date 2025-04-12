@@ -7,6 +7,7 @@ import React from "react";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/context/ThemeContext";
 import { Pressable } from "react-native-gesture-handler";
+import { ThemeColors } from "@/constants/Colors";
 
 interface SmallCardProps {
   text: string;
@@ -30,7 +31,7 @@ const SmallCard = ({ text, icon, color, onPress }: SmallCardProps) => {
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",

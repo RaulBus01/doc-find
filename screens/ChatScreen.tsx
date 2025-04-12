@@ -12,6 +12,7 @@ import { useUserData } from '@/context/UserDataContext';
 import { streamModelResponse } from '@/utils/Model';
 import { welcomeMessages } from '@/constants/WelcomeMessages';
 import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
 
 
 const ChatScreen = () => {
@@ -23,7 +24,7 @@ const ChatScreen = () => {
   const randomWelcomeMessage = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
   const [messages, setMessages] = useState<Message[]>(!id ? [randomWelcomeMessage] : []);
   const { token, isLoading, error } = useToken();
-  const { userId,picture } = useUserData();
+  const { userId,picture,name } = useUserData();
   const flatListRef = useRef<FlatList<Message>>(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
@@ -160,9 +161,9 @@ const ChatScreen = () => {
 
 
   return (
-    <SafeAreaView style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}>
+    <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
    
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: top + 10 }]}>
         <Text style={styles.headerTitle}>AI Assistant</Text>
         <View style={styles.headerIcons}>
           <TouchableOpacity
@@ -189,7 +190,7 @@ const ChatScreen = () => {
           ref={flatListRef}
           style={styles.chatContainer}
           data={messages}
-          renderItem={({ item }) => <ChatMessage id={item.id} picture={picture || "icon"} message={item.content} isAI={item.isAI} createdAt={item.createdAt} />}
+          renderItem={({ item }) => <ChatMessage id={item.id} name={name || "User"} picture={picture || "icon"} message={item.content} isAI={item.isAI} createdAt={item.createdAt} />}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ paddingTop: 30, paddingBottom: 150 }}
           keyboardDismissMode="on-drag"
@@ -217,19 +218,20 @@ const ChatScreen = () => {
   );
 };
 
-const getStyles = (theme: any) => StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: theme.textlight,
+    backgroundColor: theme.blue,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
   },
   footer: {
     position: 'absolute',
@@ -239,7 +241,7 @@ const getStyles = (theme: any) => StyleSheet.create({
     backgroundColor:"transparent"
   },
   headerTitle: {
-    color: theme.text,
+    color: theme.textLight ? theme.textLight : theme.text,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -260,17 +262,15 @@ const getStyles = (theme: any) => StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: theme.textlight,
+    color: theme.background,
   },
   content: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: theme.backgroundDark,
   },
-
-
   chatContainer: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: theme.backgroundDark,
     marginBottom: 50,
   },
 });

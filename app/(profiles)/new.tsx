@@ -3,22 +3,27 @@ import {
   Text,
   StyleSheet,
   TextInput,
+  Pressable,
+  TouchableOpacity,
+  Platform,
 } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
-import { Picker } from '@react-native-picker/picker';
-import React, { useState, useRef } from "react";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useState, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5
 import { useRouter } from "expo-router";
-import { healthIndicators, ProfileInput, profiles } from "@/database/schema";
+import { healthIndicators, profiles } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import { useDatabase } from '@/hooks/useDatabase';
 import { useUserData } from "@/context/UserDataContext";
+import { ThemeColors } from "@/constants/Colors";
+import BottomSheet, {
+  BottomSheetModal,
+  BottomSheetFlatList,
+  BottomSheetBackdrop
+} from '@gorhom/bottom-sheet';
+import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig"; // Import the config
 
-
-// Reusable Choice Component
 const NewProfile = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
@@ -30,26 +35,69 @@ const NewProfile = () => {
   };
   const {userId} = useUserData();
 
+  const generalSummaryIcons: { [key: string]: keyof typeof Ionicons.glyphMap } = {
+    "Name:": "text-outline", 
+    "Gender:": "person-outline", 
+    "Birth Year:": "calendar-outline",
+  };
   const drizzleDB = useDatabase();
-  const pickerRef = useRef(null);
+
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ['50%', '60%'], []); 
+
+  const handlePresentModalPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
 
   const [formData, setFormData] = useState({
     fullname: "",
     gender: "",
-    age: -1,
+    birthYear: -1, 
     smoker: "",
     hypertensive: "",
     diabetic: "",
   });
 
+  const currentYear = new Date().getFullYear();
+  const years = useMemo(() => {
+    return Array.from({ length: 100 }, (_, i) => currentYear - i);
+  }, [currentYear]);
+
   const handleNext = (step: number) => {
     setCurrentStep(step + 1);
   };
-  
+
   const handleBack = (step: number) => {
     setCurrentStep(step - 1);
-
   };
+
+  const handleYearSelect = useCallback((year: number) => {
+    setFormData(prev => ({
+      ...prev,
+      birthYear: year
+    }));
+    bottomSheetModalRef.current?.dismiss(); 
+  }, []);
+
+  const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
+    <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
+      <Text style={styles.bottomSheetItemText}>{item}</Text>
+    </TouchableOpacity>
+  ), [handleYearSelect, styles]);
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        enableTouchThrough={false}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5} 
+      />
+    ),
+    []
+  );
+
   const steps = [
     {
       key: "name",
@@ -77,7 +125,7 @@ const NewProfile = () => {
               key={gender}
               style={[
                 styles.genderButton,
-                formData.gender === gender && styles.selectedGender
+                formData.gender === gender && styles.selectedChoice
               ]}
               onPress={() => {
                 setFormData((prev) => ({ ...prev, gender: gender as "" | "Male" | "Female" }));
@@ -94,52 +142,33 @@ const NewProfile = () => {
       validate: () => !!formData.gender,
     },
     {
-      key: "age",
-      title: `What year was ${formData.fullname} born?`,
+      key: "birthYear", 
+      title: `What year was ${formData.fullname || 'the person'} born?`, // Updated title
       component: (
-        <View style={styles.pickerOuterContainer}>
-          <View style={styles.pickerContainer}>
-            <Picker
-              ref={pickerRef}
-              selectedValue={formData.age > 0 ? formData.age : undefined}
-              style={styles.picker}
-              itemStyle={styles.pickerItem}
-              dropdownIconColor={theme.text}
-              
-              onValueChange={(itemValue) => {
-                setFormData(prev => ({
-                  ...prev,
-                  age: itemValue
-                }));
-              }}
-            >
-             
-              <Picker.Item label="Select birth year" value={-1}  style={styles.pickerItem}/>
-              {Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i).map((year) => (
-                <Picker.Item key={year} label={`${year}`} value={new Date().getFullYear() - year} style={styles.pickerItem} />
-              ))}
-              
-            </Picker>
-        
-          </View>
-        </View>
+        <>
+          <Pressable style={styles.pickerTrigger} onPress={handlePresentModalPress}>
+            <Text style={styles.pickerTriggerText}>
+              {formData.birthYear > 0 ? formData.birthYear : "Select birth year"}
+            </Text>
+            <Ionicons name="chevron-down" size={20} color={theme.text} />
+          </Pressable>
+        </>
       ),
-      validate: () => formData.age > 0,
+      validate: () => formData.birthYear > 0, 
     },
     {key: "smoker",
     title: `Is ${formData.fullname} a smoker?`,
     component: (
       <View style={styles.choiceContainer}>
-        {["Yes", "No","I used to"].map((choice) => (
+        {["Yes", "No", "I used to"].map((choice) => (
           <Pressable
             key={choice}
             style={[
               styles.genderButton,
-              formData.smoker === choice && styles.selectedGender
+              formData.smoker === choice && styles.selectedChoice, 
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, smoker: choice as "Yes" | "No" | "I used to" }));
-         
             }}
           >
             <Text style={[
@@ -163,11 +192,10 @@ const NewProfile = () => {
             key={choice}
             style={[
               styles.genderButton,
-              formData.hypertensive === choice && styles.selectedGender
+              formData.hypertensive === choice && styles.selectedChoice, // Apply selection styling
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, hypertensive: choice  as "Yes" | "No" | "I don't know" }));
-    
             }}
           >
             <Text style={[
@@ -191,7 +219,7 @@ const NewProfile = () => {
             key={choice}
             style={[
               styles.genderButton,
-              formData.diabetic === choice && styles.selectedGender
+              formData.diabetic === choice && styles.selectedChoice, // Apply selection styling
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, diabetic: choice as "Yes" | "No" | "I don't know" }));
@@ -209,94 +237,99 @@ const NewProfile = () => {
     hideNextButton: true,
 
     },
-    {key:"finish",
-    title: "Profile Summary",
-    component: (
-      <View style={styles.summaryContainer}>
-    
-        {Object.entries({
-          "Name:": formData.fullname,
-          "Gender:": formData.gender,
-          "Date of Birth:": formData.age,
-          "Smoker:": formData.smoker,
-          "Hypertensive:": formData.hypertensive,
-          "Diabetic:": formData.diabetic
-        }).map(([key, value]) => (
-          <View key={key} style={styles.summaryRow}>
-            <Text style={styles.summaryTextHeader}>{key}</Text>
-            <Text style={styles.summaryText}>{value}</Text>
-          </View>
-        ))}
-        
-       
-     
-        
-      </View>
-          
+    {
+      key:"finish",
+      title: "Profile Summary",
+      component: (
+        <View style={styles.summaryContainer}>
+          {Object.entries({
+            "Name:": formData.fullname || 'Not Set',
+            "Gender:": formData.gender || 'Not Set',
+            "Birth Year:": formData.birthYear > 0 ? formData.birthYear : 'Not Set',
+            "Smoker:": formData.smoker || 'Not Set',
+            "Hypertensive:": formData.hypertensive || 'Not Set',
+            "Diabetic:": formData.diabetic || 'Not Set'
+          }).map(([key, value], index, arr) => {
+            let iconComponent = null;
+            const healthKey = key.replace(':', '').toLowerCase();
+
+            // Check if it's a health indicator key
+            if (healthKey in healthIndicatorConfig) {
+              const config = healthIndicatorConfig[healthKey as keyof typeof healthIndicatorConfig];
+              iconComponent = (
+                <FontAwesome5 name={config.icon} size={18} color={theme.text} style={styles.summaryIcon} />
+              );
+            }
+            // Otherwise, check the general icons
+            else if (generalSummaryIcons[key]) {
+              const iconName = generalSummaryIcons[key];
+              iconComponent = (
+                <Ionicons name={iconName} size={18} color={theme.text} style={styles.summaryIcon} />
+              );
+            }
+            // Fallback icon if none match
+            else {
+              iconComponent = (
+                <Ionicons name="help-circle-outline" size={18} color={theme.text} style={styles.summaryIcon} />
+              );
+            }
+
+            return (
+              <View
+                key={key}
+                style={[styles.summaryRow, index === arr.length - 1 && styles.summaryRowLast]}
+              >
+               
+                <View style={styles.summaryLabelContainer}>
+                  {iconComponent} 
+                  <Text style={styles.summaryTextHeader}>{key}</Text>
+                </View>
+                <Text style={styles.summaryText}>{value}</Text>
+              </View>
+            );
+          })}
+        </View>
       ),
-
     },
-
-
   ];
 
   const handleComplete = async () => {
 
-    // Handle form submission
-   try{
-    const {diabetic,hypertensive,smoker,...profileData} = formData;
+    try{
+   
+      const {diabetic, hypertensive, smoker, birthYear, ...profileData} = formData;
+      const age = birthYear > 0 ? currentYear - birthYear : 0; // Calculate age
 
-    const profileToInsert = { ...profileData, auth0Id:userId as string}; 
-  
-    await drizzleDB.transaction(async (tx)=>{
-      const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
-      
-      const newProfileId = newProfile[0].id;
-      await tx.insert(healthIndicators).values({
-        profileId: newProfileId,
+      const profileToInsert = { ...profileData, age, auth0Id:userId as string};
 
-        diabetic,
-        hypertensive,
-        smoker
-      }).execute();
-    });
-    
-    console.log("Profile created successfully");
-    router.replace("/(tabs)");
-  }catch(error){
-    console.error("Error creating profile:",error);
+      await drizzleDB.transaction(async (tx)=>{
+        const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
+
+        const newProfileId = newProfile[0].id;
+        await tx.insert(healthIndicators).values({
+          profileId: newProfileId,
+          diabetic,
+          hypertensive,
+          smoker
+        }).execute();
+      });
+
+      console.log("Profile created successfully");
+      router.replace("/(tabs)");
+    }catch(error){
+      console.error("Error creating profile:",error);
+    }
   }
-  
-}
 
-
-    
-  
   return (
-    <LinearGradient
-      colors={[
-        theme.darkbackground,
-        theme.mediumbackground,
-        theme.background,
-        theme.textlight,
-      ]}
-      locations={[0, 0.35, 0.56, 1]}
-      start={{ x: 0.5, y: 0 }}
-      end={{ x: 0.5, y: 1 }}
-      style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}
-    >
-      <LinearGradient
-        style={styles.headerContainer}
-        colors={[theme.textlight, theme.tint, theme.mediumbackground]}
-        locations={[0, 0.44, 0.9]}
-        start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 1 }}
-      >
+    <View style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}>
+      <View style={styles.headerContainer}>
         <Text style={styles.header}>Add Profile</Text>
         <Pressable onPress={handleRoutingBack} style={styles.backButton}>
           <Ionicons name="close" size={24} color={theme.text} />
         </Pressable>
-      </LinearGradient>
+      </View>
+  
       <MultiStepForm
         steps={steps}
         currentStep={currentStep}
@@ -304,146 +337,193 @@ const NewProfile = () => {
         onNext={handleNext}
         onBack={handleBack}
       />
-    </LinearGradient>
+
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0} 
+        snapPoints={snapPoints}
+        enablePanDownToClose={true} 
+        keyboardBehavior="interactive"
+        backdropComponent={renderBackdrop} 
+        backgroundStyle={{ backgroundColor: theme.backgroundDark }} 
+        handleIndicatorStyle={{ backgroundColor: theme.progressColor }} 
+      >
+        <BottomSheetFlatList
+          data={years}
+          keyExtractor={(item) => item.toString()}
+          renderItem={renderBottomSheetItem}
+          contentContainerStyle={styles.bottomSheetContentContainer}
+        />
+      </BottomSheetModal>
+    </View>
   );
 };
 
-const getStyles = (theme: any) =>
+const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
+      backgroundColor: theme.background, 
     },
+   
     headerContainer: {
       flexDirection: "row",
       alignItems: "center",
-      paddingVertical: 10,
+      justifyContent: 'center', 
+      paddingVertical: 12,
+      paddingHorizontal: 15, 
       position: "relative",
+      borderBottomWidth: 1,
+      borderBottomColor: theme.separator,
     },
     header: {
       fontSize: 20,
       fontFamily: "Roboto-Bold",
       color: theme.text,
-      flex: 1,
-      textAlign: "center",
+     
     },
     backButton: {
       position: "absolute",
-      right: 15,
+      left: 15, 
+      top: 0, 
+      bottom: 0,
+      justifyContent: 'center', 
+      paddingHorizontal: 10, 
       zIndex: 1,
-      padding: 5,
     },
+
+    textInput: {
+      height: 55, 
+      borderColor: theme.separator,
+      borderWidth: 1,
+      color: theme.text,
+      paddingHorizontal: 15, 
+      borderRadius: 12, 
+      fontSize: 16,
+      fontFamily: 'Roboto-Regular',
+      backgroundColor: theme.cardBackground, 
+      marginVertical: 10, 
+    },
+
     choiceContainer: {
       flexDirection: "column",
-      gap: 20,
-      justifyContent: "space-between",
+      gap: 12, 
+      marginVertical: 10, 
     },
-    textInput: {
-      borderColor: theme.text,
-      borderBottomWidth: 1,
-      color: theme.text,
-      padding: 10,
-      borderRadius: 8,
-      marginBottom: 20,
-    },
-    genderButton: {
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: theme.text,
+    genderButton: { 
+      flexDirection: 'row', 
+      justifyContent: 'center',
       alignItems: 'center',
+
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: 12, 
+      borderWidth: 1.5, 
+      borderColor: theme.separator,
+      backgroundColor: theme.cardBackground, 
     },
-    selectedGender: {
-      backgroundColor: theme.tint,
-      borderColor: theme.tint,
-    },
-    genderText: {
+    genderText: { 
       color: theme.text,
       fontSize: 16,
+      fontFamily: 'Roboto-Medium',
     },
-    selectedGenderText: {
-      color: theme.background,
-      fontWeight: 'bold',
+    selectedChoice: { 
+      backgroundColor: theme.blue, 
+      flexDirection: 'row', 
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingVertical: 14,
+      paddingHorizontal: 24,
+      borderRadius: 12, 
+      borderWidth: 1.5, 
+      borderColor: theme.separator,
     },
+    selectedGenderText: { 
+      color: theme.text,
+      fontFamily: 'Roboto-Bold',
+    },
+
+    pickerTrigger: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      height: 55, 
+      paddingHorizontal: 15, 
+      marginVertical: 10, 
+      borderRadius: 12,
+      borderWidth: 1, 
+      borderColor: theme.separator,
+      backgroundColor: theme.cardBackground, 
+    },
+    pickerTriggerText: {
+      fontSize: 16,
+      color: theme.text,
+      fontFamily: 'Roboto-Regular',
+    },
+
+   
+    bottomSheetContentContainer: {
+      backgroundColor: theme.backgroundDark,
+      paddingBottom: 20, 
+    },
+    bottomSheetItem: {
+      paddingVertical: 18, 
+      borderBottomWidth: StyleSheet.hairlineWidth, 
+      borderBottomColor: theme.separator,
+      marginHorizontal: 16, 
+    },
+    bottomSheetItemText: {
+      fontSize: 18,
+      color: theme.text,
+      fontFamily: 'Roboto-Regular',
+      textAlign: 'center',
+    },
+
+  
     summaryContainer: {
       flexDirection: "column",
-      gap: 20,
-      justifyContent: "space-between",
+      backgroundColor: theme.cardBackground,
+      borderRadius: 12,
+      paddingHorizontal: 16, 
+      paddingVertical: 8, 
+      marginVertical: 10,
+      borderWidth: 1,
+      borderColor: theme.separator 
     },
     summaryRow: {
       flexDirection: "row",
+      justifyContent: "space-between",
       alignItems: "center",
-      gap: 15,
+      paddingVertical: 14,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.separator 
+    },
+    summaryRowLast: {
+       borderBottomWidth: 0,
+    },
+    summaryLabelContainer: { 
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10, 
+    },
+    summaryIcon: { 
+      opacity: 0.7,
+      width: 20, 
+      textAlign: 'center', 
     },
     summaryTextHeader: {
       color: theme.text,
-      fontSize: 20,
-      fontWeight: "bold",
+      fontSize: 16,
+      fontFamily: "Roboto-Medium",
+      opacity: 0.8,
     },
     summaryText: {
       color: theme.text,
       fontSize: 16,
+      fontFamily: "Roboto-Regular",
+      textAlign: 'right',
+      flexShrink: 1, 
     },
-    yearSelectorContainer: {
-      height: 300,
-      width: '100%',
-    },
-    yearScrollView: {
-      width: '100%',
-      borderWidth: 1,
-      borderColor: theme.text,
-      borderRadius: 8,
-    },
-    yearScrollContent: {
-      paddingVertical: 10,
-    },
-    yearButton: {
-      paddingVertical: 12,
-      paddingHorizontal: 24,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.border || 'rgba(255,255,255,0.2)',
-      alignItems: 'center',
-    },
-    selectedYear: {
-      backgroundColor: theme.tint,
-    },
-    yearText: {
-      color: theme.text,
-      fontSize: 16,
-    },
-    selectedYearText: {
-      color: theme.background,
-      fontWeight: 'bold',
-    },
-    pickerOuterContainer: {
-      overflow: 'hidden',
-      borderBottomWidth: 1,
-      borderColor: theme.text,
-      marginVertical: 10,
-    },
-    pickerContainer: {
-      width: '100%',
-    
-      overflow: 'hidden',
-      borderRadius: 25, // This may not work on Android
-    },
-    picker: {
-      width: '100%',
-      color: theme.text,
-      // For Android center alignment
-      justifyContent: 'center',
-      alignItems: 'center',
-      textAlign: 'center',
-    },
-    pickerItem: {
-      fontSize: 16,
-      color: theme.text,
-      backgroundColor: theme.background,
-      textAlign: 'center',
-      fontFamily: 'Roboto-Regular',
-      
-    },
-  
   });
 
 export default NewProfile;
