@@ -9,8 +9,8 @@ import {
   SafeAreaView,
   FlatList,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomBottomSheetModal, {
   Ref,
@@ -18,6 +18,7 @@ import CustomBottomSheetModal, {
 import { useRouter } from "expo-router";
 import CustomModal from "@/components/CustomModal";
 import { useTheme } from "@/context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -89,6 +90,12 @@ const ChatHistoryScreen = () => {
     >
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Chat History</Text>
+        <TouchableOpacity
+          onPress={() => router.push("/new")}
+          style={styles.iconButton}
+        >
+          <Ionicons name="add" size={24} color={theme.text} />
+        </TouchableOpacity>
       </View>
 
       <CustomBottomSheetModal
@@ -118,12 +125,12 @@ const ChatHistoryScreen = () => {
           <Text style={{ textAlign: "center", padding: 20, color: theme.text }}>
             No chats found
           </Text>
-          <Pressable
+          <TouchableOpacity
             style={styles.button}
             onPress={() => router.push("/new")}
           >
             <Text style={{ color: theme.text }}>Start a new chat</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       )}
 

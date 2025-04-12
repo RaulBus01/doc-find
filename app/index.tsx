@@ -3,8 +3,7 @@ import { secureSave, secureSaveObject } from '../utils/SecureStorage';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { View, StyleSheet, Dimensions, Text} from 'react-native';
-import { Pressable } from 'react-native-gesture-handler';
+import { View, StyleSheet, Dimensions, Text, Pressable, TouchableOpacity} from 'react-native';
 import { Credentials, useAuth0 } from 'react-native-auth0';
 import { ApiCall } from '@/utils/ApiCall';
 
@@ -56,10 +55,10 @@ return (
      
     <CustomCarousel data={data} width={width} />
     <View style={styles.footer}>
-      <Pressable onPress={onLogin} style={styles.loginButton}>
+      <TouchableOpacity onPress={onLogin} style={styles.loginButton}>
         <Text> Continue to Login </Text>
         <FontAwesome6 name="arrow-right-long" size={24} color="black" />
-      </Pressable>
+      </TouchableOpacity>
     </View>
 
 
