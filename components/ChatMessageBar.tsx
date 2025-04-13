@@ -1,5 +1,12 @@
 import React, { useRef, useEffect, useContext } from "react";
-import { StyleSheet, TextInput, Keyboard, Pressable, View, Text } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  Keyboard,
+  Pressable,
+  View,
+  Text,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
@@ -35,25 +42,27 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   const inputRef = useRef<TextInput>(null);
   const isSendDisabled = !message.trim();
   const { theme } = useTheme();
-  const { isTabBarVisible, setIsTabBarVisible } = useContext(TabBarVisibilityContext);
-  
+  const { isTabBarVisible, setIsTabBarVisible } = useContext(
+    TabBarVisibilityContext
+  );
+
   // Define styles inline
   const styles = StyleSheet.create({
     container: {
-      position: 'relative',
+      position: "relative",
       paddingBottom: bottom,
     },
     contentView: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       backgroundColor: theme.progressColor,
       borderTopLeftRadius: 25,
       borderTopRightRadius: 25,
       paddingHorizontal: 15,
     },
     collapsedBar: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       backgroundColor: theme.background,
       borderRadius: 22,
       marginHorizontal: 15,
@@ -75,18 +84,18 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
       width: 30,
       height: 30,
       borderRadius: 50,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       backgroundColor: `${theme.background}`,
-      shadowColor: '#000',
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
       elevation: 2,
     },
     buttonView: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 14,
       marginLeft: 5,
       paddingVertical: 5,
@@ -95,25 +104,25 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
       flex: 1,
       minHeight: 46,
       maxHeight: 150,
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       backgroundColor: theme.background,
       borderRadius: 22,
       marginHorizontal: 8,
       marginVertical: 5,
       paddingVertical: 6,
       paddingHorizontal: 12,
-      shadowColor: '#000',
+      shadowColor: "#000",
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.1,
       shadowRadius: 2,
       elevation: 2,
     },
     bottomIcons: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 12,
-      position: 'absolute',
+      position: "absolute",
       bottom: 8,
       right: 12,
     },
@@ -122,123 +131,124 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
       marginLeft: 8,
       padding: 6,
       borderRadius: 20,
-      backgroundColor: 'transparent',
+      backgroundColor: "transparent",
       color: theme.text,
       fontSize: 16,
     },
     iconButton: {
-      width: 40, 
+      width: 40,
       height: 40,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       borderRadius: 20,
     },
     activeIconButton: {
-      width: 40, 
+      width: 40,
       height: 40,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       borderRadius: 20,
       backgroundColor: `${theme.text}15`,
     },
     sendButton: {
       width: 40,
       height: 40,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       borderRadius: 20,
       backgroundColor: theme.text,
     },
     actionButtonsContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       paddingHorizontal: 8,
-      justifyContent: 'space-between',
+      justifyContent: "space-between",
     },
     attachmentButtons: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      flexDirection: "row",
+      alignItems: "center",
       gap: 12,
     },
 
     toolbarContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       paddingHorizontal: 10,
       paddingVertical: 5,
     },
   });
-  
+
   const springConfig: WithSpringConfig = {
     damping: 22,
     stiffness: 180,
     mass: 1,
   };
 
-  // Animations and styles for expanded/collapsed state
+
   const containerStyle = useAnimatedStyle(() => {
     return {
       height: interpolate(
         barExpanded.value,
         [0, 1],
-        [50, 105], // Increased height for expanded state
+        [50, 105],
         Extrapolation.CLAMP
       ),
     };
   });
-  
+
   const collapsedBarStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       barExpanded.value,
-      [0, 0.3],
+      [0, 0.3], 
       [1, 0],
       Extrapolation.CLAMP
     );
-    
+
     const scale = interpolate(
       barExpanded.value,
-      [0, 0.5],
-      [1, 0.9],
+      [0, 0.3], 
+      [1, 0.95],
       Extrapolation.CLAMP
     );
-    
+
     return {
       opacity,
       transform: [{ scale }],
-      position: 'absolute',
+      position: "absolute",
       bottom: bottom + 10,
       left: 0,
       right: 0,
       zIndex: opacity === 0 ? -1 : 1,
     };
   });
-  
+
   const expandedBarStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       barExpanded.value,
-      [0.5, 1],
+      [0.3, 0.8], 
       [0, 1],
       Extrapolation.CLAMP
     );
-    
+
     const translateY = interpolate(
       barExpanded.value,
-      [0.5, 1],
+      [0.3, 0.8], 
       [20, 0],
       Extrapolation.CLAMP
     );
-    
+
     return {
       opacity,
       transform: [{ translateY }],
-      position: 'absolute',
+      position: "absolute",
       bottom: 0,
       left: 0,
       right: 0,
+      pointerEvents: opacity < 0.1 ? "none" : "auto",
     };
   });
-  
+
   const textAreaAnimatedStyle = useAnimatedStyle(() => {
     return {
       minHeight: interpolate(
@@ -263,25 +273,39 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     };
   });
 
-  // Toggle between collapsed and expanded states
   const toggleBarExpansion = () => {
     const newValue = barExpanded.value === 0 ? 1 : 0;
-    barExpanded.value = withSpring(newValue, springConfig);
-    
-    // Hide tab bar when expanding, show when collapsing
-    setIsTabBarVisible(newValue === 0);
-    
-    if (newValue === 1) {
+
+    if (newValue === 0 && inputRef.current) {
+      inputRef.current.blur();
+
+      setTimeout(() => {
+        setIsTabBarVisible(true);
+
+        barExpanded.value = withTiming(
+          0,
+          {
+            duration: 300,
+            easing: Easing.out(Easing.cubic),
+          },
+          () => {
+            focusedHeight.value = 0;
+          }
+        );
+      }, 50);
+    } else {
+      setIsTabBarVisible(false);
+
+      barExpanded.value = withSpring(1, springConfig);
+
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
         }
-      }, 400);
-    } else {
-      Keyboard.dismiss();
+      }, 200);
     }
   };
-  
+
   const expandItems = () => {
     expanded.value = withTiming(1, { duration: 400 });
     Keyboard.dismiss();
@@ -293,16 +317,10 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
 
   const onInputFocus = () => {
     collapseItems();
-    // Hide tab bar when input is focused
+
     setIsTabBarVisible(false);
-    
-  }
-  
-  const onInputBlur = () => {
-    focusedHeight.value = withTiming(0, { duration: 300 });
-    // Don't show tab bar on blur, as user may still be in expanded mode
   };
-  
+
   const expandButtonStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       expanded.value,
@@ -357,8 +375,6 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     if (message.trim()) {
       onMessageSend(message);
       setMessage("");
-      
-      // Collapse the bar and show tab bar after sending
       setTimeout(() => {
         toggleBarExpansion();
         setIsTabBarVisible(true);
@@ -370,15 +386,11 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     <Animated.View style={[styles.container, containerStyle]}>
       {/* Collapsed message bar (acts as a button) */}
       <Animated.View style={collapsedBarStyle}>
-        <Pressable 
-          style={styles.collapsedBar} 
-          onPress={toggleBarExpansion}
-        >
+        <Pressable style={styles.collapsedBar} onPress={toggleBarExpansion}>
           <Ionicons name="chatbubble-outline" size={22} color={theme.text} />
           <Animated.Text style={styles.collapsedText}>
             Type your symptoms here...
           </Animated.Text>
-         
         </Pressable>
       </Animated.View>
 
@@ -398,31 +410,23 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                 value={message}
                 onChangeText={onChangeText}
                 onFocus={onInputFocus}
-                onBlur={onInputBlur}
                 style={styles.messageInput}
               />
             </Animated.View>
 
             <Animated.View style={styles.bottomIcons}>
               {!isSendDisabled ? (
-                <Pressable
-                  onPress={handleSend}
-                  style={styles.sendButton}
-                >
+                <Pressable onPress={handleSend} style={styles.sendButton}>
                   <Ionicons name="send" size={22} color="#fff" />
                 </Pressable>
               ) : (
-                <Pressable 
-                  onPress={() => {}}
-                  style={styles.iconButton}
-                >
-                  <Ionicons name="mic" size={24} color={theme.text}/>
+                <Pressable onPress={() => {}} style={styles.iconButton}>
+                  <Ionicons name="mic" size={24} color={theme.text} />
                 </Pressable>
               )}
             </Animated.View>
           </Animated.View>
         </Animated.View>
-        
 
         {/* Action buttons container */}
         <View style={styles.actionButtonsContainer}>
@@ -442,7 +446,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                 }}
                 style={styles.activeIconButton}
               >
-                <Ionicons name="camera-outline" size={24} color={theme.text}/>
+                <Ionicons name="camera-outline" size={24} color={theme.text} />
               </Pressable>
               <Pressable
                 onPress={() => {
@@ -460,16 +464,17 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                 }}
                 style={styles.iconButton}
               >
-                <Ionicons name="document-outline" size={24} color={theme.text} />
+                <Ionicons
+                  name="document-outline"
+                  size={24}
+                  color={theme.text}
+                />
               </Pressable>
             </Animated.View>
           </View>
-          
+
           {/* Close button */}
-          <Pressable 
-            onPress={toggleBarExpansion}
-            style={styles.iconButton}
-          >
+          <Pressable onPress={toggleBarExpansion} style={styles.iconButton}>
             <Ionicons name="chevron-down" size={24} color={theme.text} />
           </Pressable>
         </View>
@@ -479,5 +484,3 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
 };
 
 export default MessageBar;
-
-
