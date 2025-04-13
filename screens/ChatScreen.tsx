@@ -1,7 +1,7 @@
 import { View, Text, SafeAreaView, StyleSheet, FlatList, Keyboard, TouchableOpacity } from 'react-native';
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import MessageBar from '../components/ChatMessageBar';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ChatMessage from '../components/ChatMessage';
 import { Message } from '@/interface/Interface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +13,8 @@ import { streamModelResponse } from '@/utils/Model';
 import { welcomeMessages } from '@/constants/WelcomeMessages';
 import { useTheme } from '@/context/ThemeContext';
 import { ThemeColors } from '@/constants/Colors';
+import { TabBarVisibilityContext } from '@/context/TabBarContext';
+import { is } from 'drizzle-orm';
 
 
 const ChatScreen = () => {
@@ -28,6 +30,7 @@ const ChatScreen = () => {
   const flatListRef = useRef<FlatList<Message>>(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const { isTabBarVisible } = useContext(TabBarVisibilityContext);
 
 
   function setChatId(id: string) {
@@ -208,7 +211,9 @@ const ChatScreen = () => {
 
       </View>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, { bottom: isTabBarVisible ? bottom + 50 : bottom }]}>
+
+        {/* Message bar */}
         <MessageBar
           onModalPress={handleModalPress}
           onMessageSend={handleMessageSend}
@@ -237,7 +242,6 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    bottom: 50,
     backgroundColor: "transparent",
   },
   headerTitle: {

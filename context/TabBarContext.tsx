@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useRef, useEffect } from 'react';
 
 export const TabBarVisibilityContext = createContext({
-  IsTabBarVisible: true,
+  isTabBarVisible: true,
   setIsTabBarVisible: (visible: boolean) => {},
 });
 
@@ -16,7 +16,7 @@ export const TabBarVisibilityProvider = ({ children }: { children: React.ReactNo
   return (
     <TabBarVisibilityContext.Provider 
       value={{
-        IsTabBarVisible: isVisible,
+        isTabBarVisible: isVisible,
         setIsTabBarVisible: setIsVisible,
       }}
     >

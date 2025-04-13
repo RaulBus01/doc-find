@@ -10,7 +10,6 @@ import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
-  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
   const database = useSQLiteContext();
   useDrizzleStudio(database);
   
@@ -22,7 +21,7 @@ export default function TabLayout() {
           animation: "fade",
         }}
         tabBar={(props) => (
-          <TabBar {...props} IsTabBarVisible={isTabBarVisible} />
+          <TabBar {...props}  />
         )}
       />
     </TabBarVisibilityProvider>

@@ -1,9 +1,10 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import TabBarButton from './TabBarButton';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useTheme } from '@/context/ThemeContext';
 import { ThemeColors } from '@/constants/Colors';
+import { TabBarVisibilityContext } from '@/context/TabBarContext';
 
 type AllowedRoute = {
   name: string;
@@ -17,7 +18,7 @@ type TabBarProps = {
   state: any;
   descriptors: any;
   navigation: any;
-  IsTabBarVisible: boolean;
+
 };
 
 const allowedRoutes: AllowedRoute[] = [
@@ -27,15 +28,16 @@ const allowedRoutes: AllowedRoute[] = [
   { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline', order: 4 },
 ];
 
-const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
+const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   // Shared value to control vertical translation
+  const { isTabBarVisible } = useContext(TabBarVisibilityContext);
   const translateY = useSharedValue(50); 
   const { theme } = useTheme();
   const styles = getStyles(theme);
 
   useEffect(() => {
-    translateY.value = withTiming(IsTabBarVisible ? 0 : 50, { duration: 300 });
-  }, [IsTabBarVisible, translateY]);
+    translateY.value = withTiming(isTabBarVisible ? 0 : 50, { duration: 300 });
+  }, [isTabBarVisible, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
@@ -58,7 +60,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   }, [filteredRoutes]);
 
   return (
-    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
+    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={isTabBarVisible ? 'auto' : 'none'}>
       {orderedRoutes?.map((route: { key: string | number; name: string }, index: any) => {
           const { options } = descriptors[route.key];
           const matchingRoute = allowedRoutes.find(allowed => allowed.path === route.name);
@@ -85,6 +87,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
           };
 
           return (
+            
             <TabBarButton
               key={route.key}
               color={theme.text}
