@@ -111,13 +111,9 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     width: '100%',
     height: 50,
     backgroundColor: theme.tabbarBackground,
-    borderTopWidth: 0.5,
-    borderTopColor: theme.text,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderWidth: 0.5,
   }
 });
 

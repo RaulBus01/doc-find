@@ -221,7 +221,7 @@ const ChatScreen = () => {
 const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.backgroundDark,
+    backgroundColor: theme.background,
   },
   header: {
     flexDirection: 'row',
@@ -238,7 +238,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 50,
-    backgroundColor:"transparent"
+    backgroundColor: "transparent",
   },
   headerTitle: {
     color: theme.textLight ? theme.textLight : theme.text,
@@ -266,11 +266,11 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: theme.backgroundDark,
+    backgroundColor: theme.background,
   },
   chatContainer: {
     flex: 1,
-    backgroundColor: theme.backgroundDark,
+    backgroundColor: theme.background,
     marginBottom: 50,
   },
 });

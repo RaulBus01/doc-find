@@ -5,8 +5,7 @@ import { TabBarVisibilityProvider } from "@/context/TabBarContext";
 import * as SplashScreen from "expo-splash-screen";
 import { useSQLiteContext } from "expo-sqlite";
 import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
-import { StatusBar } from "expo-status-bar";
-import { useTheme } from "@/context/ThemeContext";
+
 
 SplashScreen.preventAutoHideAsync();
 

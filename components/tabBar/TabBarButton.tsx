@@ -60,13 +60,15 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 15,
+        backgroundColor: "transparent",
     },
     containerFocused: {
         flex: 1,
+        margin: 5,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: theme.pressedBackground,
-        borderRadius: 15,
+        borderRadius: 25,
         
     },
     text: {

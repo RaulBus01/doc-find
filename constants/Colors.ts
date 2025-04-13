@@ -6,6 +6,7 @@ interface ThemeColors {
   backgroundDark: string;
   progressColor: string;
   tabbarBackground: string;
+  lightGreen: string;
   blue: string;
 
   red: string; 
@@ -30,9 +31,10 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
     background:"#F6F6F6",
     backgroundDark:"#e2e2e2",
     tabbarBackground:"#F2F2F2",
-    progressColor:"#84cc15",
+    lightGreen:"#84cc15",
+    progressColor:"#4CAF50",
     blue:"#3c82f6",
-    red:"#af1222",
+    red:"#FF5722",
 
     cardBackground: 'rgba(141, 141, 141, 0.18)',
     pressedBackground: 'rgba(36, 29, 29, 0.05)',
@@ -54,9 +56,10 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
     background:"#111b14",
     backgroundDark:"#1c2a1b",
     tabbarBackground:"#2f3c33",
-    progressColor:"#84cc16",
+    lightGreen:"#84cc16",
+    progressColor:"#3b893d",
     blue:"#1f3354",
-    red: '#ff455f', 
+    red: '#db3908', 
 
     cardBackground: 'rgba(255, 255, 255, 0.1)',
     pressedBackground: 'rgba(92, 92, 92, 0.25)',
