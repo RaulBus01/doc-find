@@ -85,7 +85,7 @@ const InitialLayout = () => {
       <StatusBar
         animated={true}
         backgroundColor="transparent"
-        style={isDark ? "light" : "dark"}
+        style="auto"
       />
       <Stack
         screenOptions={{

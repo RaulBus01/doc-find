@@ -322,11 +322,11 @@ const NewProfile = () => {
   }
 
   return (
-    <View style={[styles.container, { paddingTop: top, paddingBottom: bottom }]}>
-      <View style={styles.headerContainer}>
+    <View style={[styles.container, { paddingBottom: bottom }]}>
+      <View style={[styles.headerContainer, { paddingTop: top }]}>
         <Text style={styles.header}>Add Profile</Text>
         <Pressable onPress={handleRoutingBack} style={styles.backButton}>
-          <Ionicons name="close" size={24} color={theme.text} />
+          <Ionicons name="close" size={24} color={theme.textLight ? theme.textLight : theme.text} />
         </Pressable>
       </View>
   
@@ -371,21 +371,23 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       justifyContent: 'center', 
       paddingVertical: 12,
-      paddingHorizontal: 15, 
+      paddingHorizontal: 16,
+      borderBottomLeftRadius: 25,
+      borderBottomRightRadius: 25,
       position: "relative",
-      borderBottomWidth: 1,
-      borderBottomColor: theme.separator,
+      backgroundColor: theme.blue,
+     
     },
     header: {
       fontSize: 20,
       fontFamily: "Roboto-Bold",
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
      
     },
     backButton: {
       position: "absolute",
       left: 15, 
-      top: 0, 
+      top: 20, 
       bottom: 0,
       justifyContent: 'center', 
       paddingHorizontal: 10, 

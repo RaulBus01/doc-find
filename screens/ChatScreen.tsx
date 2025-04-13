@@ -170,7 +170,7 @@ const ChatScreen = () => {
             style={styles.iconButton}
             onPress={() => handleRoute('history')}
           >
-            <FontAwesome name="history" size={24} color={theme.text} />
+            <FontAwesome name="history" size={24} color={theme.textLight ? theme.textLight : theme.text} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
@@ -178,7 +178,7 @@ const ChatScreen = () => {
             
             onPress={() => handleRoute('new')}
           >
-            <Ionicons name="add" size={24} color={chatIdRef.current ? theme.text : '#918F86' } />
+            <Ionicons name="add" size={24} color={chatIdRef.current ? theme.textLight ? theme.textLight : theme.text : "#bfb9b1"} />
           </TouchableOpacity>
         </View>
       </View>
@@ -221,7 +221,7 @@ const ChatScreen = () => {
 const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.background,
+    backgroundColor: theme.backgroundDark,
   },
   header: {
     flexDirection: 'row',

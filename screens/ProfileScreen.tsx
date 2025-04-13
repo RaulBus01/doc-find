@@ -10,6 +10,7 @@ import { healthIndicators, profiles } from "@/database/schema";
 import { eq } from "drizzle-orm";
 import {
   SafeAreaView,
+  useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
@@ -61,6 +62,7 @@ const ProfileScreen = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
+  const { top, bottom } = useSafeAreaInsets();
 
   const handleBack = () => {
     router.back();
@@ -75,12 +77,11 @@ const ProfileScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-    
+    <SafeAreaView style={[styles.container, { paddingBottom: bottom }]} edges={["bottom"]}>
         {/* Header */}
-        <View style={styles.headerContainer}>
+        <View style={[styles.headerContainer, { paddingTop: top + 10 }]}>
           <Pressable onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={theme.text} />
+            <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
           </Pressable>
           <Text style={styles.headerTitle}>Profile Details</Text>
         </View>
@@ -236,23 +237,27 @@ const getStyles = (theme: ThemeColors) =>
     },
 
     headerContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingVertical: 15,
-      paddingHorizontal: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.separator,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: theme.blue,
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+      borderBottomLeftRadius: 25,
+      borderBottomRightRadius: 25,
     },
     backButton: {
       padding: 5,
+      
     },
     headerTitle: {
       flex: 1,
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       fontSize: 20,
       fontFamily: "Roboto-Bold",
       textAlign: "center",
-      marginRight: 30, // To balance with the back button
+      marginRight: 30, 
+
     },
     scrollContent: {
       paddingBottom: 30,

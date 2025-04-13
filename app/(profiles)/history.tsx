@@ -3,14 +3,15 @@ import {
   Text,
   StyleSheet,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
+  StatusBar
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDatabase } from "@/hooks/useDatabase";
 import { healthIndicators, profiles } from "@/database/schema";
 import { desc, eq, sql } from "drizzle-orm";
 import { useTheme } from "@/context/ThemeContext";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 import {
   Ionicons,
@@ -29,6 +30,7 @@ import { ThemeColors } from "@/constants/Colors";
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
   const { theme } = useTheme();
+  const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
   const styles = getStyles(theme);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
@@ -39,7 +41,7 @@ const HistoryProfile = () => {
     null
   );
   const {userId} = useUserData();
-  console.log("User ID:", userId);
+
  
 
 
@@ -106,168 +108,169 @@ const HistoryProfile = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitle}>Profiles</Text>
-            <Text style={styles.headerSubtitle}>
-              Manage your health profiles
-            </Text>
-          </View>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddProfile}>
-            <MaterialCommunityIcons
-              name="account-plus"
-              size={32}
-              color={theme.text}
-            />
-          </TouchableOpacity>
+    <SafeAreaView style={[styles.container, { paddingBottom: bottom }]} edges={["bottom"]}>
+  
+      <View style={[styles.header, { paddingTop: top + 10 }]}>
+        <View>
+          <Text style={styles.headerTitle}>Profiles</Text>
+          <Text style={styles.headerSubtitle}>
+            Manage your health profiles
+          </Text>
         </View>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddProfile}>
+          <MaterialCommunityIcons
+            name="account-plus"
+            size={32}
+            color={theme.textLight || '#fff'}
+          />
+        </TouchableOpacity>
+      </View>
 
-        <Animated.ScrollView
-          ref={scrollRef}
-          scrollEventThrottle={16}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.content}>
-            {profilesData.length === 0 ? (
-              <View style={styles.emptyContainer}>
-                <Ionicons
-                  name="people-circle-outline"
-                  size={60}
-                  color={theme.text}
-                />
-                <Text style={styles.emptyText}>No profiles found</Text>
-                <Text style={styles.emptySubtext}>
-                  Create a profile to get started
-                </Text>
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.content}>
+          {profilesData.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons
+                name="people-circle-outline"
+                size={60}
+                color={theme.text}
+              />
+              <Text style={styles.emptyText}>No profiles found</Text>
+              <Text style={styles.emptySubtext}>
+                Create a profile to get started
+              </Text>
+              <TouchableOpacity
+                style={styles.createButton}
+                onPress={handleAddProfile}
+              >
+                <Text style={styles.createButtonText}>Create Profile</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            profilesData.map((profile) => (
+              <View style={styles.profileCardWrapper} key={profile.id}>
                 <TouchableOpacity
-                  style={styles.createButton}
-                  onPress={handleAddProfile}
+                  style={styles.profileTouchable}
+                  onPress={() => onProfilePress(profile.id.toString())}
+                 
                 >
-                  <Text style={styles.createButtonText}>Create Profile</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              profilesData.map((profile) => (
-                <View style={styles.profileCardWrapper} key={profile.id}>
-                  <TouchableOpacity
-                    style={styles.profileTouchable}
-                    onPress={() => onProfilePress(profile.id.toString())}
-                   
-                  >
-                    <View style={styles.profileCard}>
-                      <View style={styles.profileHeader}>
-                        <View style={styles.profileAvatar}>
-                          <Ionicons
-                            name="person"
-                            size={28}
-                            color={theme.text}
-                          />
-                        </View>
-                        <View style={styles.profileInfo}>
-                          <Text style={styles.profileName}>
-                            {profile.fullname}
-                          </Text>
-                          <View style={styles.profileMetaContainer}>
-                            <View style={styles.profileMeta}>
-                              <FontAwesome5
-                                name={
-                                  profile.gender === "Male" ? "mars" : "venus"
-                                }
-                                size={14}
-                                color={theme.text}
-                              />
-                              <Text style={styles.profileMetaText}>
-                                {profile.gender}
-                              </Text>
-                            </View>
-                            <View style={styles.metaSeparator} />
-                            <View style={styles.profileMeta}>
-                              <Ionicons
-                                name="calendar-outline"
-                                size={14}
-                                color={theme.text}
-                              />
-                              <Text style={styles.profileMetaText}>
-                                {profile.age} years
-                              </Text>
-                            </View>
+                  <View style={styles.profileCard}>
+                    <View style={styles.profileHeader}>
+                      <View style={styles.profileAvatar}>
+                        <Ionicons
+                          name="person"
+                          size={28}
+                          color={theme.text}
+                        />
+                      </View>
+                      <View style={styles.profileInfo}>
+                        <Text style={styles.profileName}>
+                          {profile.fullname}
+                        </Text>
+                        <View style={styles.profileMetaContainer}>
+                          <View style={styles.profileMeta}>
+                            <FontAwesome5
+                              name={
+                                profile.gender === "Male" ? "mars" : "venus"
+                              }
+                              size={14}
+                              color={theme.text}
+                            />
+                            <Text style={styles.profileMetaText}>
+                              {profile.gender}
+                            </Text>
+                          </View>
+                          <View style={styles.metaSeparator} />
+                          <View style={styles.profileMeta}>
+                            <Ionicons
+                              name="calendar-outline"
+                              size={14}
+                              color={theme.text}
+                            />
+                            <Text style={styles.profileMetaText}>
+                              {profile.age} years
+                            </Text>
                           </View>
                         </View>
-                        <TouchableOpacity
-                          style={styles.moreButton}
-                          onPress={() =>
-                            handleOpenBottomSheet(profile.id.toString())
-                          }
-                        >
-                          <Ionicons
-                            name="ellipsis-vertical"
-                            size={20}
-                            color={theme.text}
-                          />
-                        </TouchableOpacity>
                       </View>
+                      <TouchableOpacity
+                        style={styles.moreButton}
+                        onPress={() =>
+                          handleOpenBottomSheet(profile.id.toString())
+                        }
+                      >
+                        <Ionicons
+                          name="ellipsis-vertical"
+                          size={20}
+                          color={theme.text}
+                        />
+                      </TouchableOpacity>
+                    </View>
 
-                      {/* Health Indicators */}
-                      {healthData[profile.id] && (
-                        <View style={styles.healthIndicators}>
-                          {Object.entries(healthIndicatorConfig).map(
-                            ([key, config]) => (
-                                <View
-                                key={key}
-                                style={[
-                                  styles.indicator,
-                                  healthData[profile.id][key] === "Yes"
-                                  ? styles.indicatorActive
-                                  : healthData[profile.id][key] === "I used to"
-                                    ? styles.indicatorWarning
-                                  : {},
-                                ]}
-                                >
-                                <FontAwesome5
-                                  name={config.icon}
-                                  size={14}
-                                  color={theme.text}
-                                />
-                                <Text style={styles.indicatorText}>
-                                  {config.label}
-                                </Text>
-                                </View>
-                            )
+                    {/* Health Indicators */}
+                    {healthData[profile.id] && (
+                      <View style={styles.healthIndicators}>
+                        {Object.entries(healthIndicatorConfig).map(
+                          ([key, config]) => (
+                              <View
+                              key={key}
+                              style={[
+                                styles.indicator,
+                                healthData[profile.id][key] === "Yes"
+                                ? styles.indicatorActive
+                                : healthData[profile.id][key] === "I used to"
+                                  ? styles.indicatorWarning
+                                : {},
+                              ]}
+                              >
+                              <FontAwesome5
+                                name={config.icon}
+                                size={14}
+                                color={theme.text}
+                              />
+                              <Text style={styles.indicatorText}>
+                                {config.label}
+                              </Text>
+                              </View>
+                          )
+                        )}
+                      </View>
+                    )}
+
+                    <View style={styles.profileFooter}>
+                      <View style={styles.lastUpdated}>
+                        <Ionicons
+                          name="time-outline"
+                          size={14}
+                          color={theme.text}
+                        />
+                        <Text style={styles.lastUpdatedText}>
+                          {formatDate(
+                            new Date(profile.updated_at).toISOString()
                           )}
-                        </View>
-                      )}
-
-                      <View style={styles.profileFooter}>
-                        <View style={styles.lastUpdated}>
-                          <Ionicons
-                            name="time-outline"
-                            size={14}
-                            color={theme.text}
-                          />
-                          <Text style={styles.lastUpdatedText}>
-                            {formatDate(
-                              new Date(profile.updated_at).toISOString()
-                            )}
-                          </Text>
-                        </View>
+                        </Text>
                       </View>
                     </View>
-                  </TouchableOpacity>
-                </View>
-              ))
-            )}
-          </View>
-        </Animated.ScrollView>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+        </View>
+      </Animated.ScrollView>
 
-        <CustomBottomSheetModal
-          index={0}
-          onDelete={handleDelete}
-          ref={bottomSheetModalRef}
-        />
-    
-    </SafeAreaView>
+      <CustomBottomSheetModal
+        index={0}
+        onDelete={handleDelete}
+        ref={bottomSheetModalRef}
+      />
+  
+  </SafeAreaView>
   );
 };
 
@@ -279,21 +282,22 @@ const getStyles = (theme: ThemeColors) =>
     },
   
     header: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 20,
-      paddingVertical: 15,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.separator,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      backgroundColor: theme.blue,
+      paddingHorizontal: 16,
+      paddingBottom: 12,
+      borderBottomLeftRadius: 25,
+      borderBottomRightRadius: 25,
     },
     headerTitle: {
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       fontSize: 28,
       fontFamily: "Roboto-Bold",
     },
     headerSubtitle: {
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       fontSize: 14,
       opacity: 0.8,
     },
