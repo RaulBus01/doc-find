@@ -1,0 +1,125 @@
+import { ThemeColors } from "@/constants/Colors";
+import { StyleSheet } from "react-native";
+
+export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleSheet.create({
+  container: {
+    position: "relative",
+    paddingBottom: bottom,
+  },
+  contentView: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.progressColor,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    minHeight: 50,
+
+  },
+  collapsedBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: theme.background,
+    borderRadius: 22,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    marginTop: 5,
+    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
+  collapsedText: {
+    color: `${theme.text}80`,
+    marginLeft: 10,
+    flex: 1,
+    fontSize: 15,
+  },
+  button: {
+    marginRight: 10,
+    width: 30,
+    height: 30,
+    borderRadius: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.background,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+  },
+  buttonView: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 14,
+    marginLeft: 5,
+    paddingVertical: 5,
+  },
+ 
+  messageInput: {
+    flex: 1,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    backgroundColor: theme.red,
+    color: theme.text,
+    fontSize: 16,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+   
+    
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+  },
+  activeIconButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: `${theme.text}15`,
+  },
+  sendButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: theme.text,
+  },
+  actionButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 15,
+    paddingBottom: 10,
+  },
+  attachmentButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    paddingLeft: 15,
+  },
+  bottomIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  toolbarContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+  }
+});

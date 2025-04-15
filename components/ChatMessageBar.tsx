@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useContext } from "react";
+import React, { useRef, useContext } from "react";
 import {
   StyleSheet,
   TextInput,
   Keyboard,
-  Pressable,
+  TouchableOpacity,
   View,
-  Text,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -18,14 +17,14 @@ import {
   withTiming,
   withSpring,
   Easing,
-  runOnJS,
 } from "react-native-reanimated";
 
+import {MessageBarStyles} from "@/components/ChatMessageBarStyle";
 import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 
-const ATouchableOpacity = Animated.createAnimatedComponent(Pressable);
+const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 type Props = {
   onModalPress: () => void;
@@ -36,7 +35,6 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   const [message, setMessage] = React.useState("");
   const { bottom } = useSafeAreaInsets();
   const expanded = useSharedValue(0);
-  const isExpanded = useSharedValue(false);
   const barExpanded = useSharedValue(0);
   const focusedHeight = useSharedValue(0);
   const inputRef = useRef<TextInput>(null);
@@ -46,152 +44,28 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     TabBarVisibilityContext
   );
 
-  // Define styles inline
-  const styles = StyleSheet.create({
-    container: {
-      position: "relative",
-      paddingBottom: bottom,
-    },
-    contentView: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: theme.progressColor,
-      borderTopLeftRadius: 25,
-      borderTopRightRadius: 25,
-      paddingHorizontal: 15,
-    },
-    collapsedBar: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: theme.background,
-      borderRadius: 22,
-      marginHorizontal: 15,
-      marginBottom: 10,
-      marginTop: 5,
-      gap: 10,
-      paddingVertical: 12,
-      paddingHorizontal: 15,
-      elevation: 3,
-    },
-    collapsedText: {
-      color: `${theme.text}80`,
-      marginLeft: 10,
-      flex: 1,
-      fontSize: 15,
-    },
-    button: {
-      marginRight: 10,
-      width: 30,
-      height: 30,
-      borderRadius: 50,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: `${theme.background}`,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-    },
-    buttonView: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 14,
-      marginLeft: 5,
-      paddingVertical: 5,
-    },
-    textAreaView: {
-      flex: 1,
-      minHeight: 46,
-      maxHeight: 150,
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: theme.background,
-      borderRadius: 22,
-      marginHorizontal: 8,
-      marginVertical: 5,
-      paddingVertical: 6,
-      paddingHorizontal: 12,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-    },
-    bottomIcons: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-      position: "absolute",
-      bottom: 8,
-      right: 12,
-    },
-    messageInput: {
-      flex: 1,
-      marginLeft: 8,
-      padding: 6,
-      borderRadius: 20,
-      backgroundColor: "transparent",
-      color: theme.text,
-      fontSize: 16,
-    },
-    iconButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 20,
-    },
-    activeIconButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 20,
-      backgroundColor: `${theme.text}15`,
-    },
-    sendButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 20,
-      backgroundColor: theme.text,
-    },
-    actionButtonsContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      paddingHorizontal: 8,
-      justifyContent: "space-between",
-    },
-    attachmentButtons: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 12,
-    },
-
-    toolbarContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-  });
-
+  const styles = MessageBarStyles(theme, bottom);
+  
   const springConfig: WithSpringConfig = {
     damping: 22,
     stiffness: 180,
     mass: 1,
   };
 
-
+  // This will now account for the text input height
   const containerStyle = useAnimatedStyle(() => {
+    // Base height + any additional height from text input
+    const baseCollapsedHeight = 50;
+    const baseExpandedHeight = 105;
+    
+    // Add the focused height to the expanded state
+    const dynamicExpandedHeight = baseExpandedHeight + Math.max(0, focusedHeight.value - 25);
+    
     return {
       height: interpolate(
         barExpanded.value,
         [0, 1],
-        [50, 105],
+        [baseCollapsedHeight, dynamicExpandedHeight],
         Extrapolation.CLAMP
       ),
     };
@@ -249,27 +123,11 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     };
   });
 
-  const textAreaAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      minHeight: interpolate(
-        focusedHeight.value,
-        [0, 1],
-        [46, 100],
-        Extrapolation.CLAMP
-      ),
-    };
-  });
-
-  // Animate the text input to shift upward when focused
+  // Modified input container style to match the text height more directly
   const inputContainerStyle = useAnimatedStyle(() => {
     return {
       flex: 1,
-      marginTop: interpolate(
-        focusedHeight.value,
-        [0, 1],
-        [0, -15],
-        Extrapolation.CLAMP
-      ),
+      height: Math.max(25, focusedHeight.value), // Ensure minimum height
     };
   });
 
@@ -367,8 +225,16 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
 
   const handleContentSizeChange = (event: any) => {
     const { height } = event.nativeEvent.contentSize;
-    const lineHeight = 20;
-    const lines = height / lineHeight;
+    const lineHeight = 25;
+    const lines = Math.ceil(height / lineHeight); // Use ceiling to avoid partial lines
+    const maxLines = 10; // Maximum number of lines allowed
+    const newHeight = Math.min(lines, maxLines) * lineHeight;
+    
+    // Make animation faster to prevent text clipping
+    focusedHeight.value = withTiming(newHeight, {
+      duration: 100, // Faster animation to prevent clipping
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1), // Less dramatic easing
+    });
   };
 
   const handleSend = () => {
@@ -386,45 +252,31 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     <Animated.View style={[styles.container, containerStyle]}>
       {/* Collapsed message bar (acts as a button) */}
       <Animated.View style={collapsedBarStyle}>
-        <Pressable style={styles.collapsedBar} onPress={toggleBarExpansion}>
+        <TouchableOpacity style={styles.collapsedBar} onPress={toggleBarExpansion}>
           <Ionicons name="chatbubble-outline" size={22} color={theme.text} />
           <Animated.Text style={styles.collapsedText}>
             Type your symptoms here...
           </Animated.Text>
-        </Pressable>
+        </TouchableOpacity>
       </Animated.View>
 
       {/* Expanded message bar */}
       <Animated.View style={expandedBarStyle}>
         <Animated.View style={[styles.contentView]}>
           {/* Input area */}
-          <Animated.View style={[styles.textAreaView, textAreaAnimatedStyle]}>
-            <Animated.View style={inputContainerStyle}>
-              <TextInput
-                ref={inputRef}
-                placeholder="Type your symptoms here..."
-                placeholderTextColor={`${theme.text}80`}
-                multiline
-                numberOfLines={3}
-                onContentSizeChange={handleContentSizeChange}
-                value={message}
-                onChangeText={onChangeText}
-                onFocus={onInputFocus}
-                style={styles.messageInput}
-              />
-            </Animated.View>
-
-            <Animated.View style={styles.bottomIcons}>
-              {!isSendDisabled ? (
-                <Pressable onPress={handleSend} style={styles.sendButton}>
-                  <Ionicons name="send" size={22} color="#fff" />
-                </Pressable>
-              ) : (
-                <Pressable onPress={() => {}} style={styles.iconButton}>
-                  <Ionicons name="mic" size={24} color={theme.text} />
-                </Pressable>
-              )}
-            </Animated.View>
+          <Animated.View style={inputContainerStyle}>
+            <TextInput
+              ref={inputRef}
+              placeholder="Type your symptoms here..."
+              placeholderTextColor={`${theme.text}80`}
+              multiline
+              numberOfLines={10}
+              onContentSizeChange={handleContentSizeChange}
+              value={message}
+              onChangeText={onChangeText}
+              onFocus={onInputFocus}
+              style={styles.messageInput}
+            />
           </Animated.View>
         </Animated.View>
 
@@ -439,16 +291,16 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
             </ATouchableOpacity>
 
             <Animated.View style={[styles.buttonView, buttonContainerStyle]}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => {
                   collapseItems();
                   console.log("Camera");
                 }}
-                style={styles.activeIconButton}
+                style={styles.iconButton}
               >
                 <Ionicons name="camera-outline" size={24} color={theme.text} />
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => {
                   collapseItems();
                   console.log("Gallery");
@@ -456,8 +308,8 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                 style={styles.iconButton}
               >
                 <Ionicons name="image-outline" size={24} color={theme.text} />
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => {
                   collapseItems();
                   console.log("Document");
@@ -469,14 +321,25 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                   size={24}
                   color={theme.text}
                 />
-              </Pressable>
+              </TouchableOpacity>
             </Animated.View>
           </View>
+          <Animated.View style={styles.bottomIcons}>
+              {!isSendDisabled ? (
+                <TouchableOpacity onPress={handleSend} style={styles.sendButton}>
+                  <Ionicons name="send" size={22} color="#fff" />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity onPress={() => {}} style={styles.iconButton}>
+                  <Ionicons name="mic" size={24} color={theme.text} />
+                </TouchableOpacity>
+              )}
+            </Animated.View>
 
           {/* Close button */}
-          <Pressable onPress={toggleBarExpansion} style={styles.iconButton}>
+          <TouchableOpacity onPress={toggleBarExpansion} style={styles.iconButton}>
             <Ionicons name="chevron-down" size={24} color={theme.text} />
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </Animated.View>
     </Animated.View>
