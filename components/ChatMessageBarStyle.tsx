@@ -69,8 +69,6 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleShe
     fontSize: 16,
     paddingVertical: 10,
     paddingHorizontal: 20,
-   
-    
   },
   iconButton: {
     width: 40,

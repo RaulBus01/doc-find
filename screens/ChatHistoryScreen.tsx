@@ -2,7 +2,7 @@ import ChatItem from "@/components/ChatItem";
 import { useToken } from "@/context/TokenContext";
 import { Chat } from "@/interface/Interface";
 import { deleteChat, getChats } from "@/utils/DatabaseAPI";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ import CustomModal from "@/components/CustomModal";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemeColors } from "@/constants/Colors";
+import { TabBarVisibilityContext } from "@/context/TabBarContext";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -31,8 +32,12 @@ const ChatHistoryScreen = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
 
   useEffect(() => {
+    if(!isTabBarVisible) {
+      setIsTabBarVisible(true);
+    }
     if (!isLoading && !error && token) {
       getChats(token,10).then((data) => {
         if (data.length > 0) {

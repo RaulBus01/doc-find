@@ -1,7 +1,8 @@
-import { View, Text, SafeAreaView, StyleSheet, FlatList, Keyboard, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, FlatList, Keyboard, TouchableOpacity, Switch } from 'react-native';
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import MessageBar from '../components/ChatMessageBar';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState, useCallback } from 'react';
+import BottomSheetModal, { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import ChatMessage from '../components/ChatMessage';
 import { Message } from '@/interface/Interface';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +15,9 @@ import { welcomeMessages } from '@/constants/WelcomeMessages';
 import { useTheme } from '@/context/ThemeContext';
 import { ThemeColors } from '@/constants/Colors';
 import { TabBarVisibilityContext } from '@/context/TabBarContext';
-import { is } from 'drizzle-orm';
+import { desc, eq, is } from 'drizzle-orm';
+import { useDatabase } from '@/hooks/useDatabase';
+import { profiles as profilesTable } from '@/database/schema';
 
 
 const ChatScreen = () => {
@@ -31,7 +34,10 @@ const ChatScreen = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { isTabBarVisible } = useContext(TabBarVisibilityContext);
-
+  const [selectedProfileId, setSelectedProfileId] = useState<string | null>(null);
+  const profilesBottomSheetRef = useRef<BottomSheetModal>(null);
+  const [profiles, setProfiles] = useState<any[]>([]); // TODO: Define a proper type for profiles
+  const [useProfileContext, setUseProfileContext] = useState(false);
 
   function setChatId(id: string) {
     chatIdRef.current = id;
@@ -149,10 +155,6 @@ const ChatScreen = () => {
       if (newTitle) {
         console.log('New title:', newTitle);
       }
-
-     
-
-
       setTimeout(() => {
         flatListRef.current?.scrollToEnd({ animated: true });
       }, 100);
@@ -162,12 +164,91 @@ const ChatScreen = () => {
     }
   }
 
+  const drizzleDB = useDatabase();
+
+  const fetchProfiles = useCallback(async () => {
+    if (!userId) return;
+    
+    try {
+      const profileData = await drizzleDB
+        .select()
+        .from(profilesTable)
+        .where(eq(profilesTable.auth0Id, userId as string))
+        .orderBy(desc(profilesTable.created_at))
+        .execute();
+      
+      setProfiles(profileData);
+    } catch (error) {
+      console.error("Error fetching profiles:", error);
+    }
+  }, [userId]);
+
+  const handleProfileSelect = (profileId: string) => {
+    if (!useProfileContext) {
+      // If profile context is disabled, don't allow selection
+      return;
+    }
+  
+    if (selectedProfileId === profileId) {
+      setSelectedProfileId(null); // Deselect if already selected
+    }
+    else {
+      setSelectedProfileId(profileId);
+    }
+    profilesBottomSheetRef.current?.close();
+    
+  };
+
+  const handleMenuPress = useCallback(() => {
+    fetchProfiles();
+    profilesBottomSheetRef.current?.expand();
+  }, [fetchProfiles]);
+
+  const renderProfileItem = ({ item }: { item: any }) => (
+    <TouchableOpacity 
+      style={styles.profileItem}
+      onPress={() => handleProfileSelect(item.id.toString())}
+    >
+      <View style={styles.profileIcon}>
+        <Ionicons name="person" size={24} color={theme.text} />
+      </View>
+      <View style={styles.profileInfo}>
+        <Text style={styles.profileName}>{item.fullname}</Text>
+        <Text style={styles.profileMeta}>{item.gender}, {item.age} years</Text>
+      </View>
+      {/* Move the checkmark outside of profileInfo */}
+      {item.id.toString() === selectedProfileId && (
+        <Ionicons name="checkmark-circle" size={24} color={theme.progressColor} />
+      )}
+    </TouchableOpacity>
+  );
 
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
    
       <View style={[styles.header, { paddingTop: top + 10 }]}>
-        <Text style={styles.headerTitle}>AI Assistant</Text>
+        <TouchableOpacity
+          style={styles.menuiconButton}
+          onPress={handleMenuPress}
+        >
+          <Entypo name="menu" size={24} color={theme.textLight ? theme.textLight : theme.text} />
+        </TouchableOpacity>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle}>AI Assistant</Text>
+          {useProfileContext && selectedProfileId ? (
+            <View style={styles.activeProfileBadge}>
+              <Ionicons name="person" size={12} color={theme.textLight} />
+              <Text style={styles.activeProfileText}>Profile Active</Text>
+            </View>
+          ) : (
+            <View style={styles.deactivatedProfileBadge}>
+              <Ionicons name="person" size={12} color={theme.textLight} />
+              <Text style={styles.activeProfileText}>No Profile Active</Text>
+            </View>
+          )
+        }
+
+        </View>
         <View style={styles.headerIcons}>
           <TouchableOpacity
             style={styles.iconButton}
@@ -219,6 +300,64 @@ const ChatScreen = () => {
           onMessageSend={handleMessageSend}
         />
       </View>
+
+      <BottomSheetModal
+        ref={profilesBottomSheetRef}
+        index={-1}
+        snapPoints={['60%']}
+        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
+        handleIndicatorStyle={{ backgroundColor: theme.blue }}
+        enableDynamicSizing={false}
+        enablePanDownToClose={true}
+        
+      >
+        <View style={styles.bottomSheetHeader}>
+          <Text style={styles.bottomSheetTitle}>Profile Context</Text>
+          <View style={styles.switchContainer}>
+            <Text style={styles.switchLabel}>Use profile information</Text>
+            <Switch
+              value={useProfileContext}
+              onValueChange={(value) => {
+                setUseProfileContext(value);
+                if (!value) setSelectedProfileId(null);
+              }}
+              trackColor={{ false: theme.separator, true: theme.progressColor }}
+              thumbColor={theme.backgroundDark}
+            />
+          </View>
+          <Text style={styles.bottomSheetSubtitle}>
+            {useProfileContext 
+              ? "Choose a profile to personalize your chat" 
+              : "Enable profile context to personalize your chat"}
+          </Text>
+        </View>
+        
+        {useProfileContext ? (
+          <BottomSheetFlatList
+            data={profiles}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={renderProfileItem}
+            contentContainerStyle={styles.profilesList}
+            ListEmptyComponent={
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={styles.emptyProfilesText}>No profiles found</Text>
+                <TouchableOpacity 
+                  onPress={() => handleRoute('new')}
+                  style={{ marginTop: 10 }}
+                >
+                  <Text style={{ color: theme.progressColor }}>Create a new profile</Text>
+                </TouchableOpacity>
+              </View>
+            }
+          />
+        ) : (
+          <View style={styles.disabledProfilesContainer}>
+            <Text style={styles.disabledProfilesText}>
+              Without profile context, the AI will respond based on general information only.
+            </Text>
+          </View>
+        )}
+      </BottomSheetModal>
     </SafeAreaView>
   );
 };
@@ -230,10 +369,9 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.blue,
-    paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
@@ -252,13 +390,48 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   headerIcons: {
     flexDirection: 'row',
     alignItems: 'center',
+    position: 'absolute',
+    right: 10,
+    bottom: 20,
+  },
+  menuiconButton: {
+    color: theme.text,
+    padding: 8,
+    position: 'absolute',
+    left: 16,
+    bottom: 20,
   },
   iconButton: {
     color: theme.text,
-    marginLeft: 16,
-    padding: 4,
+    padding: 8,
   },
-
+  headerTitleContainer: {
+    alignItems: 'center',
+    // flex: 1,
+  },
+  deactivatedProfileBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.text,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginTop: 4,
+  },
+  activeProfileBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.progressColor,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 12,
+    marginTop: 4,
+  },
+  activeProfileText: {
+    color: theme.textLight,
+    fontSize: 10,
+    marginLeft: 4,
+  },
   recentChat: {
     padding: 16,
     borderBottomWidth: 1,
@@ -276,6 +449,87 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     flex: 1,
     backgroundColor: theme.background,
     marginBottom: 50,
+  },
+  bottomSheetHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: 0.2,
+    borderBottomColor: theme.separator,
+  },
+  bottomSheetTitle: {
+    fontSize: 18,
+    fontFamily: "Roboto-Bold",
+    color: theme.text,
+    marginBottom: 4,
+  },
+  bottomSheetSubtitle: {
+    fontSize: 14,
+    color: theme.text,
+    opacity: 0.7,
+  },
+  profilesList: {
+    padding: 16,
+  },
+  profileItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between", 
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 0.2,
+    borderBottomColor: theme.separator,
+  },
+  profileIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: theme.cardBackground,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  profileInfo: {
+    flex: 1,
+    marginRight: 10, // Add some margin to create space between text and checkmark
+  },
+  profileName: {
+    fontSize: 16,
+    fontFamily: "Roboto-Bold",
+    color: theme.text,
+  },
+  profileMeta: {
+    fontSize: 14,
+    color: theme.text,
+    opacity: 0.7,
+  },
+  emptyProfilesText: {
+    textAlign: "center",
+    padding: 20,
+    color: theme.text,
+    opacity: 0.7,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+    marginBottom: 15,
+  },
+  switchLabel: {
+    fontSize: 16,
+    color: theme.text,
+  },
+  disabledProfilesContainer: {
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  disabledProfilesText: {
+    textAlign: 'center',
+    color: theme.text,
+    opacity: 0.7,
+    fontSize: 16,
+    lineHeight: 24,
   },
 });
 
