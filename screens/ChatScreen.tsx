@@ -155,9 +155,7 @@ const ChatScreen = () => {
       if (newTitle) {
         console.log('New title:', newTitle);
       }
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
+     
         Keyboard.dismiss();
     } catch (e) {
       console.error(e);

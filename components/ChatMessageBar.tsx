@@ -1,6 +1,5 @@
-import React, { useRef, useContext } from "react";
+import React, { useRef, useContext, useState } from "react";
 import {
-  StyleSheet,
   TextInput,
   Keyboard,
   TouchableOpacity,
@@ -36,14 +35,14 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   const { bottom } = useSafeAreaInsets();
   const expanded = useSharedValue(0);
   const barExpanded = useSharedValue(0);
-  const focusedHeight = useSharedValue(0);
   const inputRef = useRef<TextInput>(null);
   const isSendDisabled = !message.trim();
   const { theme } = useTheme();
   const { isTabBarVisible, setIsTabBarVisible } = useContext(
     TabBarVisibilityContext
   );
-
+  const [height, setHeight] = useState(50);
+  
   const styles = MessageBarStyles(theme, bottom);
   
   const springConfig: WithSpringConfig = {
@@ -52,24 +51,6 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     mass: 1,
   };
 
-  // This will now account for the text input height
-  const containerStyle = useAnimatedStyle(() => {
-    // Base height + any additional height from text input
-    const baseCollapsedHeight = 50;
-    const baseExpandedHeight = 105;
-    
-    // Add the focused height to the expanded state
-    const dynamicExpandedHeight = baseExpandedHeight + Math.max(0, focusedHeight.value - 25);
-    
-    return {
-      height: interpolate(
-        barExpanded.value,
-        [0, 1],
-        [baseCollapsedHeight, dynamicExpandedHeight],
-        Extrapolation.CLAMP
-      ),
-    };
-  });
 
   const collapsedBarStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -123,44 +104,32 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     };
   });
 
-  // Modified input container style to match the text height more directly
-  const inputContainerStyle = useAnimatedStyle(() => {
-    return {
-      flex: 1,
-      height: Math.max(25, focusedHeight.value), // Ensure minimum height
-    };
-  });
+
 
   const toggleBarExpansion = () => {
-    const newValue = barExpanded.value === 0 ? 1 : 0;
-
-    if (newValue === 0 && inputRef.current) {
-      inputRef.current.blur();
-
-      setTimeout(() => {
-        setIsTabBarVisible(true);
-
-        barExpanded.value = withTiming(
-          0,
-          {
-            duration: 300,
-            easing: Easing.out(Easing.cubic),
-          },
-          () => {
-            focusedHeight.value = 0;
-          }
-        );
-      }, 50);
-    } else {
+    if (barExpanded.value === 0) {
+      // Opening the bar
       setIsTabBarVisible(false);
-
       barExpanded.value = withSpring(1, springConfig);
-
+      
       setTimeout(() => {
         if (inputRef.current) {
           inputRef.current.focus();
+          
+         
         }
       }, 200);
+    } else {
+      // Closing the bar
+      if (inputRef.current) {
+        inputRef.current.blur();
+      }
+      
+      setIsTabBarVisible(true);
+      barExpanded.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.out(Easing.cubic),
+      });
     }
   };
 
@@ -177,6 +146,17 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     collapseItems();
 
     setIsTabBarVisible(false);
+    
+    // If there's existing text, measure it on focus
+    if (message.trim().length > 0 && inputRef.current) {
+      // Use setTimeout to allow the input to properly mount
+      setTimeout(() => {
+        inputRef.current?.measure(() => {
+          // This forces a layout recalculation
+          inputRef.current?.setNativeProps({});
+        });
+      }, 100);
+    }
   };
 
   const expandButtonStyle = useAnimatedStyle(() => {
@@ -223,19 +203,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     onModalPress();
   };
 
-  const handleContentSizeChange = (event: any) => {
-    const { height } = event.nativeEvent.contentSize;
-    const lineHeight = 25;
-    const lines = Math.ceil(height / lineHeight); // Use ceiling to avoid partial lines
-    const maxLines = 10; // Maximum number of lines allowed
-    const newHeight = Math.min(lines, maxLines) * lineHeight;
-    
-    // Make animation faster to prevent text clipping
-    focusedHeight.value = withTiming(newHeight, {
-      duration: 100, // Faster animation to prevent clipping
-      easing: Easing.bezier(0.25, 0.1, 0.25, 1), // Less dramatic easing
-    });
-  };
+  
 
   const handleSend = () => {
     if (message.trim()) {
@@ -249,36 +217,42 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   };
 
   return (
-    <Animated.View style={[styles.container, containerStyle]}>
+    <Animated.View style={[styles.container]}>
       {/* Collapsed message bar (acts as a button) */}
       <Animated.View style={collapsedBarStyle}>
         <TouchableOpacity style={styles.collapsedBar} onPress={toggleBarExpansion}>
           <Ionicons name="chatbubble-outline" size={22} color={theme.text} />
           <Animated.Text style={styles.collapsedText}>
-            Type your symptoms here...
+            {message.length > 0 
+    ? message.replace(/\s+/g, ' ').trim().slice(0, 20) + (message.replace(/\s+/g, ' ').trim().length > 20 ? "..." : "")
+    : "Type a message..."}
           </Animated.Text>
         </TouchableOpacity>
       </Animated.View>
 
       {/* Expanded message bar */}
       <Animated.View style={expandedBarStyle}>
-        <Animated.View style={[styles.contentView]}>
+     
           {/* Input area */}
-          <Animated.View style={inputContainerStyle}>
+       
             <TextInput
               ref={inputRef}
+            
+              textAlignVertical="top"
               placeholder="Type your symptoms here..."
-              placeholderTextColor={`${theme.text}80`}
+              placeholderTextColor={theme.text + "80"}
               multiline
               numberOfLines={10}
-              onContentSizeChange={handleContentSizeChange}
+              onContentSizeChange={(event) => {
+                setHeight(event.nativeEvent.contentSize.height);
+            }}
               value={message}
               onChangeText={onChangeText}
               onFocus={onInputFocus}
-              style={styles.messageInput}
+              style={[
+                styles.messageInput,{height: Math.max(50, height)}]}
             />
-          </Animated.View>
-        </Animated.View>
+  
 
         {/* Action buttons container */}
         <View style={styles.actionButtonsContainer}>

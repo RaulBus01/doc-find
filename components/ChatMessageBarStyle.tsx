@@ -3,8 +3,10 @@ import { StyleSheet } from "react-native";
 
 export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleSheet.create({
   container: {
+    
     position: "relative",
     paddingBottom: bottom,
+    backgroundColor: theme.blue,
   },
   contentView: {
     flexDirection: "row",
@@ -27,10 +29,7 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleShe
     paddingVertical: 12,
     paddingHorizontal: 15,
     elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
+    
   },
   collapsedText: {
     color: `${theme.text}80`,
@@ -47,10 +46,7 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleShe
     alignItems: "center",
     backgroundColor: theme.background,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+  
   },
   buttonView: {
     flexDirection: "row",
@@ -62,13 +58,14 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) => StyleShe
  
   messageInput: {
     flex: 1,
+    minHeight: 50,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
-    backgroundColor: theme.red,
+    backgroundColor: theme.blue,
     color: theme.text,
     fontSize: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingTop: 10,
+    paddingHorizontal: 25,
   },
   iconButton: {
     width: 40,

@@ -1,4 +1,5 @@
 import { fetch } from "expo/fetch";
+// const API_URL = "https://docfind-backend.deno.dev";
 const API_URL = "http://192.168.1.120:8080";
 interface QueryParams {
   [key: string]: string | number | boolean;
@@ -16,6 +17,7 @@ export class ApiCall {
   }
   static async get(url: string, token: string,query?:QueryParams) {
     try {
+
       const fullUrl = this.buildUrl(API_URL + url, query);
       const response = await fetch(fullUrl, {
         method: "GET",
@@ -39,6 +41,7 @@ export class ApiCall {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
         body: data ? JSON.stringify(data) : JSON.stringify({}),
       });
