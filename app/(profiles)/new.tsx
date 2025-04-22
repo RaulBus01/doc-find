@@ -5,24 +5,24 @@ import {
   TextInput,
   Pressable,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import React, { useState, useRef, useMemo, useCallback } from "react";
 import { useTheme } from "@/context/ThemeContext";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons"; // Import FontAwesome5
 import { useRouter } from "expo-router";
-import { healthIndicators, profiles } from "@/database/schema";
+import { HealthIndicatorInput,  ProfileInput } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import { useDatabase } from '@/hooks/useDatabase';
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
-import BottomSheet, {
+import  {
   BottomSheetModal,
   BottomSheetFlatList,
   BottomSheetBackdrop
 } from '@gorhom/bottom-sheet';
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig"; // Import the config
+import { addProfile } from "@/utils/LocalDatabase";
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -300,19 +300,18 @@ const NewProfile = () => {
       const {diabetic, hypertensive, smoker, birthYear, ...profileData} = formData;
       const age = birthYear > 0 ? currentYear - birthYear : 0; // Calculate age
 
-      const profileToInsert = { ...profileData, age, auth0Id:userId as string};
-
-      await drizzleDB.transaction(async (tx)=>{
-        const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
-
-        const newProfileId = newProfile[0].id;
-        await tx.insert(healthIndicators).values({
-          profileId: newProfileId,
-          diabetic,
-          hypertensive,
-          smoker
-        }).execute();
-      });
+      const profileToInsert = { ...profileData, age, auth0Id:userId as string} as ProfileInput;
+      const healthData = {
+        profileId: 0, 
+        diabetic: diabetic,
+        hypertensive: hypertensive,
+        smoker: smoker
+      } as HealthIndicatorInput;
+      const result = await addProfile(drizzleDB, profileToInsert, healthData);
+      if (!result) {
+        console.error("Error adding profile to database");
+        return;
+      }
 
       console.log("Profile created successfully");
       router.replace("/(tabs)");

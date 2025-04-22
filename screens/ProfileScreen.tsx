@@ -1,8 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDatabase } from "@/hooks/useDatabase";
@@ -18,6 +14,7 @@ import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
 import { ThemeColors } from "@/constants/Colors";
+import { getProfileById, getProfileHealthIndicatorById } from "@/utils/LocalDatabase";
 
 const ProfileScreen = () => {
   const { id } = useLocalSearchParams();
@@ -30,32 +27,24 @@ const ProfileScreen = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!profileId) return;
-
+      console.log("Fetching profile with ID:", profileId);
       // Fetch profile data
-      const profile = await drizzleDB
-        .select()
-        .from(profiles)
-        .where(eq(profiles.id, parseInt(profileId as string, 10)))
-        .execute();
-
-      if (profile && profile.length > 0) {
-        setProfileData(profile[0]);
+      const profile = await getProfileById(drizzleDB, Number(profileId));
+      if (!profile) {
+        setProfileData(null);
+        return;
+      }
+      setProfileData(profile);
 
         // Fetch health indicators
-        const health = await drizzleDB
-          .select()
-          .from(healthIndicators)
-          .where(
-            eq(healthIndicators.profileId, parseInt(profileId as string, 10))
-          )
-          .execute();
+        const health = await getProfileHealthIndicatorById(drizzleDB, Number(profileId));
 
-        if (health && health.length > 0) {
-          setHealthData(health[0]);
-        }
+      if (!health) {
+        setHealthData(null);
+        return;
       }
+      setHealthData(health);
     };
-
     fetchProfile();
   }, [profileId]);
 
@@ -77,146 +66,144 @@ const ProfileScreen = () => {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: bottom }]} edges={["bottom"]}>
-        {/* Header */}
-        <View style={[styles.headerContainer, { paddingTop: top + 10 }]}>
-          <Pressable onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
-          </Pressable>
-          <Text style={styles.headerTitle}>Profile Details</Text>
+    <SafeAreaView
+      style={[styles.container, { paddingBottom: bottom }]}
+      edges={["bottom"]}
+    >
+      {/* Header */}
+      <View style={[styles.headerContainer, { paddingTop: top + 10 }]}>
+        <Pressable onPress={handleBack} style={styles.backButton}>
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={theme.textLight ? theme.textLight : theme.text}
+          />
+        </Pressable>
+        <Text style={styles.headerTitle}>Profile Details</Text>
+      </View>
+
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Profile Header Card */}
+        <View style={styles.profileHeaderCard}>
+          <View style={styles.profileAvatarContainer}>
+            <View style={styles.profileAvatar}>
+              <Ionicons name="person" size={50} color={theme.text} />
+            </View>
+          </View>
+          <Text style={styles.profileName}>{profileData.fullname}</Text>
+          <View style={styles.profileMeta}>
+            <View style={styles.metaItem}>
+              <FontAwesome5
+                name={profileData.gender === "Male" ? "mars" : "venus"}
+                size={16}
+                color={theme.text}
+              />
+              <Text style={styles.metaText}>{profileData.gender}</Text>
+            </View>
+            <View style={styles.metaDivider} />
+            <View style={styles.metaItem}>
+              <Ionicons name="calendar-outline" size={16} color={theme.text} />
+              <Text style={styles.metaText}>{profileData.age} years</Text>
+            </View>
+          </View>
+          <View style={styles.profileActions}>
+            <Pressable
+              style={styles.editProfileButton}
+              onPress={() => console.log("Edit profile")}
+            >
+              <Ionicons name="pencil" size={16} color={theme.text} />
+              <Text style={styles.editProfileText}>Edit Profile</Text>
+            </Pressable>
+          </View>
         </View>
 
-        <Animated.ScrollView
-          ref={scrollRef}
-          scrollEventThrottle={16}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Profile Header Card */}
-          <View style={styles.profileHeaderCard}>
-            <View style={styles.profileAvatarContainer}>
-              <View style={styles.profileAvatar}>
-                <Ionicons name="person" size={50} color={theme.text} />
-              </View>
-            </View>
-            <Text style={styles.profileName}>{profileData.fullname}</Text>
-            <View style={styles.profileMeta}>
-              <View style={styles.metaItem}>
-                <FontAwesome5
-                  name={profileData.gender === "Male" ? "mars" : "venus"}
-                  size={16}
-                  color={theme.text}
-                />
-                <Text style={styles.metaText}>{profileData.gender}</Text>
-              </View>
-              <View style={styles.metaDivider} />
-              <View style={styles.metaItem}>
-                <Ionicons
-                  name="calendar-outline"
-                  size={16}
-                  color={theme.text}
-                />
-                <Text style={styles.metaText}>{profileData.age} years</Text>
-              </View>
-            </View>
-            <View style={styles.profileActions}>
-              <Pressable
-                style={styles.editProfileButton}
-                onPress={() => console.log("Edit profile")}
-              >
-                <Ionicons name="pencil" size={16} color={theme.text} />
-                <Text style={styles.editProfileText}>Edit Profile</Text>
-              </Pressable>
-            </View>
-          </View>
-
-          {/* Health Indicators */}
-          <View style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Health Indicators</Text>
-            {healthData && (
-              <>
-                {Object.entries(healthIndicatorConfig).map(([key, config]) => (
-                  <View key={key} style={styles.infoRow}>
-                    <View style={styles.infoIconContainer}>
-                      <FontAwesome5
-                        name={config.icon}
-                        size={20}
-                        color={theme.text}
-                      />
-                    </View>
-                    <View style={styles.infoContent}>
-                      <Text style={styles.infoLabel}>
-                        {config.label}
-                      </Text>
-                      <Text style={styles.infoValue}>
-                        {healthData[key]} 
-                      </Text>
-                    </View>
+        {/* Health Indicators */}
+        <View style={styles.sectionCard}>
+          <Text style={styles.sectionTitle}>Health Indicators</Text>
+          {healthData && (
+            <>
+              {Object.entries(healthIndicatorConfig).map(([key, config]) => (
+                <View key={key} style={styles.infoRow}>
+                  <View style={styles.infoIconContainer}>
+                    <FontAwesome5
+                      name={config.icon}
+                      size={20}
+                      color={theme.text}
+                    />
                   </View>
-                ))}
-              </>
-            )}
-          </View>
+                  <View style={styles.infoContent}>
+                    <Text style={styles.infoLabel}>{config.label}</Text>
+                    <Text style={styles.infoValue}>{healthData[key]}</Text>
+                  </View>
+                </View>
+              ))}
+            </>
+          )}
+        </View>
 
-          {/* Action Buttons */}
-          <View style={styles.actionButtonsContainer}>
-            <Pressable
-              style={[styles.actionButton, styles.medicationsButton]}
-              onPress={() =>
-                router.push(`/(profiles)/(medications)/${profileId}`)
-              }
-            >
-              <FontAwesome5 name="pills" size={20} color={theme.text} />
-              <Text style={styles.actionButtonText}>Medications</Text>
-            </Pressable>
+        {/* Action Buttons */}
+        <View style={styles.actionButtonsContainer}>
+          <Pressable
+            style={[styles.actionButton, styles.medicationsButton]}
+            onPress={() =>
+              router.push(`/(profiles)/(medications)/${profileId}`)
+            }
+          >
+            <FontAwesome5 name="pills" size={20} color={theme.text} />
+            <Text style={styles.actionButtonText}>Medications</Text>
+          </Pressable>
 
-            <Pressable
-              style={[styles.actionButton, styles.allergiesButton]}
-              onPress={() => router.push(`/(profiles)/(allergies)/${profileId}`)}
-            >
-              <FontAwesome5 name="allergies" size={20} color={theme.text} />
-              <Text style={styles.actionButtonText}>Allergies</Text>
-            </Pressable>
+          <Pressable
+            style={[styles.actionButton, styles.allergiesButton]}
+            onPress={() => router.push(`/(profiles)/(allergies)/${profileId}`)}
+          >
+            <FontAwesome5 name="allergies" size={20} color={theme.text} />
+            <Text style={styles.actionButtonText}>Allergies</Text>
+          </Pressable>
 
-            <Pressable
-              style={[styles.actionButton, styles.historyButton]}
-              onPress={() =>
-                router.push(`/(profiles)/(medicalhistory)/${profileId}`)
-              }
-            >
-              <FontAwesome5 name="file-medical" size={20} color={theme.text} />
-              <Text style={styles.actionButtonText}>Medical History</Text>
-            </Pressable>
-          </View>
+          <Pressable
+            style={[styles.actionButton, styles.historyButton]}
+            onPress={() =>
+              router.push(`/(profiles)/(medicalhistory)/${profileId}`)
+            }
+          >
+            <FontAwesome5 name="file-medical" size={20} color={theme.text} />
+            <Text style={styles.actionButtonText}>Medical History</Text>
+          </Pressable>
+        </View>
 
-          {/* Quick Info Cards */}
-          <View style={styles.quickInfoSection}>
-            <View style={styles.quickInfoCard}>
-              <View style={styles.quickInfoHeader}>
-                <FontAwesome5
-                  name="calendar-check"
-                  size={16}
-                  color={theme.text}
-                />
-                <Text style={styles.quickInfoTitle}>Created</Text>
-              </View>
-              <Text style={styles.quickInfoValue}>
-                {new Date(profileData.created_at).toLocaleDateString()}
-              </Text>
+        {/* Quick Info Cards */}
+        <View style={styles.quickInfoSection}>
+          <View style={styles.quickInfoCard}>
+            <View style={styles.quickInfoHeader}>
+              <FontAwesome5
+                name="calendar-check"
+                size={16}
+                color={theme.text}
+              />
+              <Text style={styles.quickInfoTitle}>Created</Text>
             </View>
-
-            <View style={styles.quickInfoCard}>
-              <View style={styles.quickInfoHeader}>
-                <FontAwesome5 name="edit" size={16} color={theme.text} />
-                <Text style={styles.quickInfoTitle}>Last Update</Text>
-              </View>
-              <Text style={styles.quickInfoValue}>
-                {new Date(profileData.updated_at).toLocaleDateString()}
-              </Text>
-            </View>
+            <Text style={styles.quickInfoValue}>
+              {new Date(profileData.created_at).toLocaleDateString()}
+            </Text>
           </View>
-        </Animated.ScrollView>
 
+          <View style={styles.quickInfoCard}>
+            <View style={styles.quickInfoHeader}>
+              <FontAwesome5 name="edit" size={16} color={theme.text} />
+              <Text style={styles.quickInfoTitle}>Last Update</Text>
+            </View>
+            <Text style={styles.quickInfoValue}>
+              {new Date(profileData.updated_at).toLocaleDateString()}
+            </Text>
+          </View>
+        </View>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 };
@@ -237,9 +224,9 @@ const getStyles = (theme: ThemeColors) =>
     },
 
     headerContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       backgroundColor: theme.blue,
       paddingHorizontal: 16,
       paddingBottom: 12,
@@ -248,7 +235,6 @@ const getStyles = (theme: ThemeColors) =>
     },
     backButton: {
       padding: 5,
-      
     },
     headerTitle: {
       flex: 1,
@@ -256,8 +242,7 @@ const getStyles = (theme: ThemeColors) =>
       fontSize: 20,
       fontFamily: "Roboto-Bold",
       textAlign: "center",
-      marginRight: 30, 
-
+      marginRight: 30,
     },
     scrollContent: {
       paddingBottom: 30,

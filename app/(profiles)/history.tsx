@@ -8,8 +8,6 @@ import {
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDatabase } from "@/hooks/useDatabase";
-import { healthIndicators, profiles } from "@/database/schema";
-import { desc, eq, sql } from "drizzle-orm";
 import { useTheme } from "@/context/ThemeContext";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
@@ -26,6 +24,7 @@ import { formatDate } from "@/utils/Date";
 import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
+import { deleteProfile, getProfileHealthIndicators, getProfiles } from "@/utils/LocalDatabase";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -46,28 +45,14 @@ const HistoryProfile = () => {
 
 
   const fetchProfiles = async () => {
-    console.log("Fetching profiles...", userId);
-    const profile = await drizzleDB
-      .select()
-      .from(profiles)
-      .where(eq(profiles.auth0Id, userId as string))
-      .orderBy(desc(profiles.created_at))
-      .execute();
-    setProfilesData(profile);
-
-    // Fetch health indicators for all profiles
-    const healthMap: Record<string, any> = {};
-    for (const p of profile) {
-      const health = await drizzleDB
-        .select()
-        .from(healthIndicators)
-        .where(eq(healthIndicators.profileId, p.id))
-        .execute();
-
-      if (health && health.length > 0) {
-        healthMap[p.id] = health[0];
-      }
+    const profiles = await getProfiles(drizzleDB,userId as string);
+    if (!profiles) {
+      setProfilesData([]);
+      return;
     }
+    setProfilesData(profiles);
+    // Fetch health indicators for all profiles
+    const healthMap = await getProfileHealthIndicators(drizzleDB,profiles);
     setHealthData(healthMap);
   };
 
@@ -90,10 +75,7 @@ const HistoryProfile = () => {
     if (!selectedProfileId) return;
 
     try {
-      await drizzleDB
-        .delete(profiles)
-        .where(eq(profiles.id, parseInt(selectedProfileId, 10)))
-        .execute();
+      await deleteProfile(drizzleDB,parseInt(selectedProfileId));
       fetchProfiles();
       bottomSheetModalRef.current?.dismiss();
       Alert.alert("Success", "Profile deleted successfully");

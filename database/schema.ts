@@ -91,6 +91,7 @@ export const medicationsRelations = relations(medications, ({ many }) => ({
 export type Profile = typeof profiles.$inferSelect;
 export type ProfileInput = typeof profiles.$inferInsert;
 
+
 export type Medication = typeof medications.$inferSelect;
 export type MedicationInput = typeof medications.$inferInsert;
 

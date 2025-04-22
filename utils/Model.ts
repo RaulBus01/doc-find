@@ -4,6 +4,7 @@ export const streamModelResponse = async (
   token: string | null,
   message: string,
   onChunk: (chunk: any) => void,
+  chatId: number,
   context?: any,
 ) => {
   if (!token) {
@@ -11,7 +12,8 @@ export const streamModelResponse = async (
   }
 
   try {
-    await ApiCall.stream("/completion/mistral-test", token, { message,context }, onChunk);
+    
+    await ApiCall.stream("/completion/stream-and-save", token, { message,chatId,context }, onChunk);
   } catch (error) {
     console.error("Error streaming response:", error);
     throw error;

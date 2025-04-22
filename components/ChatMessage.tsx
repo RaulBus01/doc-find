@@ -101,9 +101,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   },
   cardContainer: {
     flexDirection: "column",
-  
     padding: 10,
-
     borderRadius: 10,
     marginBottom: 10,
   },

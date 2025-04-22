@@ -1,20 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
-import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
+import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch, TouchableOpacity } from "react-native";
+import { FlatList, Pressable, ScrollView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
 import { useDatabase } from "@/hooks/useDatabase";
-import { profileMedications, medications } from "@/database/schema";
+import { profileMedications, medications, Medication } from "@/database/schema";
 import { eq, and, like } from "drizzle-orm";
 import Animated, { useAnimatedRef, FadeIn, FadeOut } from "react-native-reanimated";
 import { Ionicons, FontAwesome5, Fontisto } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
+import { deleteMedication, getMedications, getProfileMedications } from "@/utils/LocalDatabase";
 
 export default function MedicationScreen() {
-  // Keep existing state and functions
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
@@ -26,23 +26,28 @@ export default function MedicationScreen() {
   const [medicationName, setMedicationName] = useState("");
   const [dosage, setDosage] = useState<boolean>(false);
   const [profileMedicationsList, setProfileMedicationsList] = useState<any[]>([]);
-  const [suggestedMedications, setSuggestedMedications] = useState<any[]>([]);
+  const [suggestedMedications, setSuggestedMedications] = useState<Medication[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   
-  // Keep existing functions
   const fetchProfileMedications = async () => {
-    
-    const results = await drizzleDB.query.profileMedications.findMany({
-      where: eq(profileMedications.profileId, parseInt(id as string, 10)),
-      with:{
-        medication: true,
+    try {
+      if (!id) {
+        Toast.error("Missing profile ID", "top");
+        return;
       }
-    });
-    console.log(results[0]);
-    setProfileMedicationsList(results);
+      
+      const result = await getProfileMedications(drizzleDB, parseInt(id as string, 10));
+      console.log("Profile Medications:", result);
+      setProfileMedicationsList(result || []);
+    } catch (error) {
+      console.error("Error fetching profile medications:", error);
+      setProfileMedicationsList([]);
+      Toast.error("Failed to load medications", "top");
+    }
   };
   
   const searchMedications = async (text: string) => {
+    try{
     setMedicationName(text);
     
     if (text.length < 2) {
@@ -50,20 +55,24 @@ export default function MedicationScreen() {
       setShowSuggestions(false);
       return;
     }
-    
-    try {
-      const results = await drizzleDB
-        .select()
-        .from(medications)
-        .where(like(medications.name, `%${text}%`))
-        .limit(3)
-        .all();
-        
-      setSuggestedMedications(results);
-      setShowSuggestions(results.length > 0);
-    } catch (error) {
-      console.error("Error searching medications:", error);
+
+    const results = await getMedications(drizzleDB, text);
+ 
+    if (results.length === 0) {
+      setShowSuggestions(false);
+      return;
     }
+    setSuggestedMedications(results);
+    setShowSuggestions(results.length > 0);
+    }
+    catch (error) {
+      console.error("Error searching medications:", error);
+      setSuggestedMedications([]);
+      setShowSuggestions(false);
+    }
+    
+  
+    
   };
   
   const selectMedication = (medication: any) => {
@@ -154,22 +163,13 @@ export default function MedicationScreen() {
   };
   const handleDeleteMedication = (medicationId: number) => async () => {
     try {
-   
-      await drizzleDB
-          .delete(profileMedications)
-          .where(
-            and(
-              eq(profileMedications.profileId, parseInt(id as string, 10)),
-              eq(profileMedications.medicationId, medicationId)
-            )
-          )
-          .execute();
 
-        
-
-    
+      const result = await deleteMedication(drizzleDB, parseInt(id as string, 10), medicationId);
+      if (!result) {
+        Toast.error("Failed to delete medication", "top");
+        return;
+      }
       Toast.success("Medication deleted successfully", "top");
-      
       fetchProfileMedications();
     }
     catch (error) {
@@ -192,43 +192,44 @@ export default function MedicationScreen() {
       </View>
       
       {/* Medication List */}
-      <Animated.ScrollView 
-        ref={scrollRef}
-        style={styles.scrollContainer}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {profileMedicationsList.length > 0 ? (
-          profileMedicationsList.map((medication) => (
-            <Animated.View 
-              entering={FadeIn.duration(500)} 
-              key={medication.id} 
-              style={styles.medicationCard}
-            >
-              <View style={styles.medicationIconContainer}>
-                <FontAwesome5 name="pills" size={18} color="#fff" />
+  
+          <FlatList
+            data={profileMedicationsList}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.medicationCard}>
+                <View style={styles.medicationIconContainer}>
+                  <FontAwesome5 name="prescription-bottle" size={20} color="#fff" />
+                </View>
+                <View style={styles.medicationDetails}>
+                  <Text style={styles.medicationName}>{item.name}</Text>
+                  <Text style={styles.medicationDosage}>
+                    {item.permanent ? "Take daily" : "As needed"}
+                  </Text>
+                </View>
+                <Pressable onPress={handleDeleteMedication(item.id)} style={styles.deleteButton}>
+                  <Ionicons name="trash-outline" size={20} color="#ff0000" />
+                </Pressable>
               </View>
-              <View style={styles.medicationDetails}>
-                <Text style={styles.medicationName}>{medication.medication.name}</Text>
-                <Text style={styles.medicationDosage}>
-                  {medication.permanent === 1 ? "Take daily" : "As needed"}
-                </Text>
+            )}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 30 }}
+            style={{ paddingBottom: 30 }}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <View style={styles.emptyIconContainer}>
+                  <FontAwesome5 name="prescription-bottle" size={40} color="#fff" />
+                </View>
+                <Text style={styles.emptyText}>No medications found</Text>
+                <Text style={styles.emptySubtext}>Add medications using the form below</Text>
               </View>
-              <Pressable style={styles.deleteButton} onPress={handleDeleteMedication(medication.medicationId)}>
-                <Ionicons name="trash-outline" size={20} color={theme.text + '80'} />
-              </Pressable>
-            </Animated.View>
-          ))
-        ) : (
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconContainer}>
-              <FontAwesome5 name="prescription-bottle" size={40} color="#fff" />
-            </View>
-            <Text style={styles.emptyText}>No medications found</Text>
-            <Text style={styles.emptySubtext}>Add medications using the form below</Text>
-          </View>
-        )}
-      </Animated.ScrollView>
+            }
+            />
+
+
+       
+        
+        
       
       {/* Add Medication Form */}
       <View style={styles.formContainer}>
@@ -239,18 +240,18 @@ export default function MedicationScreen() {
             style={styles.suggestionsContainer}
           >
             <Text style={styles.suggestionHelpText}>Tap to select a medication</Text>
-            {
-              
-            suggestedMedications.map((med) => (
-              <Pressable
-                key={med.id}
-                style={styles.suggestionItem}
-                onPress={() => selectMedication(med)}
-              >
-                <Text style={styles.suggestionText}>{med.name}</Text>
-              </Pressable>
-            ))}
-            
+            {suggestedMedications.map((med:Medication) => {
+              console.log(med);
+              return (
+                <TouchableOpacity
+                  key={med.id}
+                  style={styles.suggestionItem}
+                  onPress={() => selectMedication(med)}
+                >
+                  <Text style={styles.suggestionText}>{med?.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </Animated.View>
         )}
         
@@ -443,7 +444,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     bottom:"120%",
     left: 16,
     right: 16,
-    backgroundColor: theme.text,
+    backgroundColor: theme.background,
     borderRadius: 16,
     paddingVertical: 8,
     marginBottom: 8,
