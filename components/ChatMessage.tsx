@@ -11,9 +11,10 @@ import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
+import { MessageType } from "@/interface/Interface";
 
 interface ChatMessageProps {
-  id: string;
+  id: number;
   name: string;
   message: string;
   isAI: boolean;
@@ -61,12 +62,12 @@ const ChatMessage = ({
           </>
         )}
       </View>
-      <View style={styles.messageContainer}>
+      <View style={isAI ? styles.messageContainerAI : styles.messageContainer}>
         <Text style={{color:theme.text}}>{message}</Text>
       </View>
       <View style={styles.footer}>
         {isAI ? (
-          id !== "welcome" && (
+          id !== MessageType.System && (
           <View style={styles.footerButtons}>
             <Pressable
               
@@ -113,6 +114,15 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     padding: 15,
     borderRadius: 20,
   },
+  messageContainerAI: {
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    backgroundColor: theme.GreenIconBackground,
+    padding: 15,
+    borderRadius: 20,
+  },
+
   avatar: {
     width: 30,
     height: 30,
@@ -134,4 +144,4 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   },
 });
 
-export default ChatMessage;
+export default React.memo(ChatMessage);

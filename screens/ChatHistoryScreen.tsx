@@ -10,6 +10,7 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomBottomSheetModal, {
@@ -87,6 +88,8 @@ const ChatHistoryScreen = () => {
     }
   }, [selectedChatId]);
 
+
+
   return (
     <SafeAreaView
       style={[styles.container, {  paddingBottom: bottom }]}
@@ -121,6 +124,8 @@ const ChatHistoryScreen = () => {
               handleModal={() => handlePresentModalPress(item.id)}
             />
           )}
+          
+
           contentContainerStyle={styles.listContentChat}
           showsVerticalScrollIndicator={false}
         />

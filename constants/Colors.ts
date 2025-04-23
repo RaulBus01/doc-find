@@ -44,7 +44,7 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
   
     BlueIconBackground: 'rgba(59, 130, 246, 0.25)',
     VioletIconBackground: 'rgba(138, 92, 246, 0.15)',
-    GreenIconBackground: 'rgba(132, 204, 22, 0.25)',
+    GreenIconBackground: 'rgba(176, 223, 107, 0.25)',
     RedIconBackground: 'rgba(239, 68, 68, 0.5)',
     YellowIconBackground: 'rgba(251, 191, 36, 0.25)',
     LightBlueIconBackground: 'rgba(59, 130, 246, 0.25)',

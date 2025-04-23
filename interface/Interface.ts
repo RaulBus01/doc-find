@@ -1,17 +1,23 @@
 export enum Role {
     User = 0,
     Bot = 1,
-  }
+}
+export enum MessageType{
+    Human = -100,
+    AI = -200,
+    System = -300,
+}
   
   
   export interface Message {
-    id: string;
-    chatId: string;
-    userId: string;
-    content: string;
+    id: number;
+    sessionId: string;
+    message:{
+      type: "human" | "ai";
+      content: string;
+    }
     createdAt: string;
     updatedAt: string;
-    isAI: boolean;
   }
   
   export interface Chat {
@@ -30,4 +36,10 @@ export enum Role {
     familyName: string,
     picture: string,
     createdAt: string,
+  }
+
+  export enum AIModel{
+    MISTRAL_SMALL = "mistral-small-latest",
+    MISTRAL_LARGE = "mistral-large-latest",
+
   }

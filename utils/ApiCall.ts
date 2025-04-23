@@ -93,7 +93,8 @@ export class ApiCall {
     url: string,
     token: string,
     data: any,
-    onChunk: (chunk: any) => void
+    onChunk: (chunk: any) => void,
+    onCompletion?: (completionData: any) => void
   ) {
     try {
       const response = await fetch(API_URL + url, {
@@ -119,6 +120,8 @@ export class ApiCall {
         if (done) break;
 
         const chunk = decoder.decode(value);
+
+        
 
         onChunk({ content: chunk });
       }

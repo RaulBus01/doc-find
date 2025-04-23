@@ -7,13 +7,14 @@ import {
   Keyboard,
   TouchableOpacity,
   Switch,
+  RefreshControl,
 } from "react-native";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import MessageBar from "../components/ChatMessageBar";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import BottomSheetModal, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import ChatMessage from "../components/ChatMessage";
-import { Message } from "@/interface/Interface";
+import { AIModel, Message, MessageType } from "@/interface/Interface";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useToken } from "@/context/TokenContext";
@@ -21,6 +22,7 @@ import {
   addChat,
   addMessage,
   generateChatTitle,
+  getLastMessage,
   getMessages,
 } from "@/utils/DatabaseAPI";
 import { useUserData } from "@/context/UserDataContext";
@@ -96,56 +98,45 @@ const ChatScreen = () => {
       }
       
       const messageContent = message.trim();
-      let isNewChat = false; // Flag to track if this is a new chat
-      
-      if (chatIdRef.current) {
-        // Existing chat - just add the message
-        const newMessage: Message = {
-          id: "",
+      if (messageContent.length === 0) {
+        return; // Ignore empty messages
+      }
+      let isNewChat = !chatIdRef.current; 
+      let newMessageId = MessageType.Human; // Default ID for human messages
+      let newMessage: Message = {
+        id: newMessageId,
+        sessionId: chatIdRef.current || "",
+        message: {
+          type: "human",
           content: messageContent,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          userId: userId,
-          chatId: chatIdRef.current,
-          isAI: false,
-        };
-        const savedMessage = await addMessage(chatIdRef.current, token, {
-          message: newMessage.content,
-          isAI: false,
-        });
-  
-        setMessages([...messages, savedMessage]);
-      } else {
-        // New chat flow
-        isNewChat = true; // Set the flag
-        const newMessage: Message = {
-          id: "",
-          content: messageContent,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          userId: userId,
-          chatId: chatIdRef.current,
-          isAI: false,
-        };
-  
-        const chat = await addChat(token, newMessage.content);
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }
+     
+      if (isNewChat) {
+        const chat = await addChat(token, messageContent);
         if (chat?.id) {
           setChatId(chat.id);
-          setMessages([newMessage]);
         }
+        setMessages([newMessage]);
+      }
+      else {
+        setMessages((prev) => [...prev, newMessage]);
       }
       
-      const aiMessageId = `temp-${Date.now()}`;
+      const aiMessageId = MessageType.AI; // Default ID for AI messages
       setMessages((prev) => [
         ...prev,
         {
           id: aiMessageId,
-          content: "",
+          sessionId: chatIdRef.current || "",
+          message: {
+            type: "ai",
+            content: "",
+          },
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          userId: "ai",
-          chatId: chatIdRef.current!,
-          isAI: true,
         },
       ]);
   
@@ -174,18 +165,60 @@ const ChatScreen = () => {
       let fullResponse = "";
       await streamModelResponse(
         token,
-        message,
+        messageContent,
         (chunk) => {
           fullResponse += chunk.content;
           setMessages((prev) =>
             prev.map((msg) =>
-              msg.id === aiMessageId ? { ...msg, content: fullResponse } : msg
+              msg.id === aiMessageId 
+                ? { 
+                    ...msg, 
+                    message: {
+                      ...msg.message,
+                      content: fullResponse
+                    } 
+                  } 
+                : msg
             )
           );
         },
         parseInt(chatIdRef.current!),
-        contextData
+        AIModel.MISTRAL_SMALL,
+        contextData,
+        
       );
+
+      if(chatIdRef.current) {
+        try{
+          const updatedMessages = await getLastMessage(token, chatIdRef.current,2);
+          if(updatedMessages && updatedMessages.length > 0) {
+            setMessages((prev)=>{
+          
+              const filteredMessages = prev.filter((msg) => {
+                return msg.id !== MessageType.AI && msg.id !== MessageType.Human && msg.id !== MessageType.System && msg.sessionId === chatIdRef.current
+              });
+              const newMessages = updatedMessages.map((msg) => {
+                return {
+                  ...msg,
+                  id: msg.id,
+                  sessionId: chatIdRef.current || "",
+                  createdAt: msg.createdAt,
+                  updatedAt: msg.updatedAt,
+                };
+              });
+
+              return [...filteredMessages, ...newMessages];
+
+            })
+          }
+          
+        }
+        catch(e) {
+          console.error("Error fetching last messages:", e);
+        }
+      }
+
+   
   
       // Only generate title for new chats
       if (isNewChat) {
@@ -263,6 +296,20 @@ const ChatScreen = () => {
     </TouchableOpacity>
   );
 
+  const renderChatMessage = useCallback(
+    ({ item }: { item: Message }) => (
+      <ChatMessage
+        id={item.id}
+        name={name || "User"}
+        picture={picture || "icon"}
+        message={item.message?.content || ""}
+        isAI={item.message?.type === "ai"}
+        createdAt={item.createdAt}
+      />
+    ),
+    [name, picture]
+  );
+
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
       <View style={[styles.header, { paddingTop: top + 10 }]}>
@@ -326,17 +373,8 @@ const ChatScreen = () => {
           ref={flatListRef}
           style={styles.chatContainer}
           data={messages}
-          renderItem={({ item }) => (
-            <ChatMessage
-              id={item.id}
-              name={name || "User"}
-              picture={picture || "icon"}
-              message={item.content}
-              isAI={item.isAI}
-              createdAt={item.createdAt}
-            />
-          )}
-          keyExtractor={(item) => item.id}
+          renderItem={renderChatMessage}
+          keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={{ paddingTop: 30, paddingBottom: 100 }}
           keyboardDismissMode="on-drag"
           onContentSizeChange={() => {
@@ -344,7 +382,8 @@ const ChatScreen = () => {
               flatListRef.current?.scrollToEnd({ animated: true });
             }
           }}
-          initialNumToRender={messages?.length} // Ensure all messages are rendered initially
+          initialNumToRender={10}
+          
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
             autoscrollToTopThreshold: 10,

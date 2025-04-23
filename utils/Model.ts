@@ -1,3 +1,4 @@
+import { AIModel } from "@/interface/Interface";
 import { ApiCall } from "./ApiCall";
 
 export const streamModelResponse = async (
@@ -5,6 +6,7 @@ export const streamModelResponse = async (
   message: string,
   onChunk: (chunk: any) => void,
   chatId: number,
+  modelType:AIModel = AIModel.MISTRAL_SMALL,
   context?: any,
 ) => {
   if (!token) {
@@ -13,7 +15,7 @@ export const streamModelResponse = async (
 
   try {
     
-    await ApiCall.stream("/completion/stream-and-save", token, { message,chatId,context }, onChunk);
+    await ApiCall.stream("/completion/stream-and-save", token, { message,chatId,context,modelType}, onChunk);
   } catch (error) {
     console.error("Error streaming response:", error);
     throw error;
