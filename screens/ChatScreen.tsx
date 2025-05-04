@@ -96,72 +96,75 @@ const ChatScreen = () => {
         console.error("Error", userId, token);
         return;
       }
-      
+
       const messageContent = message.trim();
       if (messageContent.length === 0) {
         return; // Ignore empty messages
       }
-      let isNewChat = !chatIdRef.current; 
+      let isNewChat = !chatIdRef.current;
       let newMessageId = MessageType.Human; // Default ID for human messages
       let newMessage: Message = {
         id: newMessageId,
-        sessionId: chatIdRef.current || "",
-        message: {
-          type: "human",
-          content: messageContent,
-        },
+        chatId: chatIdRef.current || "",
+        isAI: false,
+
+        content: messageContent,
+
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      }
-     
+      };
+
       if (isNewChat) {
         const chat = await addChat(token, messageContent);
         if (chat?.id) {
           setChatId(chat.id);
         }
         setMessages([newMessage]);
-      }
-      else {
+      } else {
         setMessages((prev) => [...prev, newMessage]);
       }
-      
+
       const aiMessageId = MessageType.AI; // Default ID for AI messages
       setMessages((prev) => [
         ...prev,
         {
           id: aiMessageId,
-          sessionId: chatIdRef.current || "",
-          message: {
-            type: "ai",
-            content: "",
-          },
+          chatId: chatIdRef.current || "",
+          isAI: true,
+
+          content: "",
+
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
       ]);
-  
+
       // First check if we should use profile data
       let contextData = undefined;
       if (useProfileContext && selectedProfileId) {
         // Get complete profile data using our utility function
-        const profileData = await getCompleteProfileData(drizzleDB, parseInt(selectedProfileId, 10));
-        
+        const profileData = await getCompleteProfileData(
+          drizzleDB,
+          parseInt(selectedProfileId, 10)
+        );
+
         if (profileData) {
-            // Format according to your backend expectations
-            contextData = {
-                age: profileData.age,
-                gender: profileData.gender,
-                smoker: profileData.healthData?.smoker,
-                hypertensive: profileData.healthData?.hypertensive,
-                diabetic: profileData.healthData?.diabetic,
-                allergies: profileData.allergies?.map(a => a.name) || [],
-                medicalHistory: profileData.medicalHistory?.map(m => m.condition) || [],
-                medications: profileData.medications?.map(m => m.name) || []
-            };
-            console.log("Using profile context:", contextData);
+          // Format according to your backend expectations
+          contextData = {
+            age: profileData.age,
+            gender: profileData.gender,
+            smoker: profileData.healthData?.smoker,
+            hypertensive: profileData.healthData?.hypertensive,
+            diabetic: profileData.healthData?.diabetic,
+            allergies: profileData.allergies?.map((a) => a.name) || [],
+            medicalHistory:
+              profileData.medicalHistory?.map((m) => m.condition) || [],
+            medications: profileData.medications?.map((m) => m.name) || [],
+          };
+          console.log("Using profile context:", contextData);
         }
       }
-  
+
       let fullResponse = "";
       await streamModelResponse(
         token,
@@ -170,56 +173,45 @@ const ChatScreen = () => {
           fullResponse += chunk.content;
           setMessages((prev) =>
             prev.map((msg) =>
-              msg.id === aiMessageId 
-                ? { 
-                    ...msg, 
-                    message: {
-                      ...msg.message,
-                      content: fullResponse
-                    } 
-                  } 
+              msg.id === aiMessageId
+                ? {
+                    ...msg,
+
+                    content: fullResponse,
+                  }
                 : msg
             )
           );
         },
         parseInt(chatIdRef.current!),
         AIModel.MISTRAL_SMALL,
-        contextData,
-        
+        contextData
       );
 
-      if(chatIdRef.current) {
-        try{
-          const updatedMessages = await getLastMessage(token, chatIdRef.current,2);
-          if(updatedMessages && updatedMessages.length > 0) {
-            setMessages((prev)=>{
-          
+      if (chatIdRef.current) {
+        try {
+          const updatedMessages = await getLastMessage(token, chatIdRef.current, 2);
+          if (updatedMessages && updatedMessages.length > 0) {
+            setMessages((prev) => {
+              // Keep all previous messages that aren't temporary
               const filteredMessages = prev.filter((msg) => {
-                return msg.id !== MessageType.AI && msg.id !== MessageType.Human && msg.id !== MessageType.System && msg.sessionId === chatIdRef.current
+                // Only filter out temporary messages with standard IDs
+                return (
+                  msg.id !== MessageType.AI &&
+                  msg.id !== MessageType.Human &&
+                  msg.id !== MessageType.System
+                );
               });
-              const newMessages = updatedMessages.map((msg) => {
-                return {
-                  ...msg,
-                  id: msg.id,
-                  sessionId: chatIdRef.current || "",
-                  createdAt: msg.createdAt,
-                  updatedAt: msg.updatedAt,
-                };
-              });
-
-              return [...filteredMessages, ...newMessages];
-
-            })
+              
+              // Add database messages at the end
+              return [...filteredMessages, ...updatedMessages];
+            });
           }
-          
-        }
-        catch(e) {
+        } catch (e) {
           console.error("Error fetching last messages:", e);
         }
       }
 
-   
-  
       // Only generate title for new chats
       if (isNewChat) {
         const newTitle = await generateChatTitle(token, chatIdRef.current);
@@ -227,7 +219,7 @@ const ChatScreen = () => {
           console.log("New title generated:", newTitle);
         }
       }
-  
+
       Keyboard.dismiss();
     } catch (e) {
       console.error(e);
@@ -244,7 +236,7 @@ const ChatScreen = () => {
       if (profileData) {
         setProfiles(profileData);
       } else {
-        setProfiles([]); 
+        setProfiles([]);
       }
     } catch (error) {
       console.error("Error fetching profiles:", error);
@@ -302,8 +294,8 @@ const ChatScreen = () => {
         id={item.id}
         name={name || "User"}
         picture={picture || "icon"}
-        message={item.message?.content || ""}
-        isAI={item.message?.type === "ai"}
+        message={item.content || ""}
+        isAI={item.isAI}
         createdAt={item.createdAt}
       />
     ),
@@ -383,7 +375,6 @@ const ChatScreen = () => {
             }
           }}
           initialNumToRender={10}
-          
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
             autoscrollToTopThreshold: 10,

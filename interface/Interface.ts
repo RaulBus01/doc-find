@@ -11,11 +11,9 @@ export enum MessageType{
   
   export interface Message {
     id: number;
-    sessionId: string;
-    message:{
-      type: "human" | "ai";
-      content: string;
-    }
+    chatId: string;
+    isAI: boolean;
+    content: string;
     createdAt: string;
     updatedAt: string;
   }
