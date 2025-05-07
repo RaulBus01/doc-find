@@ -12,7 +12,7 @@ import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
-import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
+import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface";
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileById, getProfileHealthIndicatorById } from "@/utils/LocalDatabase";
 

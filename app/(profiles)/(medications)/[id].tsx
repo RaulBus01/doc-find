@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch, TouchableOpacity } from "react-native";
 import { FlatList, Pressable, ScrollView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
 import { useDatabase } from "@/hooks/useDatabase";
 import { profileMedications, medications, Medication } from "@/database/schema";
@@ -12,14 +12,14 @@ import { Ionicons, FontAwesome5, Fontisto } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
-import { deleteMedication, getMedications, getProfileMedications } from "@/utils/LocalDatabase";
+import { deleteMedication, getExistingMedications, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
   const router = useRouter();
-  const scrollRef = useAnimatedRef<Animated.ScrollView>();
+
   
   const nameInputRef = React.useRef<TextInput>(null);
 
@@ -37,7 +37,7 @@ export default function MedicationScreen() {
       }
       
       const result = await getProfileMedications(drizzleDB, parseInt(id as string, 10));
-      console.log("Profile Medications:", result);
+ 
       setProfileMedicationsList(result || []);
     } catch (error) {
       console.error("Error fetching profile medications:", error);
@@ -56,7 +56,7 @@ export default function MedicationScreen() {
       return;
     }
 
-    const results = await getMedications(drizzleDB, text);
+    const results = await getMedicationsSuggestions(drizzleDB, text);
  
     if (results.length === 0) {
       setShowSuggestions(false);
@@ -100,24 +100,18 @@ export default function MedicationScreen() {
     
     try {
       // First check if this medication already exists
-      const existingMedication = await drizzleDB
-        .select()
-        .from(medications)
-        .where(eq(medications.name, medicationName.trim()))
-        .get();
+      const existingMedication =  await getExistingMedications(drizzleDB, medicationName.trim());
+    
       
       let medicationId: number;
       
       if (!existingMedication) {
         // Create new medication if it doesn't exist
-        const insertResult = await drizzleDB
-          .insert(medications)
-          .values({
-            name: medicationName.trim(),
-            description: ""
-          })
-          .returning({ id: medications.id })
-          .get();
+        const insertResult =  await insertMedication(drizzleDB, medicationName.trim());
+        if (!insertResult) {
+          Toast.error("Failed to insert medication", "top");
+          return;
+        }
           
         medicationId = insertResult.id;
       } else {
@@ -125,7 +119,7 @@ export default function MedicationScreen() {
       }
       
       // Check if user already has this medication
-      const existingProfileMed = await drizzleDB
+      const existingProfileMed =  drizzleDB
         .select()
         .from(profileMedications)
         .where(
@@ -158,12 +152,12 @@ export default function MedicationScreen() {
       
     } catch (error) {
       console.error("Error adding medication:", error);
-      Alert.alert("Error", "Failed to add medication");
+      Toast.error("Failed to add medication", "top");
     }
   };
   const handleDeleteMedication = (medicationId: number) => async () => {
     try {
-
+     
       const result = await deleteMedication(drizzleDB, parseInt(id as string, 10), medicationId);
       if (!result) {
         Toast.error("Failed to delete medication", "top");
@@ -179,17 +173,17 @@ export default function MedicationScreen() {
   }
 
   const styles = getStyles(theme);
+  const { bottom, top } = useSafeAreaInsets();
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerContainer}>
-        <Pressable onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
-        </Pressable>
-        <Text style={styles.headerTitle}>Medications</Text>
-        <View style={{ width: 30 }} />
-      </View>
+    <View style={[styles.container, { paddingBottom: bottom }]}>
+         {/* Header */}
+         <View style={[styles.headerContainer, { paddingTop: top }]}>
+           <Text style={styles.header}>Medications</Text>
+           <Pressable onPress={handleBack} style={styles.backButton}>
+             <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
+           </Pressable>
+         </View>
       
       {/* Medication List */}
   
@@ -207,13 +201,13 @@ export default function MedicationScreen() {
                     {item.permanent ? "Take daily" : "As needed"}
                   </Text>
                 </View>
-                <Pressable onPress={handleDeleteMedication(item.id)} style={styles.deleteButton}>
+                <Pressable onPress={handleDeleteMedication(item.medicationId)} style={styles.deleteButton}>
                   <Ionicons name="trash-outline" size={20} color="#ff0000" />
                 </Pressable>
               </View>
             )}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 30 }}
+            contentContainerStyle={{ paddingBottom: 30, paddingTop: 20,paddingHorizontal: 16 }}
             style={{ paddingBottom: 30 }}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
@@ -241,7 +235,6 @@ export default function MedicationScreen() {
           >
             <Text style={styles.suggestionHelpText}>Tap to select a medication</Text>
             {suggestedMedications.map((med:Medication) => {
-              console.log(med);
               return (
                 <TouchableOpacity
                   key={med.id}
@@ -280,7 +273,7 @@ export default function MedicationScreen() {
           <Switch
             value={dosage}
             onValueChange={(value) => setDosage(value)}
-            trackColor={{ false: theme.progressColor, true: theme.blue }}
+            trackColor={{ true: theme.progressColor, false: theme.blue }}
             thumbColor={theme.background}
           />
         </View>
@@ -294,7 +287,7 @@ export default function MedicationScreen() {
           <Text style={styles.addButtonText}>Add Medication</Text>
         </Pressable>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -306,14 +299,27 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingVertical: 15,
+    justifyContent: "center",
+    paddingVertical: 12,
     paddingHorizontal: 16,
-
+    borderBottomLeftRadius: 25,
+    borderBottomRightRadius: 25,
+    position: "relative",
+    backgroundColor: theme.blue,
+  },
+  header: {
+    fontSize: 20,
+    fontFamily: "Roboto-Bold",
+    color: theme.textLight ? theme.textLight : theme.text,
   },
   backButton: {
-    padding: 8,
-    borderRadius: 20,
+    position: "absolute",
+    left: 15,
+    top: 20,
+    bottom: 0,
+    justifyContent: "center",
+    paddingHorizontal: 10,
+    zIndex: 1,
   },
   headerTitle: {
     color: theme.text,
@@ -396,8 +402,12 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   formContainer: {
     padding: 16,
     backgroundColor: theme.cardBackground,
-    borderTopWidth: 1,
-    borderTopColor: theme.separator,
+    borderTopWidth: 0.25,
+    borderLeftWidth: 0.25,
+    borderRightWidth: 0.25,
+    borderColor: theme.separator,
+  
+
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
 
@@ -426,14 +436,14 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: theme.text,
+    backgroundColor: theme.blue,
     borderRadius: 12,
     paddingVertical: 14,
     marginTop: 4,
  
   },
   addButtonText: {
-    color: "#fff",
+    color: theme.text,
     fontSize: 16,
     fontFamily: "Roboto-Bold",
     marginLeft: 8,

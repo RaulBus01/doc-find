@@ -7,8 +7,8 @@ interface CustomInputProps {
   onChangeText: (text: string) => void;
   value: string;
   textColor?: string;
-  onInputFocus: () => void;
-  onInputBlur: () => void;
+  onInputFocus?: () => void;
+  onInputBlur?: () => void;
   placeholder: string;
   multiline?: boolean;
   numberOfLines?: number;
@@ -33,14 +33,14 @@ const CustomInput: React.FC<CustomInputProps> = ({
     messageInput: {
       flex: 1,
       backgroundColor: theme.background,
-      color: textColor ? textColor : theme.text,
+      color: theme.text,
       borderRadius: 8,
       padding: 10,
       fontSize: 16,
       borderWidth: 1,
-      borderColor: theme.border,
+      borderColor: theme.textLight,
       marginBottom: 10,
-      maxHeight: 100,
+      minHeight: 50,
       minWidth: '100%'
     },
   });
@@ -50,7 +50,7 @@ const CustomInput: React.FC<CustomInputProps> = ({
       <TextInput
         ref={inputRef ? inputRef : undefined}
         placeholder={placeholder}
-        placeholderTextColor={textColor}
+        placeholderTextColor={theme.text}
         maxLength={50}
         value={value}
         onChangeText={onChangeText}

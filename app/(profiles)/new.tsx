@@ -21,7 +21,7 @@ import  {
   BottomSheetFlatList,
   BottomSheetBackdrop
 } from '@gorhom/bottom-sheet';
-import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig"; // Import the config
+import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface"; // Import the config
 import { addProfile } from "@/utils/LocalDatabase";
 
 const NewProfile = () => {

@@ -44,7 +44,6 @@ export const profileAllergies = sqliteTable('profile_allergies', {
     profileId: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
     allergyId: integer("allergy_id").notNull().references(() => allergies.id, { onDelete: 'cascade' }),
     severity: text("severity"),
-    reaction: text("reaction"),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
 });
 

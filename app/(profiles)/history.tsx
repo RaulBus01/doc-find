@@ -21,7 +21,7 @@ import CustomBottomSheetModal, {
   Ref,
 } from "@/components/CustomBottomSheetModal";
 import { formatDate } from "@/utils/Date";
-import { healthIndicatorConfig } from "@/utils/healthIndicatorConfig";
+import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
 import { deleteProfile, getProfileHealthIndicators, getProfiles } from "@/utils/LocalDatabase";

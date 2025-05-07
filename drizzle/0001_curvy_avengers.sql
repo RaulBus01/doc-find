@@ -1,0 +1,1 @@
+ALTER TABLE `profile_allergies` DROP COLUMN `reaction`;

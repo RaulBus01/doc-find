@@ -19,6 +19,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 import { useUserData } from "@/context/UserDataContext";
 import { char } from "drizzle-orm/mysql-core";
+import { RefreshControl } from "react-native-gesture-handler";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -33,6 +34,7 @@ const Home = () => {
   const [chats, setChats] = useState<Chat[]>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -52,7 +54,7 @@ const Home = () => {
     if (token) {
       fetchChats();
     }
-  }, [token]);
+  }, [token, lastUpdated]);
 
   // Handle routing function from original code
   const handleProfileRouting = (path: string) => {
@@ -65,7 +67,6 @@ const Home = () => {
 
   // Symptom handling from original code
   const handleSymptom = (symptom: string) => {
-    console.log(symptom);
     router.push("/(tabs)/(chat)/new");
   };
 
@@ -177,6 +178,13 @@ const Home = () => {
         showsVerticalScrollIndicator={false} 
         nestedScrollEnabled={true} 
         style={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={() => setLastUpdated(new Date())}
+            tintColor={theme.progressColor}
+          />
+        }
       >
 
         <ProfilesComponent />
