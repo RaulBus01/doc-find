@@ -148,6 +148,7 @@ const ChatScreen = () => {
           parseInt(selectedProfileId, 10)
         );
 
+
         if (profileData) {
           // Format according to your backend expectations
           contextData = {
@@ -161,7 +162,7 @@ const ChatScreen = () => {
               profileData.medicalHistory?.map((m) => m.condition) || [],
             medications: profileData.medications?.map((m) => m.name) || [],
           };
-          console.log("Using profile context:", contextData);
+
         }
       }
 

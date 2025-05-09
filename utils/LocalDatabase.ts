@@ -195,7 +195,7 @@ export const insertMedication = async (drizzleDB: DrizzleDB, medicationName: str
 
 export const deleteMedication = async (drizzleDB: DrizzleDB, profileId: number, medicationId: number) => {
     try {
-        console.log("Deleting medication with ID:", medicationId, "for profile ID:", profileId);
+
         const result = await drizzleDB
             .delete(profileMedications)
             .where(and(eq(profileMedications.profileId, profileId), eq(profileMedications.medicationId, medicationId)))
@@ -309,7 +309,7 @@ export const insertAllergy = async (drizzleDB: DrizzleDB, allergyName: string) =
 
 export const deleteAllergy = async (drizzleDB: DrizzleDB, profileId: number, allergyId: number) => {
     try {
-        console.log("Deleting allergy with ID:", allergyId, "for profile ID:", profileId);
+       
         const result = await drizzleDB
             .delete(profileAllergies)
             .where(and(eq(profileAllergies.profileId, profileId), eq(profileAllergies.allergyId, allergyId)))

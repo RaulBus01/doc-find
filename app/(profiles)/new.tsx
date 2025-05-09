@@ -312,8 +312,6 @@ const NewProfile = () => {
         console.error("Error adding profile to database");
         return;
       }
-
-      console.log("Profile created successfully");
       router.replace("/(tabs)");
     }catch(error){
       console.error("Error creating profile:",error);

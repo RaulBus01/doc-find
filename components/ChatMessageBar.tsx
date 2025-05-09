@@ -23,6 +23,7 @@ import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 
+
 const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 type Props = {
@@ -41,7 +42,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
   const { isTabBarVisible, setIsTabBarVisible } = useContext(
     TabBarVisibilityContext
   );
-  const [height, setHeight] = useState(50);
+
   
   const styles = MessageBarStyles(theme, bottom);
   
@@ -96,11 +97,8 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     return {
       opacity,
       transform: [{ translateY }],
-      position: "absolute",
-      bottom: 0,
-      left: 0,
-      right: 0,
-      pointerEvents: opacity < 0.1 ? "none" : "auto",
+      position: "relative",
+    
     };
   });
 
@@ -120,16 +118,19 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
         }
       }, 200);
     } else {
-      // Closing the bar
-      if (inputRef.current) {
-        inputRef.current.blur();
-      }
+     
       
       setIsTabBarVisible(true);
-      barExpanded.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.out(Easing.cubic),
-      });
+    
+
+     
+       setTimeout(() => {
+       
+           barExpanded.value = withSpring(0, springConfig);
+             
+      }, 200);
+      Keyboard.dismiss();
+     
     }
   };
 
@@ -237,20 +238,17 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
        
             <TextInput
               ref={inputRef}
-            
               textAlignVertical="top"
               placeholder="Type your symptoms here..."
-              placeholderTextColor={theme.text + "80"}
+              placeholderTextColor={theme.text}
               multiline
               numberOfLines={10}
-              onContentSizeChange={(event) => {
-                setHeight(event.nativeEvent.contentSize.height);
-            }}
               value={message}
+              selectionColor={theme.red}
               onChangeText={onChangeText}
               onFocus={onInputFocus}
               style={[
-                styles.messageInput,{height: Math.max(50, height)}]}
+                styles.messageInput]}
             />
   
 

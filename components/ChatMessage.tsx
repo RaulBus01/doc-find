@@ -62,8 +62,8 @@ const ChatMessage = ({
           </>
         )}
       </View>
-      <View style={isAI ? styles.messageContainerAI : styles.messageContainer}>
-        <Text style={{color:theme.text}}>{message}</Text>
+      <View style={isAI ? styles.messageContainerAI : styles.messageContainer} >
+        <Text style={{color:theme.text}} selectable={true} selectionColor={theme.YellowIconBackground}>{message}</Text>
       </View>
       <View style={styles.footer}>
         {isAI ? (
@@ -141,6 +141,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     justifyContent: "flex-end",
     alignItems: "center",
     gap: 20,
+    
   },
 });
 

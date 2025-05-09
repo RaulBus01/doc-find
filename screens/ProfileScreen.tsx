@@ -27,7 +27,6 @@ const ProfileScreen = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!profileId) return;
-      console.log("Fetching profile with ID:", profileId);
       // Fetch profile data
       const profile = await getProfileById(drizzleDB, Number(profileId));
       if (!profile) {
