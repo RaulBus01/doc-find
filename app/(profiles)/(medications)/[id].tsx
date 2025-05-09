@@ -12,7 +12,7 @@ import { Ionicons, FontAwesome5, Fontisto } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
-import { deleteMedication, getExistingMedications, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
+import { addProfileMedication, deleteMedication, getExistingMedicationsByName, getExistingMedicationsById, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
@@ -100,7 +100,7 @@ export default function MedicationScreen() {
     
     try {
       // First check if this medication already exists
-      const existingMedication =  await getExistingMedications(drizzleDB, medicationName.trim());
+      const existingMedication =  await getExistingMedicationsByName(drizzleDB, medicationName.trim());
     
       
       let medicationId: number;
@@ -117,34 +117,15 @@ export default function MedicationScreen() {
       } else {
         medicationId = existingMedication.id;
       }
-      
       // Check if user already has this medication
-      const existingProfileMed =  drizzleDB
-        .select()
-        .from(profileMedications)
-        .where(
-          and(
-            eq(profileMedications.profileId, parseInt(id as string, 10)),
-            eq(profileMedications.medicationId, medicationId)
-          )
-        )
-        .get();
+      const existingProfileMed = await getExistingMedicationsById(drizzleDB, parseInt(id as string, 10), medicationId);
         
       if (existingProfileMed) {
         Toast.warn("Medication already exists in profile", 'top');
         return;
       }
-      
       // Add medication to profile
-      await drizzleDB
-        .insert(profileMedications)
-        .values({
-          profileId: parseInt(id as string, 10),
-          medicationId: medicationId,
-          permanent: dosage ? 1 : 0,
-        })
-        .execute();
-      
+      await addProfileMedication(drizzleDB, parseInt(id as string, 10), medicationId, dosage);
       Toast.success("Medication added successfully", "top");
       setMedicationName("");
       setDosage(false);
@@ -262,6 +243,7 @@ export default function MedicationScreen() {
               setTimeout(() => setShowSuggestions(false), 150);
             }}
             inputRef={nameInputRef}
+            multiline={false}
           />
         </View>
         

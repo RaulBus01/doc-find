@@ -1,27 +1,20 @@
-import React, {
-  useState,
-  useCallback,
-} from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import React, { useState, useCallback } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { FlatList, Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import {
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
 import { useDatabase } from "@/hooks/useDatabase";
-import { medicalHistory, MedicalHistoryEntry } from "@/database/schema";
-import { eq } from "drizzle-orm";
+import { MedicalHistoryEntry } from "@/database/schema";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { getStatusColor } from "@/utils/utilsFunctions";
 import { useFocusEffect } from "@react-navigation/native";
+import {
+  deleteMedicalHistory,
+  getProfileMedicalHistoryList,
+} from "@/utils/LocalDatabase";
 
 export default function MedicalHistoryScreen() {
   const { id } = useLocalSearchParams();
@@ -44,11 +37,14 @@ export default function MedicalHistoryScreen() {
         return;
       }
 
-      const result = await drizzleDB
-        .select()
-        .from(medicalHistory)
-        .where(eq(medicalHistory.profileId, parseInt(id as string, 10)))
-        .execute();
+      const result = await getProfileMedicalHistoryList(
+        drizzleDB,
+        parseInt(id as string)
+      );
+      if (!result) {
+        Toast.error("No medical history found", "top");
+        return;
+      }
 
       setMedicalHistoryList(result || []);
     } catch (error) {
@@ -70,10 +66,11 @@ export default function MedicalHistoryScreen() {
 
   const handleDeleteMedicalHistory = (entryId: number) => async () => {
     try {
-      await drizzleDB
-        .delete(medicalHistory)
-        .where(eq(medicalHistory.id, entryId))
-        .execute();
+      const result = await deleteMedicalHistory(drizzleDB, entryId);
+      if (!result) {
+        Toast.error("Failed to delete medical condition", "top");
+        return;
+      }
 
       Toast.success("Medical condition deleted", "top");
       fetchMedicalHistory();
@@ -105,7 +102,11 @@ export default function MedicalHistoryScreen() {
         data={medicalHistoryList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <View style={styles.historyCard}>
+          <TouchableOpacity 
+          onPress={() => router.push(`/(profiles)/(medicalhistory)/edit/${item.id}?profileId=${id}`)} 
+          activeOpacity={0.7}
+          style={styles.historyCard}        
+        >
             <View style={styles.topRow}>
               <View style={styles.titleSection}>
                 <View style={styles.historyIconContainer}>
@@ -115,7 +116,7 @@ export default function MedicalHistoryScreen() {
                     color="#fff"
                   />
                 </View>
-                <Text style={styles.conditionName}>{item.condition}</Text>
+                <Text selectable={true} style={styles.conditionName}>{item.condition}</Text>
               </View>
               <TouchableOpacity
                 onPress={handleDeleteMedicalHistory(item.id)}
@@ -135,7 +136,7 @@ export default function MedicalHistoryScreen() {
                   color={theme.text}
                   style={styles.metaIcon}
                 />
-                <Text style={styles.historyDate}>
+                <Text selectable={true} style={styles.historyDate}>
                   {item.diagnosis_date || "Unknown"}
                 </Text>
               </View>
@@ -149,7 +150,7 @@ export default function MedicalHistoryScreen() {
                     color={theme.text}
                     style={styles.metaIcon}
                   />
-                  <Text style={styles.infoText}>{item.treatment}</Text>
+                  <Text selectable={true} style={styles.infoText}>{item.treatment}</Text>
                 </View>
               ) : null}
 
@@ -162,7 +163,7 @@ export default function MedicalHistoryScreen() {
                     color={theme.text}
                     style={styles.metaIcon}
                   />
-                  <Text style={styles.notesText}>{item.notes}</Text>
+                  <Text selectable={true} style={styles.notesText}>{item.notes}</Text>
                 </View>
               ) : null}
             </View>
@@ -178,7 +179,7 @@ export default function MedicalHistoryScreen() {
                 <Text style={styles.statusText}>{item.status}</Text>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         )}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 30, paddingTop: 20 }}
@@ -189,7 +190,7 @@ export default function MedicalHistoryScreen() {
               <MaterialIcons
                 name="medical-services"
                 size={40}
-                color={theme.text}
+                color={theme.textLight ? theme.textLight : theme.text}
               />
             </View>
             <Text style={styles.emptyText}>No medical conditions found</Text>
@@ -201,7 +202,7 @@ export default function MedicalHistoryScreen() {
       />
 
       {/* Floating Action Button to open bottom sheet */}
-      <TouchableOpacity style={styles.floatingButton} onPress={handleRoute}>
+      <TouchableOpacity style={styles.floatingButton} onPress={handleRoute} activeOpacity={0.7}> 
         <Ionicons name="add" size={24} color={theme.text} />
       </TouchableOpacity>
     </View>

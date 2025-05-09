@@ -1,26 +1,33 @@
-import { allergies, HealthIndicatorInput, healthIndicators, medicalHistory, medications, Profile, profileAllergies, ProfileInput, profileMedications, profiles } from "@/database/schema";
+import { allergies, HealthIndicatorInput, healthIndicators, medicalHistory, MedicalHistoryEntryInput, medications, Profile, profileAllergies, ProfileInput, profileMedications, profiles } from "@/database/schema";
 import { eq, desc, and, like } from "drizzle-orm";
 import { ExpoSQLiteDatabase } from "drizzle-orm/expo-sqlite";
 import { SQLiteDatabase } from "expo-sqlite";
 
-type drizzleDB = ExpoSQLiteDatabase<typeof import("@/database/schema")> & { $client: SQLiteDatabase; }
+type DrizzleDB = ExpoSQLiteDatabase<typeof import("@/database/schema")> & { $client: SQLiteDatabase; };
 
-export const getProfiles = async (drizzleDB: drizzleDB, userId: string) => {
+const handleDatabaseError = (operation: string, error: any) => {
+    console.error(`Error ${operation}:`, error);
+    return null;
+};
+
+/**
+ * Profile Operations
+ */
+export const getProfiles = async (drizzleDB: DrizzleDB, userId: string) => {
     try {
         const result = await drizzleDB
             .select()
             .from(profiles)
-            .where(eq(profiles.auth0Id, userId as string))
+            .where(eq(profiles.auth0Id, userId))
             .orderBy(desc(profiles.created_at))
             .execute();
         return result.length === 0 ? null : result;
     } catch (error) {
-        console.error("Error fetching profiles:", error);
-        return null;
+        return handleDatabaseError("fetching profiles", error);
     }
-}
+};
 
-export const getProfileById = async (drizzleDB: drizzleDB, profileId: number) => {
+export const getProfileById = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
         const result = await drizzleDB
             .select()
@@ -29,12 +36,44 @@ export const getProfileById = async (drizzleDB: drizzleDB, profileId: number) =>
             .execute();
         return result.length === 0 ? null : result[0];
     } catch (error) {
-        console.error("Error fetching profile by ID:", error);
-        return null;
+        return handleDatabaseError("fetching profile by ID", error);
     }
-}
+};
 
-export const getProfileHealthIndicatorById = async (drizzleDB: drizzleDB, profileId: number) => {
+export const deleteProfile = async (drizzleDB: DrizzleDB, profileId: number) => {
+    try {
+        await drizzleDB
+            .delete(profiles)
+            .where(eq(profiles.id, profileId))
+            .execute();
+        return true;
+    } catch (error) {
+        return handleDatabaseError("deleting profile", error) ?? false;
+    }
+};
+
+export const addProfile = async (drizzleDB: DrizzleDB, profileToInsert: ProfileInput, healthData: HealthIndicatorInput) => {
+    try {
+        await drizzleDB.transaction(async (tx) => {
+            const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
+            const newProfileId = newProfile[0].id;
+            await tx.insert(healthIndicators).values({
+                profileId: newProfileId,
+                hypertensive: healthData.hypertensive,
+                diabetic: healthData.diabetic,
+                smoker: healthData.smoker,
+            }).execute();
+        });
+        return true;
+    } catch (error) {
+        return handleDatabaseError("adding profile", error) ?? false;
+    }
+};
+
+/**
+ * Health Indicator Operations
+ */
+export const getProfileHealthIndicatorById = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
         const result = await drizzleDB
             .select()
@@ -43,12 +82,11 @@ export const getProfileHealthIndicatorById = async (drizzleDB: drizzleDB, profil
             .execute();
         return result.length === 0 ? null : result[0];
     } catch (error) {
-        console.error("Error fetching health indicators:", error);
-        return null;
+        return handleDatabaseError("fetching health indicators", error);
     }
-}
+};
 
-export const getProfileHealthIndicators = async (drizzleDB: drizzleDB, profiles: Profile[]) => {
+export const getProfileHealthIndicators = async (drizzleDB: DrizzleDB, profiles: Profile[]) => {
     try {
         const healthMap: Record<string, any> = {};
         for (const p of profiles) {
@@ -70,41 +108,12 @@ export const getProfileHealthIndicators = async (drizzleDB: drizzleDB, profiles:
         console.error("Error fetching health indicators for profiles:", error);
         return {};
     }
-}
+};
 
-export const deleteProfile = async (drizzleDB: drizzleDB, profileId: number) => {
-    try {
-        await drizzleDB
-            .delete(profiles)
-            .where(eq(profiles.id, profileId))
-            .execute();
-        return true;
-    } catch (error) {
-        console.error("Error deleting profile:", error);
-        return false;
-    }
-}
-
-export const addProfile = async (drizzleDB: drizzleDB, profileToInsert: ProfileInput, healthData: HealthIndicatorInput) => {
-    try {
-        await drizzleDB.transaction(async (tx) => {
-            const newProfile = await tx.insert(profiles).values(profileToInsert).returning({ id: profiles.id }).execute();
-            const newProfileId = newProfile[0].id;
-            await tx.insert(healthIndicators).values({
-                profileId: newProfileId,
-                hypertensive: healthData.hypertensive,
-                diabetic: healthData.diabetic,
-                smoker: healthData.smoker,
-            }).execute();
-        });
-        return true;
-    } catch (error) {
-        console.error("Error adding profile:", error);
-        return false;
-    }
-}
-
-export const getProfileMedications = async (drizzleDB: drizzleDB, profileId: number) => {
+/**
+ * Medication Operations
+ */
+export const getProfileMedications = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
         const result = await drizzleDB
             .select({
@@ -117,48 +126,108 @@ export const getProfileMedications = async (drizzleDB: drizzleDB, profileId: num
             .from(profileMedications)
             .innerJoin(medications, eq(profileMedications.medicationId, medications.id))
             .where(eq(profileMedications.profileId, profileId))
+            .orderBy(desc(profileMedications.created_at))
             .execute();
         return result;
     } catch (error) {
         console.error("Error fetching medications:", error);
         return [];
     }
-}
-export const getCompleteProfileData = async (drizzleDB: drizzleDB, profileId: number) => {
+};
+
+export const getMedicationsSuggestions = async (drizzleDB: DrizzleDB, searchTerm: string) => {
     try {
-        const [profile] = await drizzleDB
+        return await drizzleDB
             .select()
-            .from(profiles)
-            .where(eq(profiles.id, profileId))
-            .execute();
-
-        if (!profile) return null;
-
-        // Get health indicators
-        const healthData = await getProfileHealthIndicatorById(drizzleDB, profileId);
-
-        // Get medications
-        const medications = await getProfileMedications(drizzleDB, profileId);
-
-        // Get allergies
-        const allergies = await getProfileAllergies(drizzleDB, profileId);
-
-        // Get medical history
-        const medicalHistory = await getProfileMedicalHistory(drizzleDB, profileId);
-
-        return {
-            ...profile,
-            healthData,
-            medications,
-            allergies,
-            medicalHistory
-        };
+            .from(medications)
+            .where(like(medications.name, `%${searchTerm}%`))
+            .limit(3)
+            .all();
     } catch (error) {
-        console.error("Error fetching complete profile:", error);
-        return null;
+        console.error("Error getting medication suggestions:", error);
+        return [];
     }
 };
-export const getProfileAllergies = async (drizzleDB: drizzleDB, profileId: number) => {
+
+export const getExistingMedicationsByName = async (drizzleDB: DrizzleDB, medicationName: string) => {
+    try {
+        return await drizzleDB
+            .select()
+            .from(medications)
+            .where(eq(medications.name, medicationName.trim()))
+            .get();
+    } catch (error) {
+        return handleDatabaseError("checking existing medication", error);
+    }
+};
+
+export const getExistingMedicationsById = async (drizzleDB: DrizzleDB, profileId: number, medicationId: number) => {
+    try {
+        return await drizzleDB
+            .select()
+            .from(profileMedications)
+            .where(
+                and(
+                    eq(profileMedications.profileId, profileId),
+                    eq(profileMedications.medicationId, medicationId)
+                )
+            )
+            .get();
+    } catch (error) {
+        return handleDatabaseError("checking existing medication by ID", error);
+    }
+};
+
+export const insertMedication = async (drizzleDB: DrizzleDB, medicationName: string) => {
+    try {
+        return await drizzleDB
+            .insert(medications)
+            .values({
+                name: medicationName.trim(),
+                description: ""
+            })
+            .returning({ id: medications.id })
+            .get();
+    } catch (error) {
+        return handleDatabaseError("inserting medication", error);
+    }
+};
+
+export const deleteMedication = async (drizzleDB: DrizzleDB, profileId: number, medicationId: number) => {
+    try {
+        console.log("Deleting medication with ID:", medicationId, "for profile ID:", profileId);
+        const result = await drizzleDB
+            .delete(profileMedications)
+            .where(and(eq(profileMedications.profileId, profileId), eq(profileMedications.medicationId, medicationId)))
+            .returning({ id: profileMedications.id })
+            .execute();
+        return result.length === 0 ? null : true;
+    } catch (error) {
+        return handleDatabaseError("deleting medication", error);
+    }
+};
+
+export const addProfileMedication = async (drizzleDB: DrizzleDB, profileId: number, medicationId: number, permanent: boolean) => {
+    try {
+        const result = await drizzleDB
+            .insert(profileMedications)
+            .values({
+                profileId: profileId,
+                medicationId: medicationId,
+                permanent: permanent,
+            })
+            .returning({ id: profileMedications.id })
+            .execute();
+        return result.length === 0 ? null : true;
+    } catch (error) {
+        return handleDatabaseError("adding profile medication", error);
+    }
+};
+
+/**
+ * Allergy Operations
+ */
+export const getProfileAllergies = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
         const result = await drizzleDB
             .select({
@@ -171,44 +240,74 @@ export const getProfileAllergies = async (drizzleDB: drizzleDB, profileId: numbe
             .from(profileAllergies)
             .innerJoin(allergies, eq(profileAllergies.allergyId, allergies.id))
             .where(eq(profileAllergies.profileId, profileId))
+            .orderBy(desc(profileAllergies.created_at))
             .execute();
         return result;
     } catch (error) {
         console.error("Error fetching allergies:", error);
         return [];
     }
-}
+};
 
-export const getProfileMedicalHistory = async (drizzleDB: drizzleDB, profileId: number) => {
+export const getAllergiesSuggestions = async (drizzleDB: DrizzleDB, searchTerm: string) => {
     try {
-        const result = await drizzleDB
+        return await drizzleDB
             .select()
-            .from(medicalHistory)
-            .where(eq(medicalHistory.profileId, profileId))
-            .execute();
-        return result;
+            .from(allergies)
+            .where(like(allergies.name, `%${searchTerm}%`))
+            .limit(3)
+            .all();
     } catch (error) {
-        console.error("Error fetching medical history:", error);
+        console.error("Error getting allergy suggestions:", error);
         return [];
     }
-}
+};
 
-export const deleteMedication = async (drizzleDB: drizzleDB, profileId: number, medicationId: number) => {
+export const getExistingAllergiesByName = async (drizzleDB: DrizzleDB, allergyName: string) => {
     try {
-        console.log("Deleting medication with ID:", medicationId, "for profile ID:", profileId);
-        const result = await drizzleDB
-            .delete(profileMedications)
-            .where(and(eq(profileMedications.profileId, profileId), eq(profileMedications.medicationId, medicationId)))
-            .returning({ id: profileMedications.id })
-            .execute();
-        return result.length === 0 ? null : true;
+        return await drizzleDB
+            .select()
+            .from(allergies)
+            .where(eq(allergies.name, allergyName.trim()))
+            .get();
     } catch (error) {
-        console.error("Error deleting medication:", error);
-        return null;
+        return handleDatabaseError("checking existing allergy", error);
     }
-}
+};
 
-export const deleteAllergy = async (drizzleDB: drizzleDB, profileId: number, allergyId: number) => {
+export const getExistingAllergiesById = async (drizzleDB: DrizzleDB, profileId: number, allergyId: number) => {
+    try {
+        return await drizzleDB
+            .select()
+            .from(profileAllergies)
+            .where(
+                and(
+                    eq(profileAllergies.profileId, profileId),
+                    eq(profileAllergies.allergyId, allergyId)
+                )
+            )
+            .get();
+    } catch (error) {
+        return handleDatabaseError("checking existing allergy by ID", error);
+    }
+};
+
+export const insertAllergy = async (drizzleDB: DrizzleDB, allergyName: string) => {
+    try {
+        return await drizzleDB
+            .insert(allergies)
+            .values({
+                name: allergyName.trim(),
+                description: ""
+            })
+            .returning({ id: allergies.id })
+            .get();
+    } catch (error) {
+        return handleDatabaseError("inserting allergy", error);
+    }
+};
+
+export const deleteAllergy = async (drizzleDB: DrizzleDB, profileId: number, allergyId: number) => {
     try {
         console.log("Deleting allergy with ID:", allergyId, "for profile ID:", profileId);
         const result = await drizzleDB
@@ -218,99 +317,126 @@ export const deleteAllergy = async (drizzleDB: drizzleDB, profileId: number, all
             .execute();
         return result.length === 0 ? null : true;
     } catch (error) {
-        console.error("Error deleting allergy:", error);
-        return null;
+        return handleDatabaseError("deleting allergy", error);
     }
-}
+};
 
-export const getMedicationsSuggestions = async (drizzleDB: drizzleDB, searchTerm: string) => {
+/**
+ * Medical History Operations
+ */
+export const getProfileMedicalHistoryList = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
-        const results = await drizzleDB
+        return await drizzleDB
             .select()
-            .from(medications)
-            .where(like(medications.name, `%${searchTerm}%`))
-            .limit(3)
-            .all();
-        return results;
+            .from(medicalHistory)
+            .where(eq(medicalHistory.profileId, profileId))
+            .orderBy(desc(medicalHistory.created_at))
+            .execute();
     } catch (error) {
-        console.error("Error getting medication suggestions:", error);
+        console.error("Error fetching medical history:", error);
         return [];
     }
-}
+};
 
-export const getAllergiesSuggestions = async (drizzleDB: drizzleDB, searchTerm: string) => {
+export const getProfileMedicalHistoryById = async (drizzleDB: DrizzleDB, id: number) => {
     try {
-        const results = await drizzleDB
+        return await drizzleDB
             .select()
-            .from(allergies)
-            .where(like(allergies.name, `%${searchTerm}%`))
-            .limit(3)
-            .all();
-        return results;
+            .from(medicalHistory)
+            .where(eq(medicalHistory.id, id))
+            .execute();
+
     } catch (error) {
-        console.error("Error getting allergy suggestions:", error);
+        console.error("Error fetching medical history:", error);
         return [];
     }
-}
+};
 
-export const getExistingMedications = async (drizzleDB: drizzleDB, medicationName: string) => {
+export const deleteMedicalHistory = async (drizzleDB: DrizzleDB, entryId: number) => {
     try {
-        const results = await drizzleDB
-            .select()
-            .from(medications)
-            .where(eq(medications.name, medicationName.trim()))
-            .get();
-        return results;
+        const result = await drizzleDB
+            .delete(medicalHistory)
+            .where(eq(medicalHistory.id, entryId))
+            .returning({ id: medicalHistory.id })
+            .execute();
+        return result.length === 0 ? null : true;
     } catch (error) {
-        console.error("Error checking existing medication:", error);
-        return null;
+        return handleDatabaseError("deleting medical history", error);
     }
-}
+};
 
-export const getExistingAllergies = async (drizzleDB: drizzleDB, allergyName: string) => {
+export const addProfileMedicalHistory = async (drizzleDB: DrizzleDB, formData: MedicalHistoryEntryInput) => {
     try {
-        const results = await drizzleDB
-            .select()
-            .from(allergies)
-            .where(eq(allergies.name, allergyName.trim()))
-            .get();
-        return results;
-    } catch (error) {
-        console.error("Error checking existing allergy:", error);
-        return null;
-    }
-}
-
-export const insertMedication = async (drizzleDB: drizzleDB, medicationName: string) => {
-    try {
-        const insertResult = await drizzleDB
-            .insert(medications)
+        const result = await drizzleDB
+            .insert(medicalHistory)
             .values({
-                name: medicationName.trim(),
-                description: ""
+                profileId: formData.profileId,
+                condition: formData.condition.trim(),
+                diagnosis_date: formData.diagnosis_date?.toString(),
+                treatment: formData.treatment?.trim(),
+                notes: formData.notes?.trim(),
+                status: formData.status?.toLowerCase() as "ongoing" | "resolved" | "chronic",
             })
-            .returning({ id: medications.id })
-            .get();
-        return insertResult;
+            .returning({ id: medicalHistory.id })
+            .execute();
+        return result.length === 0 ? null : true;
     } catch (error) {
-        console.error("Error inserting medication:", error);
-        return null;
+        return handleDatabaseError("adding medical history", error);
     }
 }
-
-export const insertAllergy = async (drizzleDB: drizzleDB, allergyName: string) => {
+export const updateMedicalHistoryEntry = async (drizzleDB: DrizzleDB, formData: MedicalHistoryEntryInput) => {
+  try {
+    const result = await drizzleDB
+      .update(medicalHistory)
+      .set({
+        condition: formData.condition,
+        diagnosis_date: formData.diagnosis_date,
+        treatment: formData.treatment,
+        notes: formData.notes,
+        status: formData.status,
+      })
+      .where(eq(medicalHistory.id, formData.id as number))
+      .returning({ id: medicalHistory.id })
+      .execute();
+    
+    return result.length > 0;
+  } catch (error) {
+    return handleDatabaseError("updating medical history", error);
+  }
+};
+/**
+ * Aggregated Data Operations
+ */
+export const getCompleteProfileData = async (drizzleDB: DrizzleDB, profileId: number) => {
     try {
-        const insertResult = await drizzleDB
-            .insert(allergies)
-            .values({
-                name: allergyName.trim(),
-                description: ""
-            })
-            .returning({ id: allergies.id })
-            .get();
-        return insertResult;
+        const [profile] = await drizzleDB
+            .select()
+            .from(profiles)
+            .where(eq(profiles.id, profileId))
+            .execute();
+
+        if (!profile) return null;
+
+        const [
+            healthData,
+            medications,
+            allergies,
+            medicalHistoryData
+        ] = await Promise.all([
+            getProfileHealthIndicatorById(drizzleDB, profileId),
+            getProfileMedications(drizzleDB, profileId),
+            getProfileAllergies(drizzleDB, profileId),
+            getProfileMedicalHistoryList(drizzleDB, profileId)
+        ]);
+
+        return {
+            ...profile,
+            healthData,
+            medications,
+            allergies,
+            medicalHistory: medicalHistoryData
+        };
     } catch (error) {
-        console.error("Error inserting allergy:", error);
-        return null;
+        return handleDatabaseError("fetching complete profile", error);
     }
-}
+};

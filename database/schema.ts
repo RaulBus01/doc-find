@@ -26,10 +26,9 @@ export const profileMedications = sqliteTable('profile_medications', {
     id: integer("id").primaryKey({ autoIncrement: true }),
     profileId: integer("profile_id").references(() => profiles.id, { onDelete: 'cascade' }).notNull(),
     medicationId: integer("medication_id").notNull().references(() => medications.id, { onDelete: 'cascade' }),
-    permanent: integer("permanent").notNull().default(0),
+    permanent: integer("permanent", { mode: "boolean" }).notNull().default(false),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
 });
-
 // Allergies table
 export const allergies = sqliteTable('allergies', {
     id: integer("id").primaryKey({ autoIncrement: true }),

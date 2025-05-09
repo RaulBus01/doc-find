@@ -12,7 +12,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import  { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
-import { getProfileAllergies,getAllergiesSuggestions,deleteAllergy } from "@/utils/LocalDatabase";
+import { getProfileAllergies,getAllergiesSuggestions,deleteAllergy, getExistingAllergiesByName, getExistingAllergiesById, insertAllergy } from "@/utils/LocalDatabase";
 
 export default function AllergiesScreen() {
   const { id } = useLocalSearchParams();
@@ -94,41 +94,25 @@ export default function AllergiesScreen() {
     
     try {
       // First check if this allergy already exists
-      const existingAllergy =  drizzleDB
-        .select()
-        .from(allergies)
-        .where(eq(allergies.name, allergyName.trim()))
-        .get();
+      const existingAllergyName =  await getExistingAllergiesByName(drizzleDB, allergyName.trim());
+      
       
       let allergyId: number;
       
-      if (!existingAllergy) {
+      if (!existingAllergyName) {
         // Create new allergy if it doesn't exist
-        const insertResult =  drizzleDB
-          .insert(allergies)
-          .values({
-            name: allergyName.trim(),
-            description: ""
-          })
-          .returning({ id: allergies.id })
-          .get();
-          
+        const insertResult = await insertAllergy(drizzleDB, allergyName.trim());
+        if (!insertResult) {
+          Toast.error("Failed to add allergy", "top");
+          return;
+        }
         allergyId = insertResult.id;
       } else {
-        allergyId = existingAllergy.id;
+        allergyId = existingAllergyName.id;
       }
       
       // Check if user already has this allergy
-      const existingProfileAllergy =  drizzleDB
-        .select()
-        .from(profileAllergies)
-        .where(
-          and(
-            eq(profileAllergies.profileId, parseInt(id as string, 10)),
-            eq(profileAllergies.allergyId, allergyId)
-          )
-        )
-        .get();
+      const existingProfileAllergy =  await getExistingAllergiesById(drizzleDB, parseInt(id as string, 10), allergyId);
         
       if (existingProfileAllergy) {
         Toast.warn("Allergy already exists in profile", 'top');
@@ -196,8 +180,8 @@ export default function AllergiesScreen() {
               <MaterialCommunityIcons name="allergy" size={20} color="#fff" />
             </View>
             <View style={styles.allergyDetails}>
-              <Text style={styles.allergyName}>{item.name}</Text>
-              <Text style={styles.allergySeverity}>
+              <Text selectable={true} style={styles.allergyName}>{item.name}</Text>
+              <Text selectable={true} style={styles.allergySeverity}>
                 {item.severe ? "Severe reaction" : "Mild reaction"}
               </Text>
             </View>
@@ -255,6 +239,7 @@ export default function AllergiesScreen() {
               setTimeout(() => setShowSuggestions(false), 150);
             }}
             inputRef={nameInputRef}
+            multiline={false}
           />
         </View>
         

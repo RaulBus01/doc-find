@@ -15,6 +15,13 @@
       "when": 1746446078848,
       "tag": "0001_curvy_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1746695271660,
+      "tag": "0002_illegal_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

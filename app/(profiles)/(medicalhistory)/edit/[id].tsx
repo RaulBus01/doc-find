@@ -1,86 +1,52 @@
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Pressable,
-  TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
+  View, Text, StyleSheet, Pressable, TouchableOpacity, 
+  ActivityIndicator, ScrollView, TextInput
 } from "react-native";
-import React, { useCallback, useMemo, useRef } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-  Ionicons,
-  MaterialIcons,
-  FontAwesome5,
-  FontAwesome,
-} from "@expo/vector-icons";
-import { ThemeColors } from "@/constants/Colors";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
+import { useDatabase } from "@/hooks/useDatabase";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { 
+  Ionicons, MaterialIcons, FontAwesome5, FontAwesome 
+} from "@expo/vector-icons";
+import { getProfileMedicalHistoryById, updateMedicalHistoryEntry } from "@/utils/LocalDatabase";
+import { MedicalHistoryEntryInput } from "@/database/schema";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { getStatusColor } from "@/utils/utilsFunctions";
-import { medicalHistory, MedicalHistoryEntryInput } from "@/database/schema";
 import { Toast } from "toastify-react-native";
-import { useDatabase } from "@/hooks/useDatabase";
-import { addProfileMedicalHistory } from "@/utils/LocalDatabase";
 import { BottomSheetBackdrop, BottomSheetFlatList, BottomSheetModal } from "@gorhom/bottom-sheet";
 
-const AddMedicalHistoryPage = () => {
-  const { id } = useLocalSearchParams();
-  const router = useRouter();
+const EditMedicalPage = () => {
+  const { id, profileId } = useLocalSearchParams();
   const { theme } = useTheme();
+  const router = useRouter();
   const drizzleDB = useDatabase();
-
-  const conditionRef = React.useRef<TextInput>(null);
-  const treatmentRef = React.useRef<TextInput>(null);
-  const notesRef = React.useRef<TextInput>(null);
-  const styles = getStyles(theme);
-  const handleBack = () => {
-    router.back();
-  };
-  const [formData, setFormData] = React.useState<MedicalHistoryEntryInput>({
-    profileId: parseInt(id as string, 10),
+  const [formData, setFormData] = useState<MedicalHistoryEntryInput>({
+    id: parseInt(id as string),
+    profileId: parseInt(profileId as string),
     condition: "",
     diagnosis_date: "",
     treatment: "",
     notes: "",
     status: "ongoing",
   });
-  const { bottom, top } = useSafeAreaInsets();
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
-  const handleAddMedicalHistory = async () => {
-    if (!formData.condition.trim()) {
-      Toast.warn("Please enter a medical condition", "top");
-      return;
-    }
-
-    try {
-      // TODO: Add to local database file
-      const result = await addProfileMedicalHistory(drizzleDB, formData);
-      if (!result) {
-        Toast.error("Failed to add medical condition", "top");
-        return;
-      }
-
-      Toast.success("Medical condition added successfully", "top");
-      setFormData({
-        profileId: parseInt(id as string, 10),
-        condition: "",
-        diagnosis_date: "",
-        treatment: "",
-        notes: "",
-        status: "ongoing",
-      });
-      router.back();
-    } catch (error) {
-      console.error("Error adding medical history:", error);
-      Toast.error("Failed to add medical condition", "top");
-    }
-  };
   
+  const styles = getStyles(theme);
+  const { bottom, top } = useSafeAreaInsets();
+  
+  const conditionRef = React.useRef<TextInput>(null);
+  const treatmentRef = React.useRef<TextInput>(null);
+  const notesRef = React.useRef<TextInput>(null);
+  
+  const handleBack = () => {
+    router.back();
+  };
+
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => {
     return Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -100,7 +66,7 @@ const AddMedicalHistoryPage = () => {
     }));
     
     bottomSheetModalRef.current?.dismiss(); 
-  }, [formData.diagnosis_date]);
+  }, []);
   
   const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
     <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
@@ -120,20 +86,93 @@ const AddMedicalHistoryPage = () => {
     ),
     []
   );
+const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null>(null);
+  const getMedicalProfile = async () => {
+    try {
+      setLoading(true);
+      const result = await getProfileMedicalHistoryById(drizzleDB, parseInt(id as string));
+      if (result && result.length > 0) {
+        const medicalHistory = result[0];
+        setFormData({
+          ...formData,
+          condition: medicalHistory.condition,
+          diagnosis_date: medicalHistory.diagnosis_date,
+          treatment: medicalHistory.treatment,
+          notes: medicalHistory.notes,
+          status: medicalHistory.status,
+        });
+        setOriginalData(medicalHistory);
+      }
+    } catch (error) {
+      console.error("Error fetching medical history:", error);
+      Toast.error("Error loading medical history", "top");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const hasChanges = () => {
+    if(!originalData) return false;
+    return (
+      formData.condition !== originalData.condition ||
+      formData.diagnosis_date !== originalData.diagnosis_date ||
+      formData.treatment !== originalData.treatment ||
+      formData.notes !== originalData.notes ||
+      formData.status !== originalData.status
+    );
+};
+    
 
+  useEffect(() => {
+    getMedicalProfile();
+  }, []);
+
+  const handleSave = async () => {
+    if (!formData.condition.trim() || formData.diagnosis_date === "") {
+    Toast.error("Please fill in all required fields", "top");
+      return;
+    }
+    
+    setSaving(true);
+    try {
+    
+
+      const result = await updateMedicalHistoryEntry(drizzleDB, formData);
+      
+      if (!result) {
+        Toast.error("Failed to update medical condition", "top");
+        return;
+      }
+
+      Toast.success("Medical condition updated successfully", "top");
+      router.back();
+    } catch (error) {
+      console.error("Error updating medical history:", error);
+      Toast.error("Failed to update medical condition", "top");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={theme.progressColor} />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView
       style={[styles.container, { paddingBottom: bottom }]}
-      edges={["bottom"]}
+        edges={["bottom"]}
     >
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: top }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={theme.text} />
         </Pressable>
-        <Text style={styles.header}>Add Medical History</Text>
+        <Text style={styles.header}>Edit Medical History</Text>
       </View>
 
       {/* Content */}
@@ -152,7 +191,6 @@ const AddMedicalHistoryPage = () => {
                     name="heartbeat"
                     size={18}
                     color={theme.progressColor}
-                    style={styles.inputIcon}
                   />
                 </View>
 
@@ -175,7 +213,6 @@ const AddMedicalHistoryPage = () => {
                     name="calendar-plus-o"
                     size={18}
                     color={theme.progressColor}
-                    style={styles.inputIcon}
                   />
                 </View>
 
@@ -188,7 +225,6 @@ const AddMedicalHistoryPage = () => {
                       ? `Diagnosis Year: ${formData.diagnosis_date}`
                       : "Select Diagnosis Year"}
                   </Text>
-                  
                 </TouchableOpacity>
               </View>
             </View>
@@ -254,7 +290,7 @@ const AddMedicalHistoryPage = () => {
                         backgroundColor: getStatusColor(
                           theme,
                           statusOption.toLowerCase()
-                          ),
+                        ),
                       },
                     ]}
                     onPress={() =>
@@ -267,16 +303,12 @@ const AddMedicalHistoryPage = () => {
                       })
                     }
                   >
-                 
                     <Text
                       style={[
                         styles.statusOptionText,
                         isSelected && styles.selectedStatusText,
                         isSelected && {
-                          color: getStatusColor(
-                            theme,
-                            statusOption.toLowerCase()
-                          ),
+                          color: theme.text,
                         },
                       ]}
                     >
@@ -289,16 +321,25 @@ const AddMedicalHistoryPage = () => {
           </View>
         </View>
       </ScrollView>
-     
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          style={styles.addButton}
-          onPress={handleAddMedicalHistory}
-          activeOpacity={0.8}
+       
+          style={!hasChanges() || saving ? styles.addButtonDisabled : styles.addButton}
+          
+          onPress={handleSave}
+          activeOpacity={0.7}
+          
+          disabled={saving || !hasChanges()}
         >
-          <Ionicons name="add" size={22} color={theme.text} />
-          <Text style={styles.addButtonText}>Save Medical History</Text>
+          {saving ? (
+            <ActivityIndicator color={theme.text} size="small" />
+          ) : (
+            <>
+              <Ionicons name="save-outline" size={22} color={theme.text} />
+              <Text style={styles.addButtonText}>Save Changes</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
       
@@ -328,7 +369,7 @@ const AddMedicalHistoryPage = () => {
 
 const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
-    container: {
+     container: {
       flex: 1,
       backgroundColor: theme.background,
     },
@@ -358,7 +399,7 @@ const getStyles = (theme: ThemeColors) =>
       justifyContent: "center",
       alignItems: "center",
     },
-    formContainer: {
+      formContainer: {
       padding: 20,
     },
     formSection: {
@@ -405,12 +446,11 @@ const getStyles = (theme: ThemeColors) =>
       flex: 1,
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: theme.cardBackground,
+      backgroundColor: theme.background,
       borderRadius: 12,
       paddingVertical: 14,
       paddingHorizontal: 16,
-      justifyContent: "center",
-  
+    
     },
     datePickerText: {
       color: theme.text,
@@ -434,6 +474,7 @@ const getStyles = (theme: ThemeColors) =>
       justifyContent: "center",
       flexDirection: "row",
       color: theme.text,
+      backgroundColor: theme.cardBackground,
     },
     bottomSheetHeader: {
       paddingVertical: 16,
@@ -488,8 +529,18 @@ const getStyles = (theme: ThemeColors) =>
       borderRadius: 12,
       paddingVertical: 16,
     },
+    addButtonDisabled: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      backgroundColor: theme.progressColor,
+      borderRadius: 12,
+      paddingVertical: 16,
+      opacity: 0.5,
+    },
+
     addButtonText: {
-      color: "#fff",
+      color: theme.text,
       fontSize: 16,
       fontFamily: "Roboto-Bold",
       marginLeft: 10,
@@ -505,4 +556,4 @@ const getStyles = (theme: ThemeColors) =>
     },
   });
 
-export default AddMedicalHistoryPage;
+export default EditMedicalPage;
