@@ -6,6 +6,8 @@ import { useRouter } from 'expo-router';
 import { View, StyleSheet, Dimensions, Text, Pressable, TouchableOpacity} from 'react-native';
 import { Credentials, useAuth0 } from 'react-native-auth0';
 import { ApiCall } from '@/utils/ApiCall';
+import { useUserData } from '@/context/UserDataContext';
+import { useToken } from '@/context/TokenContext';
 
 const { width } = Dimensions.get('window');
 const data = [
@@ -28,26 +30,35 @@ const data = [
 const Page = () => {
   const router = useRouter();
   const { authorize, isLoading } = useAuth0();
+    const { refreshData } = useUserData();
+    const { refreshToken } = useToken();
   const onLogin = async () => {
     try {
-
       const authResult = await authorize({
         scope: "openid profile email",
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
+      
       if (!authResult) return;
-      secureSave('accessToken', authResult.accessToken);
-      ApiCall.post('/user/signup', authResult.accessToken, {}).then((res) => {
-        secureSaveObject('user', res);
-      }
-      );
-      if (authResult) {
+      
+      await secureSave('accessToken', authResult.accessToken);
+      const userData = await ApiCall.post('/user/signup', authResult.accessToken, {});
+      
+      if (userData) {
+        // Save user data securely
+        await secureSaveObject('user', userData);
+        // Update token context
+        await refreshToken(); 
+        // Update user data context
+        await refreshData();
+        
+        // ONLY navigate after data is refreshed
         router.push("/(tabs)");
       }
     } catch (e) {
-      console.error(e);
+      console.error("Login error:", e);
     }
-  }
+  };
 
 
 return (

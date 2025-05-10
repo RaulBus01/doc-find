@@ -8,7 +8,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -22,6 +22,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 import { useUserData } from "@/context/UserDataContext";
 import { RefreshControl } from "react-native-gesture-handler";
+import { TabBarVisibilityContext } from "@/context/TabBarContext";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -38,7 +39,11 @@ const Home = () => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [chatCount, setChatCount] = useState<number>(0);
   const [displayCount, setDisplayCount] = useState<number>(0);
+  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
   useEffect(() => {
+    if(!isTabBarVisible) {
+      setIsTabBarVisible(true);
+    }
     const fetchChats = async () => {
       try {
         setIsLoading(true);
