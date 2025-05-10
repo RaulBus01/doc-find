@@ -4,7 +4,8 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  StatusBar
+  StatusBar,
+  RefreshControl
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDatabase } from "@/hooks/useDatabase";
@@ -16,7 +17,7 @@ import {
   FontAwesome5,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import CustomBottomSheetModal, {
   Ref,
 } from "@/components/CustomBottomSheetModal";
@@ -56,11 +57,16 @@ const HistoryProfile = () => {
     setHealthData(healthMap);
   };
 
-  useEffect(() => {
-    if (userId) {
-      fetchProfiles();
-    }
-  }, [userId]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        if (userId) {
+          await fetchProfiles();
+        }
+      };
+      fetchData();
+    }, [userId])
+  );
 
   const onProfilePress = (id: string) => {
     router.push(`/(profiles)/${id}`);
@@ -88,7 +94,20 @@ const HistoryProfile = () => {
   const handleAddProfile = () => {
     router.push("/(profiles)/new");
   };
-
+ const getChoiceStyle = (choice: string) => {
+    switch (choice) {
+      case "Yes":
+        return styles.indicatorActive;
+      case "No":
+        return styles.indicatorNegative;
+      case "I don't know":
+        return styles.indicatorWarning;
+      case "I used to":
+        return styles.indicatorWarning;
+      default:
+        return {};
+    }
+  }
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]} edges={["bottom"]}>
   
@@ -113,6 +132,13 @@ const HistoryProfile = () => {
         scrollEventThrottle={16}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={false}
+            onRefresh={fetchProfiles}
+            tintColor={theme.text}
+          />
+        }
       >
         <View style={styles.content}>
           {profilesData.length === 0 ? (
@@ -203,11 +229,9 @@ const HistoryProfile = () => {
                               key={key}
                               style={[
                                 styles.indicator,
-                                healthData[profile.id][key] === "Yes"
-                                ? styles.indicatorActive
-                                : healthData[profile.id][key] === "I used to"
-                                  ? styles.indicatorWarning
-                                : {},
+                                getChoiceStyle(
+                                  healthData[profile.id][key]
+                                ),
                               ]}
                               >
                               <FontAwesome5
@@ -402,11 +426,17 @@ const getStyles = (theme: ThemeColors) =>
       paddingVertical: 6,
       marginRight: 8,
     },
-    indicatorActive: {
+     indicatorNegative: {
+      backgroundColor: theme.GreenIconBackground,
+      borderColor: theme.GreenIconBackground,
+    },
+     indicatorActive: {
       backgroundColor: theme.RedIconBackground,
+      borderColor: theme.RedIconBackground,
     },
     indicatorWarning: {
       backgroundColor: theme.YellowIconBackground,
+      borderColor: theme.YellowIconBackground,
     },
     indicatorText: {
       color: theme.text,

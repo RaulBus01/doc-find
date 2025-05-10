@@ -35,7 +35,9 @@ import { useDatabase } from "@/hooks/useDatabase";
 import { getProfiles, getCompleteProfileData } from "@/utils/LocalDatabase";
 
 const ChatScreen = () => {
-  let { id } = useLocalSearchParams<{ id: string }>();
+  let { id,symptom } = useLocalSearchParams<{ id: string,symptom:string }>();
+  console.log("ChatScreen ID:", id);
+  console.log("ChatScreen Symptom:", symptom);
   const { top, bottom } = useSafeAreaInsets();
   const [chatId, _setChatId] = useState(id);
   const chatIdRef = useRef(chatId);

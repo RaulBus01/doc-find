@@ -84,7 +84,20 @@ const NewProfile = () => {
       <Text style={styles.bottomSheetItemText}>{item}</Text>
     </TouchableOpacity>
   ), [handleYearSelect, styles]);
-
+ const getChoiceStyle = (choice: string) => {
+    switch (choice) {
+      case "Yes":
+        return styles.indicatorActive;
+      case "No":
+        return styles.indicatorNegative;
+      case "I don't know":
+        return styles.indicatorWarning;
+      case "I used to":
+        return styles.indicatorWarning;
+      default:
+        return {};
+    }
+  }
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -165,7 +178,7 @@ const NewProfile = () => {
             key={choice}
             style={[
               styles.genderButton,
-              formData.smoker === choice && styles.selectedChoice, 
+              formData.smoker === choice && [styles.selectedChoice, getChoiceStyle(choice)]
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, smoker: choice as "Yes" | "No" | "I used to" }));
@@ -192,7 +205,7 @@ const NewProfile = () => {
             key={choice}
             style={[
               styles.genderButton,
-              formData.hypertensive === choice && styles.selectedChoice, // Apply selection styling
+              formData.hypertensive === choice && [styles.selectedChoice, getChoiceStyle(choice)]
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, hypertensive: choice  as "Yes" | "No" | "I don't know" }));
@@ -215,21 +228,21 @@ const NewProfile = () => {
     component: (
       <View style={styles.choiceContainer}>
         {["Yes", "No","I don't know"].map((choice) => (
-          <Pressable
+            <Pressable
             key={choice}
             style={[
               styles.genderButton,
-              formData.diabetic === choice && styles.selectedChoice, // Apply selection styling
+              formData.diabetic === choice && [styles.selectedChoice, getChoiceStyle(choice)]
             ]}
             onPress={() => {
               setFormData((prev) => ({ ...prev, diabetic: choice as "Yes" | "No" | "I don't know" }));
             }}
-          >
+            >
             <Text style={[
               styles.genderText,
               formData.diabetic === choice && styles.selectedGenderText
             ]}>{choice}</Text>
-          </Pressable>
+            </Pressable>
         ))}
       </View>
     ),
@@ -522,6 +535,18 @@ const getStyles = (theme: ThemeColors) =>
       fontFamily: "Roboto-Regular",
       textAlign: 'right',
       flexShrink: 1, 
+    },
+    indicatorNegative: {
+      backgroundColor: theme.GreenIconBackground,
+      borderColor: theme.GreenIconBackground,
+    },
+     indicatorActive: {
+      backgroundColor: theme.RedIconBackground,
+      borderColor: theme.RedIconBackground,
+    },
+    indicatorWarning: {
+      backgroundColor: theme.YellowIconBackground,
+      borderColor: theme.YellowIconBackground,
     },
   });
 

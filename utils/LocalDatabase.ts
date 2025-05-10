@@ -27,12 +27,12 @@ export const getProfiles = async (drizzleDB: DrizzleDB, userId: string) => {
     }
 };
 
-export const getProfileById = async (drizzleDB: DrizzleDB, profileId: number) => {
+export const getProfileById = async (drizzleDB: DrizzleDB, profileId: number,userId:string) => {
     try {
         const result = await drizzleDB
             .select()
             .from(profiles)
-            .where(eq(profiles.id, profileId))
+            .where(and(eq(profiles.id, profileId), eq(profiles.auth0Id, userId)))
             .execute();
         return result.length === 0 ? null : result[0];
     } catch (error) {
@@ -69,7 +69,40 @@ export const addProfile = async (drizzleDB: DrizzleDB, profileToInsert: ProfileI
         return handleDatabaseError("adding profile", error) ?? false;
     }
 };
-
+export const updateProfile = async (drizzleDB: DrizzleDB, profileId: number, data: Partial<ProfileInput>) => {
+  try {
+    const result = await drizzleDB
+      .update(profiles)
+      .set({
+        ...data,
+        updated_at: new Date().getTime(),
+      })
+      .where(eq(profiles.id, profileId))
+      .returning({ id: profiles.id })
+      .execute();
+    
+    return result.length > 0;
+  } catch (error) {
+    return handleDatabaseError("updating profile", error);
+  }
+};
+export const updateHealthIndicator = async (drizzleDB: DrizzleDB, profileId: number, data: Partial<HealthIndicatorInput>) => {
+  try {
+    const result = await drizzleDB
+      .update(healthIndicators)
+      .set({
+        ...data,
+    updated_at: new Date().getTime(),
+      })
+      .where(eq(healthIndicators.profileId, profileId))
+      .returning({ id: healthIndicators.id })
+      .execute();
+    
+    return result.length > 0;
+  } catch (error) {
+    return handleDatabaseError("updating health indicators", error);
+  }
+};
 /**
  * Health Indicator Operations
  */

@@ -1,9 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useDatabase } from "@/hooks/useDatabase";
-import { healthIndicators, profiles } from "@/database/schema";
-import { eq } from "drizzle-orm";
+
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -15,28 +14,35 @@ import Animated, { useAnimatedRef } from "react-native-reanimated";
 import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface";
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileById, getProfileHealthIndicatorById } from "@/utils/LocalDatabase";
-
+import { ProfileInput } from "@/database/schema";
+import { useUserData } from "@/context/UserDataContext";
+import { useFocusEffect } from "@react-navigation/native";
 const ProfileScreen = () => {
   const { id } = useLocalSearchParams();
+  const { userId } = useUserData();
   const [profileId, setProfileId] = useState(id);
   const drizzleDB = useDatabase();
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, setProfileData] = useState<ProfileInput>(
+    {} as ProfileInput
+  )
   const [healthData, setHealthData] = useState<any>(null);
   const router = useRouter();
 
-  useEffect(() => {
+ useFocusEffect(
+  useCallback(() => {
     const fetchProfile = async () => {
       if (!profileId) return;
+      
       // Fetch profile data
-      const profile = await getProfileById(drizzleDB, Number(profileId));
+      const profile = await getProfileById(drizzleDB, Number(profileId), userId as string);
       if (!profile) {
-        setProfileData(null);
+        setProfileData({} as ProfileInput);
         return;
       }
       setProfileData(profile);
 
-        // Fetch health indicators
-        const health = await getProfileHealthIndicatorById(drizzleDB, Number(profileId));
+      // Fetch health indicators
+      const health = await getProfileHealthIndicatorById(drizzleDB, Number(profileId));
 
       if (!health) {
         setHealthData(null);
@@ -44,8 +50,12 @@ const ProfileScreen = () => {
       }
       setHealthData(health);
     };
+    
     fetchProfile();
-  }, [profileId]);
+    
+    // No cleanup function needed in this case
+  }, [profileId, userId, drizzleDB])
+);
 
   const { theme } = useTheme();
   const styles = getStyles(theme);
@@ -64,6 +74,23 @@ const ProfileScreen = () => {
     );
   }
 
+  function handleRouteToEditProfile(profileId: string | string[]): void {
+    router.push(`/(profiles)/(edit)/${profileId}`);
+  }
+const getChoiceStyle = (choice: string) => {
+    switch (choice) {
+      case "Yes":
+        return styles.indicatorActive;
+      case "No":
+        return styles.indicatorNegative;
+      case "I don't know":
+        return styles.indicatorWarning;
+      case "I used to":
+        return styles.indicatorWarning;
+      default:
+        return {};
+    }
+  }
   return (
     <SafeAreaView
       style={[styles.container, { paddingBottom: bottom }]}
@@ -113,7 +140,7 @@ const ProfileScreen = () => {
           <View style={styles.profileActions}>
             <Pressable
               style={styles.editProfileButton}
-              onPress={() => console.log("Edit profile")}
+              onPress={() => handleRouteToEditProfile(profileId)}
             >
               <Ionicons name="pencil" size={16} color={theme.text} />
               <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -128,7 +155,7 @@ const ProfileScreen = () => {
             <>
               {Object.entries(healthIndicatorConfig).map(([key, config]) => (
                 <View key={key} style={styles.infoRow}>
-                  <View style={styles.infoIconContainer}>
+                  <View style={[styles.infoIconContainer, getChoiceStyle(healthData[key])]}>
                     <FontAwesome5
                       name={config.icon}
                       size={20}
@@ -188,7 +215,7 @@ const ProfileScreen = () => {
               <Text style={styles.quickInfoTitle}>Created</Text>
             </View>
             <Text style={styles.quickInfoValue}>
-              {new Date(profileData.created_at).toLocaleDateString()}
+              {new Date(profileData.created_at!).toLocaleDateString()}
             </Text>
           </View>
 
@@ -198,7 +225,7 @@ const ProfileScreen = () => {
               <Text style={styles.quickInfoTitle}>Last Update</Text>
             </View>
             <Text style={styles.quickInfoValue}>
-              {new Date(profileData.updated_at).toLocaleDateString()}
+              {new Date(profileData.updated_at!).toLocaleDateString()}
             </Text>
           </View>
         </View>
@@ -328,7 +355,7 @@ const getStyles = (theme: ThemeColors) =>
       width: 40,
       height: 40,
       borderRadius: 20,
-      backgroundColor: theme.profileActionBackground,
+      backgroundColor: theme.GreenIconBackground,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 10,
@@ -369,6 +396,18 @@ const getStyles = (theme: ThemeColors) =>
     },
     historyButton: {
       backgroundColor: theme.GreenIconBackground,
+    },
+    indicatorNegative: {
+      backgroundColor: theme.GreenIconBackground,
+      borderColor: theme.GreenIconBackground,
+    },
+     indicatorActive: {
+      backgroundColor: theme.RedIconBackground,
+      borderColor: theme.RedIconBackground,
+    },
+    indicatorWarning: {
+      backgroundColor: theme.YellowIconBackground,
+      borderColor: theme.YellowIconBackground,
     },
     actionButtonText: {
       color: theme.text,
