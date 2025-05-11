@@ -265,7 +265,7 @@ export default function MedicationScreen() {
           onPress={handleAddMedication}
           
         >
-          <Ionicons name="add" size={22} color="#fff" />
+          <Ionicons name="add" size={22} color={theme.textLight ? theme.textLight : theme.text} />
           <Text style={styles.addButtonText}>Add Medication</Text>
         </Pressable>
       </View>
@@ -425,7 +425,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
  
   },
   addButtonText: {
-    color: theme.text,
+    color: theme.textLight ? theme.textLight : theme.text,
     fontSize: 16,
     fontFamily: "Roboto-Bold",
     marginLeft: 8,

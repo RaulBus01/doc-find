@@ -11,7 +11,10 @@ import {
 } from "react-native";
 import React, { useCallback, useMemo, useRef } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import {
   Ionicons,
   MaterialIcons,
@@ -26,7 +29,11 @@ import { medicalHistory, MedicalHistoryEntryInput } from "@/database/schema";
 import { Toast } from "toastify-react-native";
 import { useDatabase } from "@/hooks/useDatabase";
 import { addProfileMedicalHistory } from "@/utils/LocalDatabase";
-import { BottomSheetBackdrop, BottomSheetFlatList, BottomSheetModal } from "@gorhom/bottom-sheet";
+import {
+  BottomSheetBackdrop,
+  BottomSheetFlatList,
+  BottomSheetModal,
+} from "@gorhom/bottom-sheet";
 
 const AddMedicalHistoryPage = () => {
   const { id } = useLocalSearchParams();
@@ -80,34 +87,43 @@ const AddMedicalHistoryPage = () => {
       Toast.error("Failed to add medical condition", "top");
     }
   };
-  
+
   const currentYear = new Date().getFullYear();
   const years = useMemo(() => {
     return Array.from({ length: 100 }, (_, i) => currentYear - i);
   }, [currentYear]);
-    
+
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['50%', '60%'], []); 
+  const snapPoints = useMemo(() => ["50%", "60%"], []);
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
-  
-  const handleYearSelect = useCallback((year: number) => {
-    setFormData(prev => ({
-      ...prev,
-      diagnosis_date: year.toString(),
-    }));
-    
-    bottomSheetModalRef.current?.dismiss(); 
-  }, [formData.diagnosis_date]);
-  
-  const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
-    <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
-      <Text style={styles.bottomSheetItemText}>{item}</Text>
-    </TouchableOpacity>
-  ), [handleYearSelect, styles]);
-  
+
+  const handleYearSelect = useCallback(
+    (year: number) => {
+      setFormData((prev) => ({
+        ...prev,
+        diagnosis_date: year.toString(),
+      }));
+
+      bottomSheetModalRef.current?.dismiss();
+    },
+    [formData.diagnosis_date]
+  );
+
+  const renderBottomSheetItem = useCallback(
+    ({ item }: { item: number }) => (
+      <TouchableOpacity
+        style={styles.bottomSheetItem}
+        onPress={() => handleYearSelect(item)}
+      >
+        <Text style={styles.bottomSheetItemText}>{item}</Text>
+      </TouchableOpacity>
+    ),
+    [handleYearSelect, styles]
+  );
+
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -115,13 +131,11 @@ const AddMedicalHistoryPage = () => {
         enableTouchThrough={false}
         disappearsOnIndex={-1}
         appearsOnIndex={0}
-        opacity={0.5} 
+        opacity={0.5}
       />
     ),
     []
   );
-
-
 
   return (
     <SafeAreaView
@@ -131,7 +145,11 @@ const AddMedicalHistoryPage = () => {
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: top }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={theme.textLight ? theme.textLight : theme.text}
+          />
         </Pressable>
         <Text style={styles.header}>Add Medical History</Text>
       </View>
@@ -179,7 +197,7 @@ const AddMedicalHistoryPage = () => {
                   />
                 </View>
 
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.datePickerButton}
                   onPress={handlePresentModalPress}
                 >
@@ -188,7 +206,6 @@ const AddMedicalHistoryPage = () => {
                       ? `Diagnosis Year: ${formData.diagnosis_date}`
                       : "Select Diagnosis Year"}
                   </Text>
-                  
                 </TouchableOpacity>
               </View>
             </View>
@@ -254,7 +271,7 @@ const AddMedicalHistoryPage = () => {
                         backgroundColor: getStatusColor(
                           theme,
                           statusOption.toLowerCase()
-                          ),
+                        ),
                       },
                     ]}
                     onPress={() =>
@@ -267,16 +284,12 @@ const AddMedicalHistoryPage = () => {
                       })
                     }
                   >
-                 
                     <Text
                       style={[
                         styles.statusOptionText,
                         isSelected && styles.selectedStatusText,
                         isSelected && {
-                          color: getStatusColor(
-                            theme,
-                            statusOption.toLowerCase()
-                          ),
+                          color: theme.text,
                         },
                       ]}
                     >
@@ -289,7 +302,6 @@ const AddMedicalHistoryPage = () => {
           </View>
         </View>
       </ScrollView>
-     
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -297,20 +309,24 @@ const AddMedicalHistoryPage = () => {
           onPress={handleAddMedicalHistory}
           activeOpacity={0.8}
         >
-          <Ionicons name="add" size={22} color={theme.text} />
+          <Ionicons
+            name="add"
+            size={22}
+            color={theme.textLight ? theme.textLight : theme.text}
+          />
           <Text style={styles.addButtonText}>Save Medical History</Text>
         </TouchableOpacity>
       </View>
-      
+
       <BottomSheetModal
         ref={bottomSheetModalRef}
-        index={0} 
+        index={0}
         snapPoints={snapPoints}
-        enablePanDownToClose={true} 
+        enablePanDownToClose={true}
         keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop} 
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }} 
-        handleIndicatorStyle={{ backgroundColor: theme.progressColor }} 
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
+        handleIndicatorStyle={{ backgroundColor: theme.progressColor }}
       >
         <View style={styles.bottomSheetHeader}>
           <Text style={styles.bottomSheetTitle}>Select Year</Text>
@@ -347,7 +363,7 @@ const getStyles = (theme: ThemeColors) =>
     header: {
       fontSize: 22,
       fontFamily: "Roboto-Bold",
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       flex: 1,
       textAlign: "center",
       marginRight: 30,
@@ -410,7 +426,6 @@ const getStyles = (theme: ThemeColors) =>
       paddingVertical: 14,
       paddingHorizontal: 16,
       justifyContent: "center",
-  
     },
     datePickerText: {
       color: theme.text,
@@ -434,6 +449,7 @@ const getStyles = (theme: ThemeColors) =>
       justifyContent: "center",
       flexDirection: "row",
       color: theme.text,
+      backgroundColor: theme.cardBackground,
     },
     bottomSheetHeader: {
       paddingVertical: 16,
@@ -448,19 +464,19 @@ const getStyles = (theme: ThemeColors) =>
     },
     bottomSheetContentContainer: {
       backgroundColor: theme.backgroundDark,
-      paddingBottom: 20, 
+      paddingBottom: 20,
     },
     bottomSheetItem: {
-      paddingVertical: 18, 
-      borderBottomWidth: StyleSheet.hairlineWidth, 
+      paddingVertical: 18,
+      borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: theme.separator,
-      marginHorizontal: 16, 
+      marginHorizontal: 16,
     },
     bottomSheetItemText: {
       fontSize: 18,
       color: theme.text,
-      fontFamily: 'Roboto-Regular',
-      textAlign: 'center',
+      fontFamily: "Roboto-Regular",
+      textAlign: "center",
     },
     statusIndicator: {
       width: 8,
@@ -489,7 +505,7 @@ const getStyles = (theme: ThemeColors) =>
       paddingVertical: 16,
     },
     addButtonText: {
-      color: "#fff",
+      color: theme.textLight ? theme.textLight : theme.text,
       fontSize: 16,
       fontFamily: "Roboto-Bold",
       marginLeft: 10,
@@ -501,7 +517,7 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       marginRight: 8,
       alignSelf: "flex-start",
-      marginTop: 8, 
+      marginTop: 8,
     },
   });
 

@@ -170,7 +170,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: top }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.text} />
+          <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight :theme.text} />
         </Pressable>
         <Text style={styles.header}>Edit Medical History</Text>
       </View>
@@ -336,7 +336,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
             <ActivityIndicator color={theme.text} size="small" />
           ) : (
             <>
-              <Ionicons name="save-outline" size={22} color={theme.text} />
+              <Ionicons name="save-outline" size={22} color={theme.textLight ? theme.textLight : theme.text} />
               <Text style={styles.addButtonText}>Save Changes</Text>
             </>
           )}
@@ -388,7 +388,7 @@ const getStyles = (theme: ThemeColors) =>
     header: {
       fontSize: 22,
       fontFamily: "Roboto-Bold",
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       flex: 1,
       textAlign: "center",
       marginRight: 30,
@@ -540,7 +540,7 @@ const getStyles = (theme: ThemeColors) =>
     },
 
     addButtonText: {
-      color: theme.text,
+      color: theme.textLight ? theme.textLight : theme.text,
       fontSize: 16,
       fontFamily: "Roboto-Bold",
       marginLeft: 10,

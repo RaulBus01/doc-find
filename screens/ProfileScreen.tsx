@@ -289,7 +289,7 @@ const getStyles = (theme: ThemeColors) =>
     editProfileButton: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: theme.profileActionBackground,
+      backgroundColor: theme.cardBackground,
       paddingVertical: 8,
       paddingHorizontal: 16,
       borderRadius: 20,
