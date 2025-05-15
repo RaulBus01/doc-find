@@ -47,6 +47,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleTheme = async () => {
 
     const newTheme = isDark ? 'light' : 'dark';
+    console.log('Toggling theme to:', newTheme);
     setManualTheme(newTheme);
     
     // Save preference to AsyncStorage

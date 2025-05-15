@@ -16,6 +16,7 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import ToastManager from "toastify-react-native";
+import 'react-native-get-random-values'
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -34,21 +35,20 @@ const InitialLayout = () => {
       <ActivityIndicator size="large" color={theme.background} />
     </View>
   );
-  // Handle font loading error
+
   useEffect(() => {
     if (fontError) {
       console.error("Font loading error:", fontError);
     }
   }, [fontError]);
 
-  // Handle splash screen
   useEffect(() => {
     if (fontsLoaded) {
       SplashScreen.hideAsync().catch(console.error);
     }
   }, [fontsLoaded]);
 
-  // Handle navigation based on auth state
+
   useEffect(() => {
     if (!authLoading && fontsLoaded) {
       const route = user ? "/(tabs)" : "/";
@@ -56,12 +56,10 @@ const InitialLayout = () => {
     }
   }, [user, authLoading, fontsLoaded, router]);
 
-  // Show loading screen while initializing
   if (!fontsLoaded || authLoading) {
     return <LoadingScreen />;
   }
 
-  // Show error screen if something went wrong
   if (fontError || authError) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>

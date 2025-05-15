@@ -1,5 +1,7 @@
 import { ThemeColors } from "@/constants/Colors";
 
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+
 
 
 export const getStatusColor = (theme:ThemeColors,statusValue: string) => {
@@ -14,3 +16,4 @@ export const getStatusColor = (theme:ThemeColors,statusValue: string) => {
         return theme.text;
     }
   };
+

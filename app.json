@@ -17,7 +17,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.laurbalaur.docfind"
+      "package": "com.laurbalaur.docfind",
+      "config":{
+        "googleMaps": {
+          
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +47,10 @@
         {
           
         }
+      ],
+      [
+        "expo-google-places"
+       
       ],
       "expo-asset",
       {

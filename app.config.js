@@ -19,7 +19,12 @@ export default {
           "foregroundImage": "./assets/images/adaptive-icon.png",
           "backgroundColor": "#ffffff"
         },
-        "package": "com.laurbalaur.docfind"
+        "package": "com.laurbalaur.docfind",
+        "config":{
+        "googleMaps": {
+          "apiKey": process.env.GOOGLE_MAPS_API_KEY
+        }
+      }
       },
       "web": {
         "bundler": "metro",
@@ -45,6 +50,13 @@ export default {
             "domain": process.env.AUTH0_DOMAIN,
           }
         ],
+        [
+        "expo-google-places",
+        {
+          "androidApiKey": process.env.GOOGLE_MAPS_API_KEY,
+          "iosApiKey": process.env.GOOGLE_MAPS_API_KEY,
+        }
+      ],
         "expo-asset",
         
       ],
@@ -62,7 +74,8 @@ export default {
         "domain": process.env.AUTH0_DOMAIN,
         "clientId": process.env.AUTH0_CLIENT_ID,
         "audience": process.env.AUTH0_AUDIENCE
-        }
+        },
+        "googleMapsApiKey": process.env.GOOGLE_MAPS_API_KEY
       }
     }
   }

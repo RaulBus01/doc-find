@@ -10,11 +10,15 @@ import { Pressable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/context/ThemeContext';
 import { ThemeColors } from '@/constants/Colors';
+import * as ExpoGooglePlaces from "expo-google-places";
+import { secureGetValueFor } from '@/utils/SecureStorage';
+import * as Location from "expo-location";
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
   placeholder?: string;
 }
+
 
 const CustomSearchBar: React.FC<SearchBarProps> = ({ 
   onSearch, 
@@ -25,6 +29,8 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
   const animatedWidth = new Animated.Value(1);
   const {theme} = useTheme();
   const styles = getStyles(theme);
+  
+
 
   const handleFocus = () => {
     setIsFocused(true);
@@ -49,6 +55,39 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
     onSearch('');
     Keyboard.dismiss();
   };
+  const fetchPredictions = async (search: string) => {
+  try {
+    const lastLocation =  await secureGetValueFor("lastLocation");
+    const lastLocationParsed = JSON.parse(lastLocation!) as Location.LocationObject;
+
+    const predictions = await ExpoGooglePlaces.fetchPredictionsWithSession(search, {
+      origin: {
+        latitude: lastLocationParsed?.coords.latitude || 45.75,
+        longitude: lastLocationParsed?.coords.longitude || 21.22,
+      },
+      locationBias: {
+        northEastBounds: {
+          latitude: (lastLocationParsed?.coords.latitude || 45.75)+1,
+          longitude: (lastLocationParsed?.coords.longitude || 21.22)+1,
+        }
+        ,
+        southWestBounds: {
+          latitude: (lastLocationParsed?.coords.latitude || 45.75)-1,
+          longitude: (lastLocationParsed?.coords.longitude || 21.22)-1,
+        }
+        
+      },
+      types:["hospital","pharmacy","physiotherapist","dentist","doctor"],
+    });
+    predictions.forEach((prediction) => {
+      console.log("Prediction: ", prediction);
+    });
+
+  } catch (error) {
+    console.log("Error fetching predictions", error);
+  }
+};
+  
 
   return (
     <Animated.View 
@@ -61,22 +100,22 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
       ]}
     >
       <View style={styles.searchIcon}>
-        <Ionicons name="search" size={20} color={theme.text} />
+        <Ionicons name="search" size={20} color={theme.textLight ? theme.textLight : theme.text} />
       </View>
       
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        placeholderTextColor={theme.text + '80'}
+        placeholderTextColor={theme.textLight ? theme.textLight : theme.text}
         value={searchText}
         onChangeText={(text) => {
           setSearchText(text);
-          onSearch(text);
+          fetchPredictions(text);
         }}
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
-      
+     
       {searchText.length > 0 && (
         <Pressable 
           style={styles.clearButton}
@@ -92,23 +131,16 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
 const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 20,
+    top: 50,
     left:50,
     right: 50,
     width: '75%',
     height: 50,
-    backgroundColor: theme.text,
+    backgroundColor: theme.tabbarBackground,
     borderRadius: 12,
     flexDirection: 'row',
-    
+    color: theme.text,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    elevation: 10,
     zIndex: 1,
   },
   searchIcon: {

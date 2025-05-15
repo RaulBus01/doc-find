@@ -1,3 +1,5 @@
+import { int } from "drizzle-orm/mysql-core";
+
 export enum Role {
     User = 0,
     Bot = 1,
@@ -39,5 +41,10 @@ export enum MessageType{
   export enum AIModel{
     MISTRAL_SMALL = "mistral-small-latest",
     MISTRAL_LARGE = "mistral-large-latest",
-
   }
+  export const MapsTypes = [
+   "hospital",
+  "doctor",
+   "pharmacy",
+    
+  ]
