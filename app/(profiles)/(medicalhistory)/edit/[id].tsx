@@ -9,14 +9,15 @@ import { ThemeColors } from "@/constants/Colors";
 import { useDatabase } from "@/hooks/useDatabase";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { 
-  Ionicons, MaterialIcons, FontAwesome5, FontAwesome 
+  Ionicons, FontAwesome5, FontAwesome 
 } from "@expo/vector-icons";
 import { getProfileMedicalHistoryById, updateMedicalHistoryEntry } from "@/utils/LocalDatabase";
 import { MedicalHistoryEntryInput } from "@/database/schema";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { getStatusColor } from "@/utils/utilsFunctions";
 import { Toast } from "toastify-react-native";
-import { BottomSheetBackdrop, BottomSheetFlatList, BottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 
 const EditMedicalPage = () => {
   const { id, profileId } = useLocalSearchParams();
@@ -47,45 +48,18 @@ const EditMedicalPage = () => {
     router.back();
   };
 
-  const currentYear = new Date().getFullYear();
-  const years = useMemo(() => {
-    return Array.from({ length: 100 }, (_, i) => currentYear - i);
-  }, [currentYear]);
+
     
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['50%', '60%'], []); 
+
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
   
-  const handleYearSelect = useCallback((year: number) => {
-    setFormData(prev => ({
-      ...prev,
-      diagnosis_date: year.toString(),
-    }));
-    
-    bottomSheetModalRef.current?.dismiss(); 
-  }, []);
+
   
-  const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
-    <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
-      <Text style={styles.bottomSheetItemText}>{item}</Text>
-    </TouchableOpacity>
-  ), [handleYearSelect, styles]);
-  
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        enableTouchThrough={false}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5} 
-      />
-    ),
-    []
-  );
+
 const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null>(null);
   const getMedicalProfile = async () => {
     try {
@@ -343,26 +317,17 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
         </TouchableOpacity>
       </View>
       
-      <BottomSheetModal
+ 
+         <CustomBottomSheetModal
         ref={bottomSheetModalRef}
-        index={0} 
-        snapPoints={snapPoints}
-        enablePanDownToClose={true} 
-        keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop} 
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }} 
-        handleIndicatorStyle={{ backgroundColor: theme.progressColor }} 
-      >
-        <View style={styles.bottomSheetHeader}>
-          <Text style={styles.bottomSheetTitle}>Select Year</Text>
-        </View>
-        <BottomSheetFlatList
-          data={years}
-          keyExtractor={(item) => item.toString()}
-          renderItem={renderBottomSheetItem}
-          contentContainerStyle={styles.bottomSheetContentContainer}
-        />
-      </BottomSheetModal>
+        index={1}
+      onSelectYear={(year: number) => {
+          setFormData((prev) => ({ ...prev, diagnosis_date: year.toString() }));
+          bottomSheetModalRef.current?.dismiss();
+        }}
+        type="years"
+      />
+
     </SafeAreaView>
   );
 };

@@ -274,6 +274,7 @@ const HistoryProfile = () => {
         index={0}
         onDelete={handleDelete}
         ref={bottomSheetModalRef}
+        type="more"
       />
   
   </SafeAreaView>

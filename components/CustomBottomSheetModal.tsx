@@ -1,28 +1,44 @@
-import { BackHandler, StyleSheet, View } from "react-native";
+import {
+  BackHandler,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Text,
+} from "react-native";
 import React, { forwardRef, useCallback, useEffect, useMemo } from "react";
 import {
   BottomSheetBackdrop,
+  BottomSheetFlatList,
   BottomSheetModal,
+  BottomSheetScrollView,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 
 import BottomSheetModalButton from "./BottomSheetModalButton";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
+import { FontAwesome } from "@expo/vector-icons";
 
 export type Ref = BottomSheetModal;
 interface CustomBottomSheetModalProps {
   index?: number;
-  onDelete: () => void;
+  onDelete?: () => void;
   onEdit?: () => void;
-  type?:"more" | "years",
+  onSelectYear?: (year: number) => void;
+  type?: "more" | "years";
 }
 
 const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
-  
   (props, ref) => {
-    const { onDelete, onEdit,index } = props;
-    const snapPoints = useMemo(() => ["20%", "25%"], []);
+    const { onDelete, onEdit, index, type, onSelectYear } = props;
+    const snapPoints = useMemo(() => {
+      if (type === "more") {
+      return ["20%","25%"];
+      } else if (type === "years") {
+      return ["50%", "80%"];
+      }
+      return ["25%"];
+    }, [type]);
     const { theme } = useTheme();
     const styles = getStyles(theme);
 
@@ -50,23 +66,42 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
     useEffect(() => {
       // Add the event listener for handling back button
       const backHandler = BackHandler.addEventListener(
-        'hardwareBackPress', 
+        "hardwareBackPress",
         handleBackPress
       );
-      
+
       // Clean up function to remove the listener when component unmounts
       return () => backHandler.remove();
     }, [handleBackPress]);
-    const handleOnAnimate = useCallback((fromIndex: number, toIndex: number) => {
-      setModalVisible(toIndex >= 0);
-    }, []);
+    const handleOnAnimate = useCallback(
+      (fromIndex: number, toIndex: number) => {
+        setModalVisible(toIndex >= 0);
+      },
+      []
+    );
+    const currentYear = new Date().getFullYear();
+    const years = useMemo(() => {
+      return Array.from({ length: 100 }, (_, i) => currentYear - i);
+    }, [currentYear]);
+
+    const renderBottomSheetItem = useCallback(
+      ({ item }: { item: number }) => (
+        <TouchableOpacity
+          style={styles.bottomSheetItem}
+          onPress={() => onSelectYear && onSelectYear(item)}
+        >
+          <Text style={styles.bottomSheetItemText}>{item}</Text>
+        </TouchableOpacity>
+      ),
+      [onSelectYear, styles]
+    );
+
     return (
       <BottomSheetModal
         index={index}
         ref={ref}
         backdropComponent={renderBackdrop}
         snapPoints={snapPoints}
-        
         enablePanDownToClose={true}
         keyboardBehavior="interactive"
         handleIndicatorStyle={styles.handleIndicator}
@@ -75,31 +110,44 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
         onDismiss={() => setModalVisible(false)}
         onAnimate={handleOnAnimate}
       >
-        <BottomSheetView style={styles.content}>
-          <BottomSheetModalButton
-            title="Delete"
-            icon="trash"
-            onPress={() => {
-              onDelete();
-              (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
-            }}
+        {type === "more" && (
+          <BottomSheetView style={styles.content}>
+            <BottomSheetModalButton
+              title="Delete"
+              icon="trash"
+              onPress={() => {
+                onDelete!();
+                (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
+              }}
+            />
+            <View style={styles.separator} />
+            {onEdit && (
+              <BottomSheetModalButton
+                title="Edit"
+                icon="create-outline"
+                onPress={() => {
+                  onEdit();
+                  (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
+                }}
+              />
+            )}
+          </BottomSheetView>
+        )}
+        {type === "years" && (
+          <BottomSheetFlatList
+            scrollEnabled={true}
+            data={years}
+            keyExtractor={(item) => item.toString()}
+            renderItem={renderBottomSheetItem}
+            contentContainerStyle={styles.bottomSheetContentContainer}
+            ListHeaderComponent={() => (
+              <View style={styles.bottomSheetHeader}>
+                <Text style={styles.bottomSheetTitle}>Select Year</Text>
+                <FontAwesome name="calendar" size={24} color={theme.text} />
+              </View>
+            )}
           />
-          <View style={styles.separator} />
-          { onEdit &&
-         
-          
-          <BottomSheetModalButton
-            title="Edit"
-            icon="create-outline"
-            onPress={() => {
-              onEdit();
-              (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
-            }}
-          />
-         
-          }
-
-        </BottomSheetView>
+        )}
       </BottomSheetModal>
     );
   }
@@ -120,21 +168,51 @@ const getStyles = (theme: ThemeColors) =>
       borderTopLeftRadius: 16,
       borderTopRightRadius: 16,
     },
-    separator:{
+    separator: {
       width: "90%",
       height: 1,
       backgroundColor: theme.progressColor,
       marginVertical: 10,
       justifyContent: "center",
       alignSelf: "center",
-    }
-    ,
+    },
+    bottomSheetHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: 16,
+      paddingVertical: 16,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.separator,
+    },
+    bottomSheetTitle: {
+      fontSize: 18,
+      fontFamily: "Roboto-Bold",
+      color: theme.text,
+      textAlign: "center",
+    },
     content: {
       flex: 1,
       justifyContent: "center",
       flexDirection: "column",
       backgroundColor: theme.background,
       paddingBottom: 20,
+    },
+    bottomSheetContentContainer: {
+      backgroundColor: theme.backgroundDark,
+      paddingBottom: 20,
+    },
+    bottomSheetItem: {
+      paddingVertical: 18,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.separator,
+      marginHorizontal: 16,
+    },
+    bottomSheetItemText: {
+      fontSize: 18,
+      color: theme.text,
+      fontFamily: "Roboto-Regular",
+      textAlign: "center",
     },
   });
 

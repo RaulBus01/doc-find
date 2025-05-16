@@ -34,6 +34,7 @@ import {
   BottomSheetFlatList,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
+import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 
 const AddMedicalHistoryPage = () => {
   const { id } = useLocalSearchParams();
@@ -89,53 +90,18 @@ const AddMedicalHistoryPage = () => {
   };
 
   const currentYear = new Date().getFullYear();
-  const years = useMemo(() => {
-    return Array.from({ length: 100 }, (_, i) => currentYear - i);
-  }, [currentYear]);
+
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["50%", "60%"], []);
+
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
   }, []);
 
-  const handleYearSelect = useCallback(
-    (year: number) => {
-      setFormData((prev) => ({
-        ...prev,
-        diagnosis_date: year.toString(),
-      }));
 
-      bottomSheetModalRef.current?.dismiss();
-    },
-    [formData.diagnosis_date]
-  );
 
-  const renderBottomSheetItem = useCallback(
-    ({ item }: { item: number }) => (
-      <TouchableOpacity
-        style={styles.bottomSheetItem}
-        onPress={() => handleYearSelect(item)}
-      >
-        <Text style={styles.bottomSheetItemText}>{item}</Text>
-      </TouchableOpacity>
-    ),
-    [handleYearSelect, styles]
-  );
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        enableTouchThrough={false}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-      />
-    ),
-    []
-  );
 
   return (
     <SafeAreaView
@@ -318,26 +284,19 @@ const AddMedicalHistoryPage = () => {
         </TouchableOpacity>
       </View>
 
-      <BottomSheetModal
+      <CustomBottomSheetModal
         ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
-        handleIndicatorStyle={{ backgroundColor: theme.progressColor }}
-      >
-        <View style={styles.bottomSheetHeader}>
-          <Text style={styles.bottomSheetTitle}>Select Year</Text>
-        </View>
-        <BottomSheetFlatList
-          data={years}
-          keyExtractor={(item) => item.toString()}
-          renderItem={renderBottomSheetItem}
-          contentContainerStyle={styles.bottomSheetContentContainer}
+        index={1}
+       onSelectYear={(year: number) => {
+         setFormData((prev) => ({
+        ...prev,
+        diagnosis_date: year.toString(),
+      }));
+          bottomSheetModalRef.current?.dismiss();
+        }}
+        type="years"
         />
-      </BottomSheetModal>
+
     </SafeAreaView>
   );
 };

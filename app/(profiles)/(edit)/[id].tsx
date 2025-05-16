@@ -18,7 +18,8 @@ import {
 } from "@/utils/LocalDatabase";
 import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
-import { BottomSheetModal, BottomSheetFlatList, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
+import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();
@@ -57,12 +58,10 @@ const EditProfilePage = () => {
 
   // Bottom sheet for year selection
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['50%', '60%'], []);
+
   
   const currentYear = new Date().getFullYear();
-  const years = useMemo(() => {
-    return Array.from({ length: 100 }, (_, i) => currentYear - i);
-  }, [currentYear]);
+
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -120,32 +119,9 @@ const EditProfilePage = () => {
     bottomSheetModalRef.current?.present();
   }, []);
   
-  const handleYearSelect = useCallback((year: number) => {
-    setFormData(prev => ({
-      ...prev,
-      birthYear: year
-    }));
-    bottomSheetModalRef.current?.dismiss();
-  }, []);
   
-  const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
-    <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
-      <Text style={styles.bottomSheetItemText}>{item}</Text>
-    </TouchableOpacity>
-  ), [handleYearSelect, styles]);
   
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        enableTouchThrough={false}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-      />
-    ),
-    []
-  );
+
   
   const hasChanges = () => {
     return (
@@ -404,26 +380,16 @@ const EditProfilePage = () => {
       </View>
       
       {/* Bottom Sheet for Year Selection */}
-      <BottomSheetModal
+    <CustomBottomSheetModal
         ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
-        handleIndicatorStyle={{ backgroundColor: theme.blue }}
-      >
-        <View style={styles.bottomSheetHeader}>
-          <Text style={styles.bottomSheetTitle}>Select Birth Year</Text>
-        </View>
-        <BottomSheetFlatList
-          data={years}
-          keyExtractor={(item) => item.toString()}
-          renderItem={renderBottomSheetItem}
-          contentContainerStyle={styles.bottomSheetContentContainer}
-        />
-      </BottomSheetModal>
+        index={1}
+      onSelectYear={(year: number) => {
+          setFormData((prev) => ({ ...prev, birthYear: year }));
+          bottomSheetModalRef.current?.dismiss();
+        }}
+        type="years"
+      />
+      
     </SafeAreaView>
   );
 };
@@ -579,17 +545,7 @@ const getStyles = (theme: ThemeColors) =>
       fontFamily: "Roboto-Bold",
       marginLeft: 10,
     },
-    bottomSheetHeader: {
-      paddingVertical: 16,
-      borderBottomWidth: StyleSheet.hairlineWidth,
-      borderBottomColor: theme.separator,
-    },
-    bottomSheetTitle: {
-      fontSize: 18,
-      fontFamily: "Roboto-Bold",
-      color: theme.text,
-      textAlign: "center",
-    },
+   
     bottomSheetContentContainer: {
       backgroundColor: theme.backgroundDark,
       paddingBottom: 20,

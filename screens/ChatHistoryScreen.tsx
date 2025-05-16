@@ -109,6 +109,7 @@ const ChatHistoryScreen = () => {
         onDelete={handleDeleteChat}
         onEdit={handleEditChat}
         ref={bottomSheetModalRef}
+        type="more"
       />
 
       {chatHistory.length > 0 ? (

@@ -23,6 +23,7 @@ import  {
 } from '@gorhom/bottom-sheet';
 import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface"; // Import the config
 import { addProfile } from "@/utils/LocalDatabase";
+import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -43,7 +44,7 @@ const NewProfile = () => {
   const drizzleDB = useDatabase();
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ['50%', '60%'], []); 
+
 
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
@@ -57,34 +58,7 @@ const NewProfile = () => {
     hypertensive: "",
     diabetic: "",
   });
-
-  const currentYear = new Date().getFullYear();
-  const years = useMemo(() => {
-    return Array.from({ length: 100 }, (_, i) => currentYear - i);
-  }, [currentYear]);
-
-  const handleNext = (step: number) => {
-    setCurrentStep(step + 1);
-  };
-
-  const handleBack = (step: number) => {
-    setCurrentStep(step - 1);
-  };
-
-  const handleYearSelect = useCallback((year: number) => {
-    setFormData(prev => ({
-      ...prev,
-      birthYear: year
-    }));
-    bottomSheetModalRef.current?.dismiss(); 
-  }, []);
-
-  const renderBottomSheetItem = useCallback(({ item }: { item: number }) => (
-    <TouchableOpacity style={styles.bottomSheetItem} onPress={() => handleYearSelect(item)}>
-      <Text style={styles.bottomSheetItemText}>{item}</Text>
-    </TouchableOpacity>
-  ), [handleYearSelect, styles]);
- const getChoiceStyle = (choice: string) => {
+const getChoiceStyle = (choice: string) => {
     switch (choice) {
       case "Yes":
         return styles.indicatorActive;
@@ -98,18 +72,17 @@ const NewProfile = () => {
         return {};
     }
   }
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        enableTouchThrough={false}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5} 
-      />
-    ),
-    []
-  );
+  
+  const handleNext = (step: number) => {
+    setCurrentStep(step + 1);
+  };
+
+  const handleBack = (step: number) => {
+    setCurrentStep(step - 1);
+  };
+
+
+  
 
   const steps = [
     {
@@ -305,7 +278,7 @@ const NewProfile = () => {
       ),
     },
   ];
-
+ const currentYear = new Date().getFullYear();
   const handleComplete = async () => {
 
     try{
@@ -348,23 +321,17 @@ const NewProfile = () => {
         onBack={handleBack}
       />
 
-      <BottomSheetModal
+    
+      <CustomBottomSheetModal
         ref={bottomSheetModalRef}
-        index={0} 
-        snapPoints={snapPoints}
-        enablePanDownToClose={true} 
-        keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop} 
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }} 
-        handleIndicatorStyle={{ backgroundColor: theme.progressColor }} 
-      >
-        <BottomSheetFlatList
-          data={years}
-          keyExtractor={(item) => item.toString()}
-          renderItem={renderBottomSheetItem}
-          contentContainerStyle={styles.bottomSheetContentContainer}
+        index={1}
+        onSelectYear={(year: number) => {
+          setFormData((prev) => ({ ...prev, birthYear: year }));
+          bottomSheetModalRef.current?.dismiss();
+        }}
+        type="years"
         />
-      </BottomSheetModal>
+
     </View>
   );
 };
@@ -472,25 +439,21 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.text,
       fontFamily: 'Roboto-Regular',
     },
-
+indicatorNegative: {
+      backgroundColor: theme.GreenIconBackground,
+      borderColor: theme.GreenIconBackground,
+    },
+     indicatorActive: {
+      backgroundColor: theme.RedIconBackground,
+      borderColor: theme.RedIconBackground,
+    },
+    indicatorWarning: {
+      backgroundColor: theme.YellowIconBackground,
+      borderColor: theme.YellowIconBackground,
+    },
    
-    bottomSheetContentContainer: {
-      backgroundColor: theme.backgroundDark,
-      paddingBottom: 20, 
-    },
-    bottomSheetItem: {
-      paddingVertical: 18, 
-      borderBottomWidth: StyleSheet.hairlineWidth, 
-      borderBottomColor: theme.separator,
-      marginHorizontal: 16, 
-    },
-    bottomSheetItemText: {
-      fontSize: 18,
-      color: theme.text,
-      fontFamily: 'Roboto-Regular',
-      textAlign: 'center',
-    },
-
+   
+    
   
     summaryContainer: {
       flexDirection: "column",
@@ -536,18 +499,7 @@ const getStyles = (theme: ThemeColors) =>
       textAlign: 'right',
       flexShrink: 1, 
     },
-    indicatorNegative: {
-      backgroundColor: theme.GreenIconBackground,
-      borderColor: theme.GreenIconBackground,
-    },
-     indicatorActive: {
-      backgroundColor: theme.RedIconBackground,
-      borderColor: theme.RedIconBackground,
-    },
-    indicatorWarning: {
-      backgroundColor: theme.YellowIconBackground,
-      borderColor: theme.YellowIconBackground,
-    },
+   
   });
 
 export default NewProfile;
