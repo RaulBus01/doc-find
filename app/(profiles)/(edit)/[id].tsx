@@ -19,7 +19,6 @@ import {
 import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal, BottomSheetFlatList, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();

@@ -48,3 +48,40 @@ export enum MessageType{
    "pharmacy",
     
   ]
+export interface GooglePlaceDetails {
+  business_status: string;
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+    viewport: {
+      northeast: any;
+      southwest: any;
+    };
+  };
+  icon: string;
+  icon_background_color: string;
+  icon_mask_base_uri: string;
+  name: string;
+  opening_hours?: {
+    open_now: boolean;
+  };
+  photos?: Array<{
+    height: number;
+    html_attributions: string[];
+    photo_reference: string;
+    width: number;
+  }>;
+  place_id: string;
+  plus_code?: {
+    compound_code: string;
+    global_code: string;
+  };
+  rating?: number;
+  reference: string;
+  scope: string;
+  types: string[];
+  user_ratings_total?: number;
+  vicinity: string;
+}

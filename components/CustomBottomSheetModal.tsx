@@ -15,6 +15,7 @@ interface CustomBottomSheetModalProps {
   index?: number;
   onDelete: () => void;
   onEdit?: () => void;
+  type?:"more" | "years",
 }
 
 const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(

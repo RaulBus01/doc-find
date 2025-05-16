@@ -1,12 +1,20 @@
 import React, {
   act,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { View, StyleSheet, Alert, TouchableOpacity, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+  Image,
+  Text,
+} from "react-native";
 import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
 import { useNavigation } from "@react-navigation/native";
@@ -22,7 +30,14 @@ import {
   secureSaveObject,
 } from "@/utils/SecureStorage";
 import { fetchNearbyPlaces } from "@/utils/NearbySearch";
-import { MapsTypes } from "@/interface/Interface";
+import { GooglePlaceDetails, MapsTypes } from "@/interface/Interface";
+import {
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -34,9 +49,8 @@ export default function Map() {
   const navigation = useNavigation();
   const [search, setSearch] = useState("");
   const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); // Consume context
-  const [places, setPlaces] = useState<any[]>([]);
+  const [places, setPlaces] = useState<GooglePlaceDetails[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("doctor");
-  
   const [isLoading, setIsLoading] = useState(false);
   const [lastRegion, setLastRegion] = useState<Region | null>(null);
 
@@ -154,7 +168,25 @@ export default function Map() {
   const handleSearch = (text: string) => {
     setSearch(text);
   };
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+  const snapPoints = useMemo(() => ["50%", "60%"], []);
+  const handlePresentModalPress = useCallback((place: GooglePlaceDetails) => {
+    console.log("Presenting modal for place:", place);
+    bottomSheetModalRef.current?.present(place);
+  }, []);
 
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        enableTouchThrough={false}
+        disappearsOnIndex={-1}
+        appearsOnIndex={0}
+        opacity={0.5}
+      />
+    ),
+    []
+  );
   const hasChangedSignificantly = (region: Region) => {
     const result =
       lastRegion === null ||
@@ -185,12 +217,12 @@ export default function Map() {
     pharmacy: require("@/assets/images/pharmacyIcon.png"),
     doctor: require("@/assets/images/doctorIcon.png"),
   };
- 
+
   return (
     <View style={styles.container}>
       <MapView
         customMapStyle={mapStyle}
-        style={StyleSheet.absoluteFill}
+        style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
         provider={PROVIDER_GOOGLE}
         showsUserLocation={true}
         showsMyLocationButton={false}
@@ -221,14 +253,10 @@ export default function Map() {
               latitude: place.geometry.location.lat,
               longitude: place.geometry.location.lng,
             }}
-            title={place.name}
-            description={place.vicinity}
+            onPress={() => handlePresentModalPress(place)}
             tracksViewChanges={false}
             icon={markerIcons[activeFilter]}
-            
-          >
-           
-          </Marker>
+          ></Marker>
         ))}
       </MapView>
       <View style={styles.buttonsContainer}>
@@ -261,7 +289,7 @@ export default function Map() {
             onPress={() => {
               setActiveFilter(type);
               fetchPlacesInViewport(
-               lastRegion || {
+                lastRegion || {
                   latitude: location?.coords?.latitude || 46,
                   longitude: location?.coords?.longitude || 23,
                   latitudeDelta: 0.0922,
@@ -277,6 +305,25 @@ export default function Map() {
       </View>
 
       <CustomSearchBar onSearch={handleSearch} />
+      <BottomSheetModal
+        ref={bottomSheetModalRef}
+        index={0}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        keyboardBehavior="interactive"
+        backdropComponent={renderBackdrop}
+        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
+        handleIndicatorStyle={{ backgroundColor: theme.progressColor }}
+      >
+        {({ data }) => (
+          console.log("Bottom sheet data:", data.name),
+          (
+            <BottomSheetScrollView style={{ padding: 20 }}>
+              <PlaceDetails data={data} theme={theme} />
+            </BottomSheetScrollView>
+          )
+        )}
+      </BottomSheetModal>
     </View>
   );
 }
@@ -328,13 +375,11 @@ const getStyles = (theme: ThemeColors) =>
       zIndex: 1,
     },
     markerButton: {
-
       padding: 5,
       borderRadius: 10,
       alignItems: "center",
       justifyContent: "center",
     },
-    
 
     plusButton: {
       backgroundColor: theme.tabbarBackground,
@@ -349,15 +394,16 @@ const getStyles = (theme: ThemeColors) =>
       borderRadius: 10,
       marginLeft: 10,
     },
+   
   });
 const mapStyle = [
   {
     featureType: "poi",
     stylers: [
       {
-        visibility: "off"
-      }
-    ]
+        visibility: "off",
+      },
+    ],
   },
   {
     elementType: "geometry",
@@ -509,5 +555,4 @@ const mapStyle = [
       },
     ],
   },
-  
 ];
