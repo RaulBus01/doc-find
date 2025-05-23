@@ -94,9 +94,11 @@ export class ApiCall {
     token: string,
     data: any,
     onChunk: (chunk: any) => void,
-    onCompletion?: (completionData: any) => void
+    abortSignal?: AbortSignal,
+
   ) {
     try {
+   
       const response = await fetch(API_URL + url, {
         method: "POST",
         headers: {
@@ -105,8 +107,9 @@ export class ApiCall {
           Accept: "text/event-stream",
         },
         body: JSON.stringify(data),
-      });
-
+        signal: abortSignal,
+      }); 
+   
       if (!response.ok) {
         throw new Error(response.statusText);
       }
@@ -126,8 +129,8 @@ export class ApiCall {
         onChunk({ content: chunk });
       }
     } catch (error) {
-      console.error("Stream error:", error);
-      throw error;
+      
+    throw error;
     }
   }
 }

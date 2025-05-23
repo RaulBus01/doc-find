@@ -27,11 +27,14 @@ import { TabBarVisibilityContext } from "@/context/TabBarContext";
 const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 type Props = {
+  isStreaming?: boolean;
   onModalPress: () => void;
   onMessageSend: (message: string) => void;
+  onAbortStream: () => void;
+
 };
 
-const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
+const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: Props) => {
   const [message, setMessage] = React.useState("");
   const { bottom } = useSafeAreaInsets();
   const expanded = useSharedValue(0);
@@ -228,6 +231,11 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
     ? message.replace(/\s+/g, ' ').trim().slice(0, 20) + (message.replace(/\s+/g, ' ').trim().length > 20 ? "..." : "")
     : "Type a message..."}
           </Animated.Text>
+           {isStreaming && (
+                <TouchableOpacity onPress={onAbortStream} style={styles.iconButton}>
+                  <Ionicons name="stop-circle-outline" size={24} color={theme.text} />
+                </TouchableOpacity>
+              )}
         </TouchableOpacity>
       </Animated.View>
 
@@ -306,6 +314,7 @@ const MessageBar = ({ onModalPress, onMessageSend }: Props) => {
                   <Ionicons name="mic" size={24} color={theme.text} />
                 </TouchableOpacity>
               )}
+             
             </Animated.View>
 
           {/* Close button */}

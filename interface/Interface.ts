@@ -66,6 +66,8 @@ export interface GooglePlaceDetails {
   name: string;
   opening_hours?: {
     open_now: boolean;
+    periods?: Array<any>; 
+    weekday_text?: string[]; 
   };
   photos?: Array<{
     height: number;
@@ -84,4 +86,38 @@ export interface GooglePlaceDetails {
   types: string[];
   user_ratings_total?: number;
   vicinity: string;
+  
+ 
+  address_components?: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
+  adr_address?: string;
+  formatted_address?: string;
+  formatted_phone_number?: string;
+  international_phone_number?: string;
+  reviews?: Array<{
+    author_name: string;
+    author_url?: string;
+    language?: string;
+    original_language?: string;
+    profile_photo_url?: string;
+    rating: number;
+    relative_time_description: string;
+    text: string;
+    time: number;
+    translated: boolean;
+  }>;
+  url?: string;
+  utc_offset?: number;
+  wheelchair_accessible_entrance?: boolean;
+  
+  
+  current_opening_hours?: {
+    open_now: boolean;
+    periods?: Array<any>;
+    weekday_text?: string[];
+  };
+  website?: string;
 }

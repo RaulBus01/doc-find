@@ -29,7 +29,7 @@ import {
   secureSave,
   secureSaveObject,
 } from "@/utils/SecureStorage";
-import { fetchNearbyPlaces } from "@/utils/NearbySearch";
+import { fetchNearbyPlaces } from "@/utils/MapsDetails";
 import { GooglePlaceDetails, MapsTypes } from "@/interface/Interface";
 import {
   BottomSheetBackdrop,
@@ -38,6 +38,7 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
+import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -46,7 +47,6 @@ export default function Map() {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const mapRef = useRef<MapView>(null);
-  const navigation = useNavigation();
   const [search, setSearch] = useState("");
   const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); // Consume context
   const [places, setPlaces] = useState<GooglePlaceDetails[]>([]);
@@ -169,24 +169,10 @@ export default function Map() {
     setSearch(text);
   };
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const snapPoints = useMemo(() => ["50%", "60%"], []);
   const handlePresentModalPress = useCallback((place: GooglePlaceDetails) => {
-    console.log("Presenting modal for place:", place);
     bottomSheetModalRef.current?.present(place);
   }, []);
 
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop
-        {...props}
-        enableTouchThrough={false}
-        disappearsOnIndex={-1}
-        appearsOnIndex={0}
-        opacity={0.5}
-      />
-    ),
-    []
-  );
   const hasChangedSignificantly = (region: Region) => {
     const result =
       lastRegion === null ||
@@ -240,7 +226,6 @@ export default function Map() {
           setTimeout(() => setIsTabBarVisible(true), 100);
         }}
         onRegionChangeComplete={(region) => {
-          console.log("Has changed significantly:", hasChangedSignificantly);
           if (hasChangedSignificantly(region)) {
             fetchPlacesInViewport(region, activeFilter);
           }
@@ -305,25 +290,14 @@ export default function Map() {
       </View>
 
       <CustomSearchBar onSearch={handleSearch} />
-      <BottomSheetModal
-        ref={bottomSheetModalRef}
-        index={0}
-        snapPoints={snapPoints}
-        enablePanDownToClose={true}
-        keyboardBehavior="interactive"
-        backdropComponent={renderBackdrop}
-        backgroundStyle={{ backgroundColor: theme.backgroundDark }}
-        handleIndicatorStyle={{ backgroundColor: theme.progressColor }}
-      >
+
+      <CustomBottomSheetModal ref={bottomSheetModalRef} type="placeDetails">
         {({ data }) => (
-          console.log("Bottom sheet data:", data.name),
-          (
-            <BottomSheetScrollView style={{ padding: 20 }}>
-              <PlaceDetails data={data} theme={theme} />
-            </BottomSheetScrollView>
-          )
+          <BottomSheetScrollView style={{ padding: 20 }}>
+            <PlaceDetails data={data} theme={theme} />
+          </BottomSheetScrollView>
         )}
-      </BottomSheetModal>
+      </CustomBottomSheetModal>
     </View>
   );
 }
@@ -394,7 +368,6 @@ const getStyles = (theme: ThemeColors) =>
       borderRadius: 10,
       marginLeft: 10,
     },
-   
   });
 const mapStyle = [
   {

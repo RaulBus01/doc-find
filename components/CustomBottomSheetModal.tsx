@@ -5,7 +5,7 @@ import {
   View,
   Text,
 } from "react-native";
-import React, { forwardRef, useCallback, useEffect, useMemo } from "react";
+import React, { forwardRef, useCallback, useEffect, useMemo, useImperativeHandle, useState } from "react";
 import {
   BottomSheetBackdrop,
   BottomSheetFlatList,
@@ -18,39 +18,67 @@ import BottomSheetModalButton from "./BottomSheetModalButton";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 import { FontAwesome } from "@expo/vector-icons";
+import { GooglePlaceDetails } from "@/interface/Interface";
 
-export type Ref = BottomSheetModal;
+export type Ref = BottomSheetModal & {
+  present: (data: GooglePlaceDetails) => void;
+};
+
 interface CustomBottomSheetModalProps {
   index?: number;
   onDelete?: () => void;
   onEdit?: () => void;
   onSelectYear?: (year: number) => void;
-  type?: "more" | "years";
+  children?: (props: { data: GooglePlaceDetails }) => React.ReactNode;
+  type?: "more" | "years" | "placeDetails";
 }
 
 const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
   (props, ref) => {
-    const { onDelete, onEdit, index, type, onSelectYear } = props;
+    const { onDelete, onEdit, index = 0, type, children, onSelectYear } = props;
     const snapPoints = useMemo(() => {
-      if (type === "more") {
-      return ["20%","25%"];
-      } else if (type === "years") {
-      return ["50%", "80%"];
+      switch (type) {
+        case "more":
+          return ["20%","25%"];
+        case "years":
+          return ["50%", "80%"];
+        case "placeDetails":
+          return ["56%", "70%"];
+        default:
+          return ["25%"];
       }
-      return ["25%"];
     }, [type]);
+    
     const { theme } = useTheme();
     const styles = getStyles(theme);
-
-    const [isModalVisible, setModalVisible] = React.useState(false);
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [modalData, setModalData] = useState<GooglePlaceDetails | null>(null);
+    
+    
+    const bottomSheetRef = React.useRef<BottomSheetModal>(null);
+    
+    // Expose custom methods via ref
+    useImperativeHandle(ref, () => ({
+    
+      present: (data: GooglePlaceDetails) => {
+        setModalData(data);
+        bottomSheetRef.current?.present();
+      },
+      dismiss: () => bottomSheetRef.current?.dismiss(),
+      close: () => bottomSheetRef.current?.close(),
+      expand: () => bottomSheetRef.current?.expand(),
+      collapse: () => bottomSheetRef.current?.collapse(),
+      snapToIndex: (index: number) => bottomSheetRef.current?.snapToIndex(index),
+     
+    } as Ref));
 
     const handleBackPress = useCallback(() => {
-      if (isModalVisible && ref) {
-        (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
-        return true; // Prevent default behavior (app exit)
+      if (isModalVisible) {
+        bottomSheetRef.current?.dismiss();
+        return true; 
       }
       return false;
-    }, [isModalVisible, ref]);
+    }, [isModalVisible]);
 
     const renderBackdrop = useCallback(
       (props: any) => (
@@ -63,6 +91,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
       ),
       []
     );
+    
     useEffect(() => {
       // Add the event listener for handling back button
       const backHandler = BackHandler.addEventListener(
@@ -70,15 +99,17 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
         handleBackPress
       );
 
-      // Clean up function to remove the listener when component unmounts
+      
       return () => backHandler.remove();
     }, [handleBackPress]);
+    
     const handleOnAnimate = useCallback(
       (fromIndex: number, toIndex: number) => {
         setModalVisible(toIndex >= 0);
       },
       []
     );
+    
     const currentYear = new Date().getFullYear();
     const years = useMemo(() => {
       return Array.from({ length: 100 }, (_, i) => currentYear - i);
@@ -99,7 +130,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
     return (
       <BottomSheetModal
         index={index}
-        ref={ref}
+        ref={bottomSheetRef}
         backdropComponent={renderBackdrop}
         snapPoints={snapPoints}
         enablePanDownToClose={true}
@@ -110,14 +141,18 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
         onDismiss={() => setModalVisible(false)}
         onAnimate={handleOnAnimate}
       >
+        {type === "placeDetails" && children && modalData && (
+          children({ data: modalData })
+        )}
+        
         {type === "more" && (
           <BottomSheetView style={styles.content}>
             <BottomSheetModalButton
               title="Delete"
               icon="trash"
               onPress={() => {
-                onDelete!();
-                (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
+                onDelete && onDelete();
+                bottomSheetRef.current?.dismiss();
               }}
             />
             <View style={styles.separator} />
@@ -127,12 +162,13 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
                 icon="create-outline"
                 onPress={() => {
                   onEdit();
-                  (ref as React.RefObject<BottomSheetModal>).current?.dismiss();
+                  bottomSheetRef.current?.dismiss();
                 }}
               />
             )}
           </BottomSheetView>
         )}
+        
         {type === "years" && (
           <BottomSheetFlatList
             scrollEnabled={true}
@@ -152,6 +188,7 @@ const CustomBottomSheetModal = forwardRef<Ref, CustomBottomSheetModalProps>(
     );
   }
 );
+
 const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({
     container: {

@@ -6,7 +6,7 @@ import {
 } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import React from "react";
-
+import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/context/ThemeContext";
@@ -37,6 +37,8 @@ const ChatMessage = ({
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(message);
   };
+
+
   return (
     <View style={styles.cardContainer}>
       <View
@@ -63,7 +65,70 @@ const ChatMessage = ({
         )}
       </View>
       <View style={isAI ? styles.messageContainerAI : styles.messageContainer} >
-        <Text style={{color:theme.text}} selectable={true} selectionColor={theme.YellowIconBackground}>{message}</Text>
+      <Markdown
+  style={{
+    body: {
+      color: theme.text,
+      fontSize: 14,
+      lineHeight: 20,
+      flexShrink: 1,         
+      flexWrap: 'wrap',    
+      width: '100%',        
+    },
+    // Style for code blocks which often cause overflow
+    code_block: {
+      backgroundColor: theme.cardBackground,
+      padding: 8,
+      borderRadius: 5,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    code_inline: {
+      backgroundColor: theme.cardBackground,
+      padding: 3,
+      borderRadius: 3,
+      flexWrap: 'wrap',
+    },
+  
+    paragraph: {
+      flexWrap: 'wrap',
+      width: '100%',
+      flexShrink: 1,
+    },
+ 
+    link: {
+      color: theme.text,
+      textDecorationLine: 'underline',
+      flexWrap: 'wrap',
+    },
+    heading1: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading2: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading3: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading4: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+  }}
+  markdownit={
+    MarkdownIt({typographer: true, breaks: true})
+  }
+>
+  {message}
+</Markdown>
+
       </View>
       <View style={styles.footer}>
         {isAI ? (
@@ -121,6 +186,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     backgroundColor: theme.GreenIconBackground,
     padding: 15,
     borderRadius: 20,
+    height: "auto",
   },
 
   avatar: {
@@ -145,4 +211,12 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   },
 });
 
-export default React.memo(ChatMessage);
+export default React.memo(ChatMessage, (prevProps, nextProps) => {
+  
+  return (
+    prevProps.id === nextProps.id &&
+    prevProps.message === nextProps.message &&
+    prevProps.isAI === nextProps.isAI &&
+    prevProps.picture === nextProps.picture
+  );
+});

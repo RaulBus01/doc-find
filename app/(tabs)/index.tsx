@@ -8,13 +8,13 @@ import {
   TextInput,
   ActivityIndicator,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
 import { useToken } from "@/context/TokenContext";
 import { getChats, getChatsCount } from "@/utils/DatabaseAPI";
@@ -40,7 +40,7 @@ const Home = () => {
   const [chatCount, setChatCount] = useState<number>(0);
   const [displayCount, setDisplayCount] = useState<number>(0);
   const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
-  useEffect(() => {
+  useFocusEffect( useCallback(() => {
     if(!isTabBarVisible) {
       setIsTabBarVisible(true);
     }
@@ -63,7 +63,8 @@ const Home = () => {
     if (token) {
       fetchChats();
     }
-  }, [token, lastUpdated]);
+  }, [token, lastUpdated])
+  );
 
   // Handle routing function from original code
   const handleProfileRouting = (path: string) => {
@@ -76,7 +77,7 @@ const Home = () => {
 
   // Symptom handling from original code
   const handleSymptom = (symptom: string) => {
-    router.push("/(tabs)/(chat)/new");
+    router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
 
   // ProfilesComponent - reimplemented with new UI style
@@ -229,9 +230,14 @@ const Home = () => {
         <View style={[styles.sectionContainer, styles.lastSection]}>
           <Text style={styles.sectionTitle}>AI Chatbot</Text>
           <View style={styles.chatbotCard}>
+          
             <View style={styles.chatbotDetails}>
-              <Text style={styles.chatbotCount}>{displayCount}+</Text>
-              <Text style={styles.chatbotLabel}>Total Conversations</Text>
+                {displayCount > 0 ? (
+              <><Text style={styles.chatbotCount}>{displayCount}+</Text><Text style={styles.chatbotLabel}>Total Conversations</Text></>
+                )
+                : (
+                  <Text style={styles.chatbotCount}>No Conversations</Text>
+                )}
               <View style={styles.chatbotStatusRow}>
                 <View style={styles.chatbotStatus}>
                   <View style={styles.statusDot} />

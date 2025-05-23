@@ -33,11 +33,10 @@ import { ThemeColors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useDatabase } from "@/hooks/useDatabase";
 import { getProfiles, getCompleteProfileData } from "@/utils/LocalDatabase";
+import { Toast } from "toastify-react-native";
 
 const ChatScreen = () => {
   let { id,symptom } = useLocalSearchParams<{ id: string,symptom:string }>();
-  console.log("ChatScreen ID:", id);
-  console.log("ChatScreen Symptom:", symptom);
   const { top, bottom } = useSafeAreaInsets();
   const [chatId, _setChatId] = useState(id);
   const chatIdRef = useRef(chatId);
@@ -58,11 +57,29 @@ const ChatScreen = () => {
   const profilesBottomSheetRef = useRef<BottomSheetModal>(null);
   const [profiles, setProfiles] = useState<any[]>([]); // TODO: Define a proper type for profiles
   const [useProfileContext, setUseProfileContext] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleAbortStream = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      Toast.info("Stream aborted by user.");
+      setIsStreaming(false);
+      abortControllerRef.current = null;
+    }
+  
+};
 
   function setChatId(id: string) {
     chatIdRef.current = id;
     _setChatId(id);
   }
+
+  useEffect(() => {
+  if(symptom){
+    handleMessageSend("I have a symptom: " + symptom);
+  }
+}, [id, symptom]);
 
   useEffect(() => {
     const loadMessages = async () => {
@@ -73,7 +90,9 @@ const ChatScreen = () => {
           setMessages(data);
           // Scroll to bottom after messages are loaded
           setTimeout(() => {
-            flatListRef.current?.scrollToEnd({ animated: true });
+            flatListRef.current?.scrollToEnd({
+              animated: true,
+            });
           }, 100);
         } catch (e) {
           console.error("Failed to load messages:", e);
@@ -98,6 +117,7 @@ const ChatScreen = () => {
         console.error("Error", userId, token);
         return;
       }
+      if (isStreaming) return; 
 
       const messageContent = message.trim();
       if (messageContent.length === 0) {
@@ -120,6 +140,7 @@ const ChatScreen = () => {
         const chat = await addChat(token, messageContent);
         if (chat?.id) {
           setChatId(chat.id);
+          chatIdRef.current = chat.id;
         }
         setMessages([newMessage]);
       } else {
@@ -167,8 +188,10 @@ const ChatScreen = () => {
 
         }
       }
-
+     abortControllerRef.current = new AbortController();
+     setIsStreaming(true);
       let fullResponse = "";
+      try {
       await streamModelResponse(
         token,
         messageContent,
@@ -188,28 +211,25 @@ const ChatScreen = () => {
         },
         parseInt(chatIdRef.current!),
         AIModel.MISTRAL_SMALL,
-        contextData
+        contextData,
+        abortControllerRef.current.signal
       );
+      }
+      catch (error) {
+        const errorMessage = error instanceof Error ? error : new Error(String(error));
+     
+        console.log("Stream aborted by user.",errorMessage);
+      }
+      
+      finally {
+        setIsStreaming(false);
+        abortControllerRef.current = null;
+      }
 
       if (chatIdRef.current) {
         try {
-          const updatedMessages = await getLastMessage(token, chatIdRef.current, 2);
-          if (updatedMessages && updatedMessages.length > 0) {
-            setMessages((prev) => {
-              // Keep all previous messages that aren't temporary
-              const filteredMessages = prev.filter((msg) => {
-                // Only filter out temporary messages with standard IDs
-                return (
-                  msg.id !== MessageType.AI &&
-                  msg.id !== MessageType.Human &&
-                  msg.id !== MessageType.System
-                );
-              });
-              
-              // Add database messages at the end
-              return [...filteredMessages, ...updatedMessages];
-            });
-          }
+          const updatedMessages = await getMessages(token, chatIdRef.current);
+          setMessages(updatedMessages);
         } catch (e) {
           console.error("Error fetching last messages:", e);
         }
@@ -218,9 +238,8 @@ const ChatScreen = () => {
       // Only generate title for new chats
       if (isNewChat) {
         const newTitle = await generateChatTitle(token, chatIdRef.current);
-        if (newTitle) {
-          console.log("New title generated:", newTitle);
-        }
+        
+       
       }
 
       Keyboard.dismiss();
@@ -294,6 +313,7 @@ const ChatScreen = () => {
   const renderChatMessage = useCallback(
     ({ item }: { item: Message }) => (
       <ChatMessage
+        key={item.id}
         id={item.id}
         name={name || "User"}
         picture={picture || "icon"}
@@ -374,10 +394,16 @@ const ChatScreen = () => {
           keyboardDismissMode="on-drag"
           onContentSizeChange={() => {
             if (messages.length > 0) {
-              flatListRef.current?.scrollToEnd({ animated: true });
+              flatListRef.current?.scrollToEnd({
+                animated: true,
+              });
             }
           }}
           initialNumToRender={10}
+          maxToRenderPerBatch={10}
+          windowSize={10}
+          removeClippedSubviews={true}
+          updateCellsBatchingPeriod={50}
           maintainVisibleContentPosition={{
             minIndexForVisible: 0,
             autoscrollToTopThreshold: 10,
@@ -393,8 +419,10 @@ const ChatScreen = () => {
       >
         {/* Message bar */}
         <MessageBar
+          isStreaming={isStreaming}
           onModalPress={handleModalPress}
           onMessageSend={handleMessageSend}
+          onAbortStream={handleAbortStream}
         />
       </View>
 
