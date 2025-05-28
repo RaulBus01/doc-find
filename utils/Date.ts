@@ -1,4 +1,4 @@
-export const formatDate = (dateString: string): string => {
+export const formatDate = (t:any,dateString: string): string => {
   try {
     const date = new Date(dateString);
     
@@ -13,7 +13,7 @@ export const formatDate = (dateString: string): string => {
     yesterday.setDate(yesterday.getDate() - 1);
 
     // Format time
-    const timeString = date.toLocaleTimeString('en-US', {
+    const timeString = date.toLocaleTimeString(t('date'), {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true
@@ -21,17 +21,17 @@ export const formatDate = (dateString: string): string => {
 
     // Check if date is today
     if (date.toDateString() === today.toDateString()) {
-      return `Today at ${timeString}`;
+      return `${t('dateToday')} ${timeString}`;
     }
 
     // Check if date is yesterday
     if (date.toDateString() === yesterday.toDateString()) {
-      return `Yesterday at ${timeString}`;
+      return `${t('dateYesterday')} ${timeString}`;
     }
 
     // If date is within this year
     if (date.getFullYear() === today.getFullYear()) {
-      return date.toLocaleDateString('en-US', {
+      return date.toLocaleDateString(t('date'), {
         month: 'short',
         day: 'numeric',
         hour: 'numeric',
@@ -41,7 +41,7 @@ export const formatDate = (dateString: string): string => {
     }
 
     // For older dates
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString(t('date'), {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

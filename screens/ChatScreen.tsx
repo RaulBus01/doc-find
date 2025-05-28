@@ -27,21 +27,21 @@ import {
 } from "@/utils/DatabaseAPI";
 import { useUserData } from "@/context/UserDataContext";
 import { streamModelResponse } from "@/utils/Model";
-import { welcomeMessages } from "@/constants/WelcomeMessages";
+import { getWelcomeMessage } from "@/constants/WelcomeMessages";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useDatabase } from "@/hooks/useDatabase";
 import { getProfiles, getCompleteProfileData } from "@/utils/LocalDatabase";
 import { Toast } from "toastify-react-native";
+import { useTranslation } from "react-i18next";
 
 const ChatScreen = () => {
   let { id,symptom } = useLocalSearchParams<{ id: string,symptom:string }>();
   const { top, bottom } = useSafeAreaInsets();
   const [chatId, _setChatId] = useState(id);
   const chatIdRef = useRef(chatId);
-  const randomWelcomeMessage =
-    welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+  const randomWelcomeMessage = getWelcomeMessage();
   const [messages, setMessages] = useState<Message[]>(
     !id ? [randomWelcomeMessage] : []
   );
@@ -50,7 +50,7 @@ const ChatScreen = () => {
   const flatListRef = useRef<FlatList<Message>>(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
-  const { isTabBarVisible } = useContext(TabBarVisibilityContext);
+  const { isTabBarVisible,setIsTabBarVisible } = useContext(TabBarVisibilityContext);
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
     null
   );
@@ -59,6 +59,9 @@ const ChatScreen = () => {
   const [useProfileContext, setUseProfileContext] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+
+  const {t} = useTranslation();
 
   const handleAbortStream = () => {
     if (abortControllerRef.current) {
@@ -107,6 +110,9 @@ const ChatScreen = () => {
   const handleRoute = (path: string) => {
     router.replace(`/${path}`);
   };
+  const handlePushRoute = (path: string) => {
+    router.push(`/${path}`);
+  }
 
   const handleModalPress = () => {
     console.log("Modal pressed");
@@ -281,9 +287,22 @@ const ChatScreen = () => {
   };
 
   const handleMenuPress = useCallback(() => {
+    Keyboard.dismiss();
+    if (isProfileModalOpen && profilesBottomSheetRef.current ) {
+      profilesBottomSheetRef.current.close();
+      setIsProfileModalOpen(false);
+      setIsTabBarVisible(true);
+       
+      return;
+    }
+    setIsProfileModalOpen(true);
+    if (isTabBarVisible) {
+      setIsTabBarVisible(false);
+    }
+    
     fetchProfiles();
     profilesBottomSheetRef.current?.expand();
-  }, [fetchProfiles]);
+  }, [fetchProfiles, isProfileModalOpen, profilesBottomSheetRef]);
 
   const renderProfileItem = ({ item }: { item: any }) => (
     <TouchableOpacity
@@ -296,7 +315,7 @@ const ChatScreen = () => {
       <View style={styles.profileInfo}>
         <Text style={styles.profileName}>{item.fullname}</Text>
         <Text style={styles.profileMeta}>
-          {item.gender}, {item.age} years
+          {item.gender}, {item.age} {t('years')}
         </Text>
       </View>
       {/* Move the checkmark outside of profileInfo */}
@@ -339,16 +358,16 @@ const ChatScreen = () => {
           />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>AI Assistant</Text>
+          <Text style={styles.headerTitle}>{t('chat.chatHeaderTitle')}</Text>
           {useProfileContext && selectedProfileId ? (
             <View style={styles.activeProfileBadge}>
               <Ionicons name="person" size={12} color={theme.textLight} />
-              <Text style={styles.activeProfileText}>Profile Active</Text>
+              <Text style={styles.activeProfileText}>{t('chat.chatProfileActiveTitle')}</Text>
             </View>
           ) : (
             <View style={styles.deactivatedProfileBadge}>
               <Ionicons name="person" size={12} color={theme.textLight} />
-              <Text style={styles.activeProfileText}>No Profile Active</Text>
+              <Text style={styles.activeProfileText}>{t('chat.chatProfileInactiveTitle')}</Text>
             </View>
           )}
         </View>
@@ -436,9 +455,9 @@ const ChatScreen = () => {
         enablePanDownToClose={true}
       >
         <View style={styles.bottomSheetHeader}>
-          <Text style={styles.bottomSheetTitle}>Profile Context</Text>
+          <Text style={styles.bottomSheetTitle}>{t('chat.chatContextTitle')}</Text>
           <View style={styles.switchContainer}>
-            <Text style={styles.switchLabel}>Use profile information</Text>
+            <Text style={styles.switchLabel}>{t('chat.chatContextSubTitle')}</Text>
             <Switch
               value={useProfileContext}
               onValueChange={(value) => {
@@ -451,8 +470,8 @@ const ChatScreen = () => {
           </View>
           <Text style={styles.bottomSheetSubtitle}>
             {useProfileContext
-              ? "Choose a profile to personalize your chat"
-              : "Enable profile context to personalize your chat"}
+              ? t('chat.chatContextSubTitle2')
+              : t('chat.chatContextSubTitle1')}
           </Text>
         </View>
 
@@ -470,13 +489,15 @@ const ChatScreen = () => {
                   alignItems: "center",
                 }}
               >
-                <Text style={styles.emptyProfilesText}>No profiles found</Text>
+                <Text style={styles.emptyProfilesText}>
+                  {t('chat.chatNoProfileText')}
+                </Text>
                 <TouchableOpacity
-                  onPress={() => handleRoute("new")}
+                  onPress={() => handlePushRoute("(profiles)/new")}
                   style={{ marginTop: 10 }}
                 >
                   <Text style={{ color: theme.progressColor }}>
-                    Create a new profile
+                    {t('chat.chatCreateText')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -485,8 +506,7 @@ const ChatScreen = () => {
         ) : (
           <View style={styles.disabledProfilesContainer}>
             <Text style={styles.disabledProfilesText}>
-              Without profile context, the AI will respond based on general
-              information only.
+              {t('chat.chatContextDisabledText')}
             </Text>
           </View>
         )}

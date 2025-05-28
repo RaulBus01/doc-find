@@ -16,12 +16,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CustomBottomSheetModal, {
   Ref,
 } from "../components/CustomBottomSheetModal";
-import { useRouter } from "expo-router";
+import { useFocusEffect, useRouter } from "expo-router";
 import CustomModal from "@/components/CustomModal";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { ThemeColors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { useTranslation } from "react-i18next";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -33,9 +34,10 @@ const ChatHistoryScreen = () => {
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const {t} = useTranslation();
   const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
 
-  useEffect(() => {
+  useFocusEffect(useCallback(() => {
     if(!isTabBarVisible) {
       setIsTabBarVisible(true);
     }
@@ -46,7 +48,7 @@ const ChatHistoryScreen = () => {
         }
       });
     }
-  }, [isLoading, error, token]);
+  }, [isLoading, error, token]));
 
  
   const handlePresentModalPress = useCallback((chatId: string) => {
@@ -95,9 +97,9 @@ const ChatHistoryScreen = () => {
       style={[styles.container, {  paddingBottom: bottom }]}
     >
       <View style={[styles.header,{ paddingTop: top }]}>
-        <Text style={styles.headerTitle}>Chat History</Text>
+        <Text style={styles.headerTitle}>{t('chatHistory.chatHistoryTitle')}</Text>
         <TouchableOpacity
-          onPress={() => router.push("/new")}
+          onPress={() => router.replace("/new")}
           style={styles.iconButton}
         >
           <Ionicons name="add" size={24} color={theme.textLight ? theme.textLight : theme.text} />
@@ -133,13 +135,13 @@ const ChatHistoryScreen = () => {
       ) : (
         <View style={styles.listContent}>
           <Text style={{ textAlign: "center", padding: 20, color: theme.text }}>
-            No chats found
+            {t('chatHistory.chatHistoryEmptyText')}
           </Text>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => router.push("/new")}
+            onPress={() => router.replace("/new")}
           >
-            <Text style={{ color: theme.text }}>Start a new chat</Text>
+            <Text style={{ color: theme.text }}>{t('chatHistory.chatStartText')}</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -153,8 +155,8 @@ const ChatHistoryScreen = () => {
           setDeleteModalVisible(false);
         }}
         onConfirmed={confirmDeleteChat}
-        modalTitle="Delete Chat"
-        modalMessage="Are you sure you want to delete this chat?"
+        modalTitle={t('chatHistory.chatDeleteText')}
+        modalMessage={t('chatHistory.chatDeleteConfirmText')}
       />
     </SafeAreaView>
   );

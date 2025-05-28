@@ -13,12 +13,14 @@ import CustomInput from "@/components/CustomInput/CustomInput";
 import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { addProfileMedication, deleteMedication, getExistingMedicationsByName, getExistingMedicationsById, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
+import { useTranslation } from "react-i18next";
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
   const router = useRouter();
+  const {t} = useTranslation();
 
   
   const nameInputRef = React.useRef<TextInput>(null);
@@ -32,7 +34,7 @@ export default function MedicationScreen() {
   const fetchProfileMedications = async () => {
     try {
       if (!id) {
-        Toast.error("Missing profile ID", "top");
+        Toast.error(t('medications.error'), "top");
         return;
       }
       
@@ -40,9 +42,8 @@ export default function MedicationScreen() {
  
       setProfileMedicationsList(result || []);
     } catch (error) {
-      console.error("Error fetching profile medications:", error);
       setProfileMedicationsList([]);
-      Toast.error("Failed to load medications", "top");
+         Toast.error(t('medications.error'), "top");
     }
   };
   
@@ -66,7 +67,7 @@ export default function MedicationScreen() {
     setShowSuggestions(results.length > 0);
     }
     catch (error) {
-      console.error("Error searching medications:", error);
+      Toast.error(t('medications.error'), "top");
       setSuggestedMedications([]);
       setShowSuggestions(false);
     }
@@ -94,7 +95,7 @@ export default function MedicationScreen() {
   
   const handleAddMedication = async () => {
     if (!medicationName.trim()) {
-      Toast.warn("Please enter a medication name", "top");
+      Toast.warn(t('medications.warning'), "top");
       return;
     }
     
@@ -109,7 +110,7 @@ export default function MedicationScreen() {
         // Create new medication if it doesn't exist
         const insertResult =  await insertMedication(drizzleDB, medicationName.trim());
         if (!insertResult) {
-          Toast.error("Failed to insert medication", "top");
+          Toast.error(t('medications.errorAdd'), "top");
           return;
         }
           
@@ -121,19 +122,18 @@ export default function MedicationScreen() {
       const existingProfileMed = await getExistingMedicationsById(drizzleDB, parseInt(id as string, 10), medicationId);
         
       if (existingProfileMed) {
-        Toast.warn("Medication already exists in profile", 'top');
+        Toast.warn(t('medications.warningExists'), 'top');
         return;
       }
       // Add medication to profile
       await addProfileMedication(drizzleDB, parseInt(id as string, 10), medicationId, dosage);
-      Toast.success("Medication added successfully", "top");
+      Toast.success(t('medications.successAdd'), "top");
       setMedicationName("");
       setDosage(false);
       fetchProfileMedications();
       
     } catch (error) {
-      console.error("Error adding medication:", error);
-      Toast.error("Failed to add medication", "top");
+      Toast.error(t('medications.errorAdd'), "top");
     }
   };
   const handleDeleteMedication = (medicationId: number) => async () => {
@@ -141,15 +141,14 @@ export default function MedicationScreen() {
      
       const result = await deleteMedication(drizzleDB, parseInt(id as string, 10), medicationId);
       if (!result) {
-        Toast.error("Failed to delete medication", "top");
+        Toast.error(t('medications.deleteError'), "top");
         return;
       }
-      Toast.success("Medication deleted successfully", "top");
+      Toast.success(t('medications.successDelete'), "top");
       fetchProfileMedications();
     }
     catch (error) {
-      console.error("Error deleting medication:", error);
-      Toast.error("Failed to delete medication", "top");
+      Toast.error(t('medications.deleteError'), "top");
     }
   }
 
@@ -160,7 +159,7 @@ export default function MedicationScreen() {
     <View style={[styles.container, { paddingBottom: bottom }]}>
          {/* Header */}
          <View style={[styles.headerContainer, { paddingTop: top }]}>
-           <Text style={styles.header}>Medications</Text>
+           <Text style={styles.header}>{t('medications.title')}</Text>
            <Pressable onPress={handleBack} style={styles.backButton}>
              <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
            </Pressable>
@@ -195,8 +194,8 @@ export default function MedicationScreen() {
                 <View style={styles.emptyIconContainer}>
                   <FontAwesome5 name="prescription-bottle" size={40} color="#fff" />
                 </View>
-                <Text style={styles.emptyText}>No medications found</Text>
-                <Text style={styles.emptySubtext}>Add medications using the form below</Text>
+                <Text style={styles.emptyText}>{t('medications.emptyText')}</Text>
+                <Text style={styles.emptySubtext}>{t('medications.addText')}</Text>
               </View>
             }
             />
@@ -214,7 +213,7 @@ export default function MedicationScreen() {
             exiting={FadeOut.duration(200)}
             style={styles.suggestionsContainer}
           >
-            <Text style={styles.suggestionHelpText}>Tap to select a medication</Text>
+            <Text style={styles.suggestionHelpText}>{t('medications.tapToSelect')}</Text>
             {suggestedMedications.map((med:Medication) => {
               return (
                 <TouchableOpacity
@@ -231,7 +230,7 @@ export default function MedicationScreen() {
         
         <View style={styles.inputRow}>
           <CustomInput
-            placeholder="Medication name"
+            placeholder={t('medications.medicationName')}
             value={medicationName}
             onChangeText={searchMedications}
             onInputFocus={() => {
@@ -250,7 +249,7 @@ export default function MedicationScreen() {
         <View style={styles.dosageRow}>
           <View style={styles.dosageTextContainer}>
             <Fontisto name="drug-pack" size={24} color={theme.text} />
-            <Text style={styles.dosageText}>Take daily?</Text>
+            <Text style={styles.dosageText}>{t('medications.dosageText')} ?</Text>
           </View>
           <Switch
             value={dosage}
@@ -266,7 +265,7 @@ export default function MedicationScreen() {
           
         >
           <Ionicons name="add" size={22} color={theme.textLight ? theme.textLight : theme.text} />
-          <Text style={styles.addButtonText}>Add Medication</Text>
+          <Text style={styles.addButtonText}>{t('medications.addButtonText')}</Text>
         </Pressable>
       </View>
     </View>
@@ -372,6 +371,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     color: theme.text,
     fontSize: 20,
     fontFamily: "Roboto-Bold",
+    textAlign: "center",
     marginBottom: 8,
   },
   emptySubtext: {

@@ -20,6 +20,15 @@ import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+import { useTranslation } from "react-i18next";
+import { 
+  healthIndicatorConfig, 
+  getHealthIndicatorLabel, 
+  getHealthIndicatorValue,
+  healthIndicatorValueKeys,
+  getGenderValue,
+  genderValueKeys
+} from "@/utils/HealthIndicatorInterface";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();
@@ -119,6 +128,7 @@ const EditProfilePage = () => {
     bottomSheetModalRef.current?.present();
   }, []);
   
+  const {t} = useTranslation();
   
   
 
@@ -217,7 +227,7 @@ const EditProfilePage = () => {
         <Pressable onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
         </Pressable>
-        <Text style={styles.header}>Edit Profile</Text>
+        <Text style={styles.header}>{t('editProfile.headerTitle')}</Text>
       </View>
       
       <ScrollView 
@@ -227,57 +237,58 @@ const EditProfilePage = () => {
         <View style={styles.formContainer}>
           {/* Personal Info Section */}
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+            <Text style={styles.sectionTitle}>{t('editProfile.personalTitle')}</Text>
             
             {/* Name Field */}
             <View style={styles.inputRow}>
-      
-                
-                <TextInput
-                  style={styles.textInput}
-                  value={formData.fullname}
-                  onChangeText={(text) => setFormData({...formData, fullname: text})}
-                  placeholder="Full Name"
-                  placeholderTextColor={theme.textLight}
-                />
-             
+              <Text style={styles.fieldLabel}>{t('editProfile.nameTitle')}</Text>
+              <TextInput
+                style={styles.textInput}
+                value={formData.fullname}
+                onChangeText={(text) => setFormData({...formData, fullname: text})}
+                placeholder={t('editProfile.nameTitle')}
+                placeholderTextColor={theme.textLight}
+              />
             </View>
             
             {/* Gender Selection */}
-            <Text style={styles.fieldLabel}>Gender</Text>
+            <Text style={styles.fieldLabel}>{t('editProfile.genderTitle')}</Text>
             <View style={styles.choiceContainer}>
-              {["Male", "Female"].map((gender) => (
-                <Pressable
-                  key={gender}
-                  style={[
-                    styles.choiceButton,
-                    formData.gender === gender && styles.selectedChoice
-                  ]}
-                  onPress={() => {
-                    setFormData({...formData, gender: gender as "Male" | "Female"});
-                  }}
-                >
-                  <FontAwesome5 
-                    name={gender === "Male" ? "male" : "female"} 
-                    size={16} 
-                    color={formData.gender === gender ? "#fff" : theme.text} 
-                  />
-                  <Text style={[
-                    styles.choiceText,
-                    formData.gender === gender && styles.selectedChoiceText
-                  ]}>{gender}</Text>
-                </Pressable>
-              ))}
+              {["Male", "Female"].map((englishGender) => {
+                const translatedGender = getGenderValue(englishGender as keyof typeof genderValueKeys, t);
+                return (
+                  <Pressable
+                    key={englishGender}
+                    style={[
+                      styles.choiceButton,
+                      formData.gender === englishGender && styles.selectedChoice
+                    ]}
+                    onPress={() => {
+                      setFormData({...formData, gender: englishGender as "Male" | "Female"});
+                    }}
+                  >
+                    <FontAwesome5 
+                      name={englishGender === "Male" ? "male" : "female"} 
+                      size={16} 
+                      color={formData.gender === englishGender ? "#fff" : theme.text} 
+                    />
+                    <Text style={[
+                      styles.choiceText,
+                      formData.gender === englishGender && styles.selectedChoiceText
+                    ]}>{translatedGender}</Text>
+                  </Pressable>
+                );
+              })}
             </View>
-            
+
             {/* Birth Year */}
-            <Text style={styles.fieldLabel}>Birth Year</Text>
+            <Text style={styles.fieldLabel}>{t('editProfile.birthYear')}</Text>
             <Pressable 
               style={styles.pickerTrigger} 
               onPress={handlePresentModalPress}
             >
               <Text style={styles.pickerTriggerText}>
-                {formData.birthYear > 0 ? formData.birthYear : "Select birth year"}
+                {formData.birthYear > 0 ? formData.birthYear : t('editProfile.selectBirthYear')}
               </Text>
               <Ionicons name="chevron-down" size={20} color={theme.text} />
             </Pressable>
@@ -285,73 +296,81 @@ const EditProfilePage = () => {
           
           {/* Health Indicators Section */}
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Health Indicators</Text>
+            <Text style={styles.sectionTitle}>{t('editProfile.healthIndicatorsTitle')}</Text>
             
             {/* Smoker Status */}
-            <Text style={styles.fieldLabel}>Do you smoke?</Text>
+            <Text style={styles.fieldLabel}>{getHealthIndicatorLabel('smoker', t)}</Text>
             <View style={styles.choiceContainer}>
-              {["Yes", "No", "I used to"].map((choice) => (
-                <Pressable
-                  key={choice}
-                  style={[
-                    styles.choiceButton,
-                    formData.smoker === choice && getChoiceStyle(choice)
-                    
-                  ]}
-                  onPress={() => {
-                    setFormData({...formData, smoker: choice as "Yes" | "No" | "I used to"});
-                  }}
-                >
-                  <Text style={[
-                    styles.choiceText,
-                    formData.smoker === choice && styles.selectedChoiceText
-                  ]}>{choice}</Text>
-                </Pressable>
-              ))}
+              {["Yes", "No", "I used to"].map((englishChoice) => {
+                const translatedChoice = getHealthIndicatorValue(englishChoice as keyof typeof healthIndicatorValueKeys, t);
+                return (
+                  <Pressable
+                    key={englishChoice}
+                    style={[
+                      styles.choiceButton,
+                      formData.smoker === englishChoice && getChoiceStyle(englishChoice)
+                    ]}
+                    onPress={() => {
+                      setFormData({...formData, smoker: englishChoice as "Yes" | "No" | "I used to"});
+                    }}
+                  >
+                    <Text style={[
+                      styles.choiceText,
+                      formData.smoker === englishChoice && styles.selectedChoiceText
+                    ]}>{translatedChoice}</Text>
+                  </Pressable>
+                );
+              })}
             </View>
             
             {/* Hypertension Status */}
-            <Text style={styles.fieldLabel}>Do you have hypertension?</Text>
+            <Text style={styles.fieldLabel}>{getHealthIndicatorLabel('hypertensive', t)}</Text>
             <View style={styles.choiceContainer}>
-              {["Yes", "No", "I don't know"].map((choice) => (
-                <Pressable
-                  key={choice}
-                  style={[
-                    styles.choiceButton,
-                    formData.hypertensive === choice && getChoiceStyle(choice)
-                  ]}
-                  onPress={() => {
-                    setFormData({...formData, hypertensive: choice as "Yes" | "No" | "I don't know"});
-                  }}
-                >
-                  <Text style={[
-                    styles.choiceText,
-                    formData.hypertensive === choice && styles.selectedChoiceText
-                  ]}>{choice}</Text>
-                </Pressable>
-              ))}
+              {["Yes", "No", "I don't know"].map((englishChoice) => {
+                const translatedChoice = getHealthIndicatorValue(englishChoice as keyof typeof healthIndicatorValueKeys, t);
+                return (
+                  <Pressable
+                    key={englishChoice}
+                    style={[
+                      styles.choiceButton,
+                      formData.hypertensive === englishChoice && getChoiceStyle(englishChoice)
+                    ]}
+                    onPress={() => {
+                      setFormData({...formData, hypertensive: englishChoice as "Yes" | "No" | "I don't know"});
+                    }}
+                  >
+                    <Text style={[
+                      styles.choiceText,
+                      formData.hypertensive === englishChoice && styles.selectedChoiceText
+                    ]}>{translatedChoice}</Text>
+                  </Pressable>
+                );
+              })}
             </View>
             
             {/* Diabetes Status */}
-            <Text style={styles.fieldLabel}>Do you have diabetes?</Text>
+            <Text style={styles.fieldLabel}>{getHealthIndicatorLabel('diabetic', t)}</Text>
             <View style={styles.choiceContainer}>
-              {["Yes", "No", "I don't know"].map((choice) => (
-                <Pressable
-                  key={choice}
-                  style={[
-                    styles.choiceButton,
-                    formData.diabetic === choice && getChoiceStyle(choice)
-                  ]}
-                  onPress={() => {
-                    setFormData({...formData, diabetic: choice as "Yes" | "No" | "I don't know"});
-                  }}
-                >
-                  <Text style={[
-                    styles.choiceText,
-                    formData.diabetic === choice && styles.selectedChoiceText
-                  ]}>{choice}</Text>
-                </Pressable>
-              ))}
+              {["Yes", "No", "I don't know"].map((englishChoice) => {
+                const translatedChoice = getHealthIndicatorValue(englishChoice as keyof typeof healthIndicatorValueKeys, t);
+                return (
+                  <Pressable
+                    key={englishChoice}
+                    style={[
+                      styles.choiceButton,
+                      formData.diabetic === englishChoice && getChoiceStyle(englishChoice)
+                    ]}
+                    onPress={() => {
+                      setFormData({...formData, diabetic: englishChoice as "Yes" | "No" | "I don't know"});
+                    }}
+                  >
+                    <Text style={[
+                      styles.choiceText,
+                      formData.diabetic === englishChoice && styles.selectedChoiceText
+                    ]}>{translatedChoice}</Text>
+                  </Pressable>
+                );
+              })}
             </View>
           </View>
         </View>
@@ -373,23 +392,22 @@ const EditProfilePage = () => {
           ) : (
             <>
               <Ionicons name="save-outline" size={22} color={theme.textLight ? theme.textLight : theme.text} />
-              <Text style={styles.saveButtonText}>Save Changes</Text>
+              <Text style={styles.saveButtonText}>{t('editProfile.saveTitle')}</Text>
             </>
           )}
         </TouchableOpacity>
       </View>
       
       {/* Bottom Sheet for Year Selection */}
-    <CustomBottomSheetModal
+      <CustomBottomSheetModal
         ref={bottomSheetModalRef}
         index={1}
-      onSelectYear={(year: number) => {
+        onSelectYear={(year: number) => {
           setFormData((prev) => ({ ...prev, birthYear: year }));
           bottomSheetModalRef.current?.dismiss();
         }}
         type="years"
       />
-      
     </SafeAreaView>
   );
 };

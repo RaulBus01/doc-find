@@ -73,7 +73,7 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
     RedIconBackground: 'rgba(239, 68, 68, 0.25)', 
     YellowIconBackground: 'rgba(251, 191, 36, 0.25)',
     LightBlueIconBackground: 'rgba(59, 130, 246, 0.25)',
-    LightVioletIconBackground: 'rgba(124, 58, 237, 0.2s5)',
+    LightVioletIconBackground: 'rgba(124, 58, 237, 0.25)',
   },
 };
 

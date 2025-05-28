@@ -5,6 +5,7 @@ import { Entypo } from "@expo/vector-icons";
 import { formatDate } from "../utils/Date";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
+import { useTranslation } from "react-i18next";
 
 interface ChatItemProps {
   id: string;
@@ -24,6 +25,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   const router = useRouter();
   const {theme} = useTheme();
   const styles = getStyles(theme);
+  const {t} = useTranslation();
 
   const handlePress = () => {
     router.push(`/${id}`);
@@ -38,7 +40,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
       <View style={styles.contentContainer}>
         <View style={styles.textContainer}>
           <Text style={styles.title}>{title}</Text>
-          <Text style={styles.date}>{formatDate(updatedAt)}</Text>
+          <Text style={styles.date}>{formatDate(t,updatedAt)}</Text>
         </View>
         <TouchableOpacity onPress={() => handleModal(id)}>
           <Entypo name="dots-three-vertical" size={22} color={theme.text} />

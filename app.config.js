@@ -33,6 +33,8 @@ export default {
       },
       "plugins": [
         "expo-sqlite",
+        "expo-secure-store",
+         "expo-localization",
         "expo-router",
         [
           "expo-splash-screen",

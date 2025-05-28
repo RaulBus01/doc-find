@@ -35,12 +35,14 @@ import {
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+import { useTranslation } from "react-i18next";
 
 const AddMedicalHistoryPage = () => {
   const { id } = useLocalSearchParams();
   const router = useRouter();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
+  const {t} = useTranslation();
 
   const conditionRef = React.useRef<TextInput>(null);
   const treatmentRef = React.useRef<TextInput>(null);
@@ -61,19 +63,19 @@ const AddMedicalHistoryPage = () => {
 
   const handleAddMedicalHistory = async () => {
     if (!formData.condition.trim()) {
-      Toast.warn("Please enter a medical condition", "top");
+      Toast.warn(t('medicalHistory.warning'), "top");
       return;
     }
 
     try {
-      // TODO: Add to local database file
+     
       const result = await addProfileMedicalHistory(drizzleDB, formData);
       if (!result) {
-        Toast.error("Failed to add medical condition", "top");
+        Toast.error(t('medicalHistory.errorAdd'), "top");
         return;
       }
 
-      Toast.success("Medical condition added successfully", "top");
+      Toast.success(t('medicalHistory.errorAdd'), "top");
       setFormData({
         profileId: parseInt(id as string, 10),
         condition: "",
@@ -84,12 +86,10 @@ const AddMedicalHistoryPage = () => {
       });
       router.back();
     } catch (error) {
-      console.error("Error adding medical history:", error);
-      Toast.error("Failed to add medical condition", "top");
+     
+    Toast.error(t('medicalHistory.errorAdd'), "top");
     }
   };
-
-  const currentYear = new Date().getFullYear();
 
 
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -117,7 +117,7 @@ const AddMedicalHistoryPage = () => {
             color={theme.textLight ? theme.textLight : theme.text}
           />
         </Pressable>
-        <Text style={styles.header}>Add Medical History</Text>
+        <Text style={styles.header}>{t('medicalHistory.title')}</Text>
       </View>
 
       {/* Content */}
@@ -127,7 +127,7 @@ const AddMedicalHistoryPage = () => {
       >
         <View style={styles.formContainer}>
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Condition Details</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.conditionDetails')}</Text>
 
             <View style={styles.inputRow}>
               <View style={styles.inputIconWrapper}>
@@ -141,7 +141,7 @@ const AddMedicalHistoryPage = () => {
                 </View>
 
                 <CustomInput
-                  placeholder="Medical condition"
+                  placeholder={t('medicalHistory.conditionPlaceholder')}
                   value={formData.condition}
                   onChangeText={(text) =>
                     setFormData({ ...formData, condition: text })
@@ -169,8 +169,8 @@ const AddMedicalHistoryPage = () => {
                 >
                   <Text style={styles.datePickerText}>
                     {formData.diagnosis_date
-                      ? `Diagnosis Year: ${formData.diagnosis_date}`
-                      : "Select Diagnosis Year"}
+                      ? `${t('medicalHistory.diagnosisYear')}: ${formData.diagnosis_date}`
+                      : t('medicalHistory.selectYear')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -178,7 +178,7 @@ const AddMedicalHistoryPage = () => {
           </View>
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Treatment Information</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.treatmentDetails')}</Text>
             <View style={styles.inputRow}>
               <View style={styles.inputIconWrapper}>
                 <View style={styles.iconContainer}>
@@ -189,7 +189,7 @@ const AddMedicalHistoryPage = () => {
                   />
                 </View>
                 <CustomInput
-                  placeholder="Treatment (optional)"
+                  placeholder={t('medicalHistory.medicinesDetails')}
                   value={formData.treatment ?? ""}
                   onChangeText={(text) =>
                     setFormData({ ...formData, treatment: text })
@@ -210,7 +210,7 @@ const AddMedicalHistoryPage = () => {
                   />
                 </View>
                 <CustomInput
-                  placeholder="Additional notes (optional)"
+                  placeholder={t('medicalHistory.additionalNotes')}
                   value={formData.notes ?? ""}
                   onChangeText={(text) =>
                     setFormData({ ...formData, notes: text })
@@ -223,7 +223,7 @@ const AddMedicalHistoryPage = () => {
           </View>
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Current Status</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.currentStatus')}</Text>
             <View style={styles.statusOptions}>
               {["Ongoing", "Resolved", "Chronic"].map((statusOption) => {
                 const isSelected =
@@ -280,7 +280,7 @@ const AddMedicalHistoryPage = () => {
             size={22}
             color={theme.textLight ? theme.textLight : theme.text}
           />
-          <Text style={styles.addButtonText}>Save Medical History</Text>
+          <Text style={styles.addButtonText}>{t('medicalHistory.saveButtonText')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -388,7 +388,7 @@ const getStyles = (theme: ThemeColors) =>
     },
     datePickerText: {
       color: theme.text,
-      fontSize: 16,
+      fontSize: 14,
       fontFamily: "Roboto-Regular",
       justifyContent: "center",
       alignItems: "center",

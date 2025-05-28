@@ -5,6 +5,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-na
 import { useTheme } from '@/context/ThemeContext';
 import { ThemeColors } from '@/constants/Colors';
 import { TabBarVisibilityContext } from '@/context/TabBarContext';
+import { useTranslation } from 'react-i18next';
 
 type AllowedRoute = {
   name: string;
@@ -21,12 +22,6 @@ type TabBarProps = {
 
 };
 
-const allowedRoutes: AllowedRoute[] = [
-  { name: 'Home', path: 'index', iconFocused: 'home', iconDefault: 'home-outline', order: 1 },
-  { name: 'Map', path: 'map', iconFocused: 'map', iconDefault: 'map-outline', order: 2 },
-  { name: 'Chat', path: '(chat)', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline', order: 3 },
-  { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline', order: 4 },
-];
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   // Shared value to control vertical translation
@@ -34,6 +29,14 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
   const translateY = useSharedValue(50); 
   const { theme } = useTheme();
   const styles = getStyles(theme);
+  const {t} = useTranslation();
+  const allowedRoutes: AllowedRoute[] = [
+  { name: t('tabbar.home'), path: 'index', iconFocused: 'home', iconDefault: 'home-outline', order: 1 },
+  { name: t('tabbar.map'), path: 'map', iconFocused: 'map', iconDefault: 'map-outline', order: 2 },
+  { name: t('tabbar.chat'), path: '(chat)', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline', order: 3 },
+  { name: t('tabbar.account'), path: 'account', iconFocused: 'person', iconDefault: 'person-outline', order: 4 },
+];
+
 
   useEffect(() => {
     translateY.value = withTiming(isTabBarVisible ? 0 : 50, { duration: 300 });

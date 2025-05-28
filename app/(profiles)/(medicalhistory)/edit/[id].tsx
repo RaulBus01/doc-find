@@ -18,6 +18,7 @@ import { getStatusColor } from "@/utils/utilsFunctions";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+import { useTranslation } from "react-i18next";
 
 const EditMedicalPage = () => {
   const { id, profileId } = useLocalSearchParams();
@@ -35,6 +36,7 @@ const EditMedicalPage = () => {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const {t} = useTranslation();
 
   
   const styles = getStyles(theme);
@@ -79,7 +81,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
       }
     } catch (error) {
       console.error("Error fetching medical history:", error);
-      Toast.error("Error loading medical history", "top");
+      Toast.error(t('medicalHistory.error'), "top");
     } finally {
       setLoading(false);
     }
@@ -103,26 +105,24 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
 
   const handleSave = async () => {
     if (!formData.condition.trim() || formData.diagnosis_date === "") {
-    Toast.error("Please fill in all required fields", "top");
+      Toast.error(t('medicalHistory.warning'), "top");
       return;
     }
     
     setSaving(true);
     try {
-    
-
       const result = await updateMedicalHistoryEntry(drizzleDB, formData);
       
       if (!result) {
-        Toast.error("Failed to update medical condition", "top");
+        Toast.error(t('medicalHistory.errorAdd'), "top");
         return;
       }
 
-      Toast.success("Medical condition updated successfully", "top");
+      Toast.success(t('medicalHistory.successAdd'), "top");
       router.back();
     } catch (error) {
       console.error("Error updating medical history:", error);
-      Toast.error("Failed to update medical condition", "top");
+      Toast.error(t('medicalHistory.errorAdd'), "top");
     } finally {
       setSaving(false);
     }
@@ -139,14 +139,14 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
   return (
     <SafeAreaView
       style={[styles.container, { paddingBottom: bottom }]}
-        edges={["bottom"]}
+      edges={["bottom"]}
     >
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: top }]}>
         <Pressable onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight :theme.text} />
+          <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
         </Pressable>
-        <Text style={styles.header}>Edit Medical History</Text>
+        <Text style={styles.header}>{t('medicalHistory.editTitle')}</Text>
       </View>
 
       {/* Content */}
@@ -156,7 +156,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
       >
         <View style={styles.formContainer}>
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Condition Details</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.conditionDetails')}</Text>
 
             <View style={styles.inputRow}>
               <View style={styles.inputIconWrapper}>
@@ -169,7 +169,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
                 </View>
 
                 <CustomInput
-                  placeholder="Medical condition"
+                  placeholder={t('medicalHistory.conditionPlaceholder')}
                   value={formData.condition}
                   onChangeText={(text) =>
                     setFormData({ ...formData, condition: text })
@@ -196,8 +196,8 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
                 >
                   <Text style={styles.datePickerText}>
                     {formData.diagnosis_date
-                      ? `Diagnosis Year: ${formData.diagnosis_date}`
-                      : "Select Diagnosis Year"}
+                      ? `${t('medicalHistory.diagnosisYear')}: ${formData.diagnosis_date}`
+                      : t('medicalHistory.selectYear')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -205,7 +205,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
           </View>
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Treatment Information</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.treatmentDetails')}</Text>
             <View style={styles.inputRow}>
               <View style={styles.inputIconWrapper}>
                 <View style={styles.iconContainer}>
@@ -216,7 +216,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
                   />
                 </View>
                 <CustomInput
-                  placeholder="Treatment (optional)"
+                  placeholder={t('medicalHistory.medicinesDetails')}
                   value={formData.treatment ?? ""}
                   onChangeText={(text) =>
                     setFormData({ ...formData, treatment: text })
@@ -237,7 +237,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
                   />
                 </View>
                 <CustomInput
-                  placeholder="Additional notes (optional)"
+                  placeholder={t('medicalHistory.additionalNotes')}
                   value={formData.notes ?? ""}
                   onChangeText={(text) =>
                     setFormData({ ...formData, notes: text })
@@ -250,7 +250,7 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
           </View>
 
           <View style={styles.formSection}>
-            <Text style={styles.sectionTitle}>Current Status</Text>
+            <Text style={styles.sectionTitle}>{t('medicalHistory.currentStatus')}</Text>
             <View style={styles.statusOptions}>
               {["Ongoing", "Resolved", "Chronic"].map((statusOption) => {
                 const isSelected =
@@ -298,12 +298,9 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-       
           style={!hasChanges() || saving ? styles.addButtonDisabled : styles.addButton}
-          
           onPress={handleSave}
           activeOpacity={0.7}
-          
           disabled={saving || !hasChanges()}
         >
           {saving ? (
@@ -311,17 +308,16 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
           ) : (
             <>
               <Ionicons name="save-outline" size={22} color={theme.textLight ? theme.textLight : theme.text} />
-              <Text style={styles.addButtonText}>Save Changes</Text>
+              <Text style={styles.addButtonText}>{t('medicalHistory.saveButtonText')}</Text>
             </>
           )}
         </TouchableOpacity>
       </View>
       
- 
-         <CustomBottomSheetModal
+      <CustomBottomSheetModal
         ref={bottomSheetModalRef}
         index={1}
-      onSelectYear={(year: number) => {
+        onSelectYear={(year: number) => {
           setFormData((prev) => ({ ...prev, diagnosis_date: year.toString() }));
           bottomSheetModalRef.current?.dismiss();
         }}

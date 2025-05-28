@@ -86,7 +86,7 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 20,
-      backgroundColor: theme.text,
+      backgroundColor:"transparent",
     },
     actionButtonsContainer: {
       flexDirection: "row",

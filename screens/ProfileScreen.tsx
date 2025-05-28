@@ -11,12 +11,21 @@ import { Pressable } from "react-native-gesture-handler";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
-import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface";
+import { 
+  healthIndicatorConfig, 
+  getHealthIndicatorLabel, 
+  getHealthIndicatorValue,
+  healthIndicatorValueKeys,
+  genderValueKeys,
+  getGenderValue
+} from "@/utils/HealthIndicatorInterface";
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileById, getProfileHealthIndicatorById } from "@/utils/LocalDatabase";
 import { ProfileInput } from "@/database/schema";
 import { useUserData } from "@/context/UserDataContext";
 import { useFocusEffect } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+
 const ProfileScreen = () => {
   const { id } = useLocalSearchParams();
   const { userId } = useUserData();
@@ -27,6 +36,7 @@ const ProfileScreen = () => {
   )
   const [healthData, setHealthData] = useState<any>(null);
   const router = useRouter();
+  const {t} = useTranslation();
 
  useFocusEffect(
   useCallback(() => {
@@ -69,7 +79,7 @@ const ProfileScreen = () => {
   if (!profileData) {
     return (
       <SafeAreaView style={styles.container}>
-        <Text style={styles.loadingText}>Loading profile...</Text>
+        <Text style={styles.loadingText}>{t('loading.loadingText')}</Text>
       </SafeAreaView>
     );
   }
@@ -105,7 +115,7 @@ const getChoiceStyle = (choice: string) => {
             color={theme.textLight ? theme.textLight : theme.text}
           />
         </Pressable>
-        <Text style={styles.headerTitle}>Profile Details</Text>
+        <Text style={styles.headerTitle}>{t('profile.profileHeaderTitle')}</Text>
       </View>
 
       <Animated.ScrollView
@@ -129,12 +139,14 @@ const getChoiceStyle = (choice: string) => {
                 size={16}
                 color={theme.text}
               />
-              <Text style={styles.metaText}>{profileData.gender}</Text>
+              <Text style={styles.metaText}>
+                {getGenderValue(profileData.gender as keyof typeof genderValueKeys, t)}
+              </Text>
             </View>
             <View style={styles.metaDivider} />
             <View style={styles.metaItem}>
               <Ionicons name="calendar-outline" size={16} color={theme.text} />
-              <Text style={styles.metaText}>{profileData.age} years</Text>
+              <Text style={styles.metaText}>{profileData.age} {t('years')}</Text>
             </View>
           </View>
           <View style={styles.profileActions}>
@@ -143,31 +155,39 @@ const getChoiceStyle = (choice: string) => {
               onPress={() => handleRouteToEditProfile(profileId)}
             >
               <Ionicons name="pencil" size={16} color={theme.text} />
-              <Text style={styles.editProfileText}>Edit Profile</Text>
+              <Text style={styles.editProfileText}>{t('profile.profileEditText')}</Text>
             </Pressable>
           </View>
         </View>
 
         {/* Health Indicators */}
         <View style={styles.sectionCard}>
-          <Text style={styles.sectionTitle}>Health Indicators</Text>
+          <Text style={styles.sectionTitle}>{t('profile.profileHealthIndicationsTitle')}</Text>
           {healthData && (
             <>
-              {Object.entries(healthIndicatorConfig).map(([key, config]) => (
-                <View key={key} style={styles.infoRow}>
-                  <View style={[styles.infoIconContainer, getChoiceStyle(healthData[key])]}>
-                    <FontAwesome5
-                      name={config.icon}
-                      size={20}
-                      color={theme.text}
-                    />
+              {Object.entries(healthIndicatorConfig).map(([key, config]) => {
+                const healthValue = healthData[key];
+                const translatedLabel = getHealthIndicatorLabel(key as keyof typeof healthIndicatorConfig, t);
+                const translatedValue = healthValue && healthValue in healthIndicatorValueKeys 
+                  ? getHealthIndicatorValue(healthValue as keyof typeof healthIndicatorValueKeys, t)
+                  : healthValue;
+
+                return (
+                  <View key={key} style={styles.infoRow}>
+                    <View style={[styles.infoIconContainer, getChoiceStyle(healthValue)]}>
+                      <FontAwesome5
+                        name={config.icon}
+                        size={20}
+                        color={theme.text}
+                      />
+                    </View>
+                    <View style={styles.infoContent}>
+                      <Text style={styles.infoLabel}>{translatedLabel}</Text>
+                      <Text style={styles.infoValue}>{translatedValue}</Text>
+                    </View>
                   </View>
-                  <View style={styles.infoContent}>
-                    <Text style={styles.infoLabel}>{config.label}</Text>
-                    <Text style={styles.infoValue}>{healthData[key]}</Text>
-                  </View>
-                </View>
-              ))}
+                );
+              })}
             </>
           )}
         </View>
@@ -181,7 +201,7 @@ const getChoiceStyle = (choice: string) => {
             }
           >
             <FontAwesome5 name="pills" size={20} color={theme.text} />
-            <Text style={styles.actionButtonText}>Medications</Text>
+            <Text style={styles.actionButtonText}>{t('profile.profileMedicationsTitle')}</Text>
           </Pressable>
 
           <Pressable
@@ -189,7 +209,7 @@ const getChoiceStyle = (choice: string) => {
             onPress={() => router.push(`/(profiles)/(allergies)/${profileId}`)}
           >
             <FontAwesome5 name="allergies" size={20} color={theme.text} />
-            <Text style={styles.actionButtonText}>Allergies</Text>
+            <Text style={styles.actionButtonText}>{t('profile.profileAllergiesTitle')}</Text>
           </Pressable>
 
           <Pressable
@@ -199,7 +219,7 @@ const getChoiceStyle = (choice: string) => {
             }
           >
             <FontAwesome5 name="file-medical" size={20} color={theme.text} />
-            <Text style={styles.actionButtonText}>Medical History</Text>
+            <Text style={styles.actionButtonText}>{t('profile.profileMedicalHistoryTitle')}</Text>
           </Pressable>
         </View>
 
@@ -212,7 +232,7 @@ const getChoiceStyle = (choice: string) => {
                 size={16}
                 color={theme.text}
               />
-              <Text style={styles.quickInfoTitle}>Created</Text>
+              <Text style={styles.quickInfoTitle}>{t('profile.profileCreated')}</Text>
             </View>
             <Text style={styles.quickInfoValue}>
               {new Date(profileData.created_at!).toLocaleDateString()}
@@ -222,7 +242,7 @@ const getChoiceStyle = (choice: string) => {
           <View style={styles.quickInfoCard}>
             <View style={styles.quickInfoHeader}>
               <FontAwesome5 name="edit" size={16} color={theme.text} />
-              <Text style={styles.quickInfoTitle}>Last Update</Text>
+              <Text style={styles.quickInfoTitle}>{t('profile.profileLastUpdated')}</Text>
             </View>
             <Text style={styles.quickInfoValue}>
               {new Date(profileData.updated_at!).toLocaleDateString()}
@@ -412,7 +432,8 @@ const getStyles = (theme: ThemeColors) =>
     actionButtonText: {
       color: theme.text,
       marginLeft: 5,
-      fontSize: 12,
+      fontSize: 11,
+      textAlign: "center",
       fontFamily: "Roboto-Bold",
     },
     quickInfoSection: {
@@ -434,7 +455,7 @@ const getStyles = (theme: ThemeColors) =>
     },
     quickInfoTitle: {
       color: theme.text,
-      fontSize: 14,
+      fontSize: 12,
       opacity: 0.7,
       marginLeft: 5,
     },

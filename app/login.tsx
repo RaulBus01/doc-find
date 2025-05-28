@@ -8,12 +8,13 @@ import { ApiCall } from '@/utils/ApiCall';
 import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useUserData } from "@/context/UserDataContext";
 import { useToken } from "@/context/TokenContext";
+import { useTranslation } from "react-i18next";
 
 const { width } = Dimensions.get('window');
 
 export default function AuthorizationScreen() {
   const { authorize, user, error, isLoading } = useAuth0();
-
+  const { t } = useTranslation();
   const { refreshData } = useUserData();
   const { refreshToken } = useToken();
 
@@ -66,8 +67,8 @@ export default function AuthorizationScreen() {
       </View>
 
       <View style={styles.contentContainer}>
-        <Text style={styles.welcomeText}>Welcome Back</Text>
-        <Text style={styles.subText}>Please sign in to continue</Text>
+        <Text style={styles.welcomeText}>{t('login.welcomeText')}</Text>
+        <Text style={styles.subText}>{t('login.subText')}</Text>
         
         <TouchableOpacity 
           style={styles.loginButton} 
@@ -75,7 +76,7 @@ export default function AuthorizationScreen() {
           activeOpacity={0.8}
         >
           <FontAwesome name="lock" size={20} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.loginButtonText}>Login with Auth0</Text>
+          <Text style={styles.loginButtonText}>{t('login.loginButtonText')}</Text>
         </TouchableOpacity>
 
         {error && (
@@ -89,7 +90,7 @@ export default function AuthorizationScreen() {
         style={styles.newUserButton} 
         onPress={() => router.push("/")}
       >
-        <Text style={styles.newUserText}>New to DocFind? See what we offer</Text>
+        <Text style={styles.newUserText}>{t('login.newUserText')}</Text>
         <FontAwesome6 name="arrow-right" size={14} color="#0056b3" />
       </TouchableOpacity>
     </View>

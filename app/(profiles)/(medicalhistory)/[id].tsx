@@ -15,12 +15,14 @@ import {
   deleteMedicalHistory,
   getProfileMedicalHistoryList,
 } from "@/utils/LocalDatabase";
+import { useTranslation } from "react-i18next";
 
 export default function MedicalHistoryScreen() {
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
   const router = useRouter();
+  const {t} = useTranslation();
 
   const [medicalHistoryList, setMedicalHistoryList] = useState<
     MedicalHistoryEntry[]
@@ -33,7 +35,7 @@ export default function MedicalHistoryScreen() {
   const fetchMedicalHistory = async () => {
     try {
       if (!id) {
-        Toast.error("Missing profile ID", "top");
+        Toast.error(t('medicalHistory.error'),"top");
         return;
       }
 
@@ -42,15 +44,14 @@ export default function MedicalHistoryScreen() {
         parseInt(id as string)
       );
       if (!result) {
-        Toast.error("No medical history found", "top");
+         Toast.error(t('medicalHistory.error'), "top");
         return;
       }
 
       setMedicalHistoryList(result || []);
     } catch (error) {
-      console.error("Error fetching medical history:", error);
       setMedicalHistoryList([]);
-      Toast.error("Failed to load medical history", "top");
+       Toast.error(t('medicalHistory.error'), "top");
     }
   };
 
@@ -68,15 +69,14 @@ export default function MedicalHistoryScreen() {
     try {
       const result = await deleteMedicalHistory(drizzleDB, entryId);
       if (!result) {
-        Toast.error("Failed to delete medical condition", "top");
+          Toast.error(t('medicalHistory.deleteError'), "top");
         return;
       }
 
-      Toast.success("Medical condition deleted", "top");
+      Toast.success(t('medicalHistory.successDelete'), "top");
       fetchMedicalHistory();
     } catch (error) {
-      console.error("Error deleting medical history:", error);
-      Toast.error("Failed to delete medical condition", "top");
+      Toast.error(t('medicalHistory.deleteError'), "top");
     }
   };
 
@@ -87,7 +87,7 @@ export default function MedicalHistoryScreen() {
     <View style={[styles.container, { paddingBottom: bottom }]}>
       {/* Header */}
       <View style={[styles.headerContainer, { paddingTop: top }]}>
-        <Text style={styles.header}>Medical History</Text>
+        <Text style={styles.header}>{t('medicalHistory.title')}</Text>
         <Pressable onPress={handleBack} style={styles.backButton}>
           <Ionicons
             name="arrow-back"
@@ -193,9 +193,9 @@ export default function MedicalHistoryScreen() {
                 color={theme.textLight ? theme.textLight : theme.text}
               />
             </View>
-            <Text style={styles.emptyText}>No medical conditions found</Text>
+            <Text style={styles.emptyText}>{t('medicalHistory.emptyText')}</Text>
             <Text style={styles.emptySubtext}>
-              Add conditions using the button below
+                 {t('medicalHistory.addText')}
             </Text>
           </View>
         }
@@ -370,6 +370,7 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.text,
       fontSize: 20,
       fontFamily: "Roboto-Bold",
+      textAlign: "center",
       marginBottom: 8,
     },
     emptySubtext: {

@@ -23,6 +23,7 @@ import { ThemeColors } from "@/constants/Colors";
 import { useUserData } from "@/context/UserDataContext";
 import { RefreshControl } from "react-native-gesture-handler";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { useTranslation } from "react-i18next";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -79,12 +80,13 @@ const Home = () => {
   const handleSymptom = (symptom: string) => {
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
+  const {t} = useTranslation();
 
   // ProfilesComponent - reimplemented with new UI style
   const ProfilesComponent = () => {
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Your Profiles</Text>
+        <Text style={styles.sectionTitle}>{t('homePage.ProfileSectionTitle')}</Text>
         <View style={styles.profileCards}>
           <TouchableOpacity
             style={[
@@ -96,7 +98,7 @@ const Home = () => {
             <View style={styles.profileCardIcon}>
               <Ionicons name="person-add" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>Add New Profile</Text>
+            <Text style={styles.profileCardText}>{t('homePage.ProfileCardText')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -106,7 +108,7 @@ const Home = () => {
             <View style={styles.profileCardIcon}>
               <Ionicons name="people" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>View All Profiles</Text>
+            <Text style={styles.profileCardText}>{t('homePage.ProfileViewText')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -115,14 +117,14 @@ const Home = () => {
 
   const SymptomsComponent = () => {
     const symptoms = [
-      { name: "Cough", icon: "😷", color: theme.progressColor },
-      { name: "Headache", icon: "🤕", color: theme.red },
-      { name: "Fever", icon: "🤒", color: theme.blue },
+      { name: t('homePage.cough'), icon: "😷", color: theme.progressColor },
+      { name: t('homePage.headache'), icon: "🤕", color: theme.red },
+      { name: t('homePage.fever'), icon: "🤒", color: theme.blue },
     ];
 
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>What are your symptoms?</Text>
+        <Text style={styles.sectionTitle}>{t('homePage.SymptomsSectionTitle')}</Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -145,9 +147,9 @@ const Home = () => {
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Morning";
-    if (hour < 18) return "Afternoon";
-    return "Evening";
+    if (hour < 12) return t('homePage.morning');
+    if (hour < 18) return t('homePage.afternoon');
+    return t('homePage.evening');
   };
   useEffect(() => {
 
@@ -190,7 +192,7 @@ const Home = () => {
             </View>
             <View style={styles.dateContainer}>
               <Text style={styles.dateText}>
-                {new Date().toLocaleDateString("en-US", {
+                {new Date().toLocaleDateString(t('date'), {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -206,7 +208,7 @@ const Home = () => {
         {/* Second row - greeting message */}
         <View style={styles.headerBottomRow}>
           <Text style={styles.greetingText}>
-            Good {getTimeOfDay()}, {name} 👋
+           {t('homePage.good')} {getTimeOfDay()}, {name} 👋
           </Text>
         </View>
       </View>
@@ -228,20 +230,20 @@ const Home = () => {
 
         {/* AI Chatbot Section */}
         <View style={[styles.sectionContainer, styles.lastSection]}>
-          <Text style={styles.sectionTitle}>AI Chatbot</Text>
+          <Text style={styles.sectionTitle}>{t('homePage.chatSectionTitle')} </Text>
           <View style={styles.chatbotCard}>
           
             <View style={styles.chatbotDetails}>
                 {displayCount > 0 ? (
-              <><Text style={styles.chatbotCount}>{displayCount}+</Text><Text style={styles.chatbotLabel}>Total Conversations</Text></>
+              <><Text style={styles.chatbotCount}>{displayCount}+</Text><Text style={styles.chatbotLabel}>{t('homePage.chatCountTotalChats')}</Text></>
                 )
                 : (
-                  <Text style={styles.chatbotCount}>No Conversations</Text>
+                  <Text style={styles.chatbotCount}>{t('homePage.chatCountNoChats')}</Text>
                 )}
               <View style={styles.chatbotStatusRow}>
                 <View style={styles.chatbotStatus}>
                   <View style={styles.statusDot} />
-                  <Text style={styles.statusLabel}>24 Hrs Active</Text>
+                  <Text style={styles.statusLabel}>{t('homePage.chatStatusText')}</Text>
                 </View>
               </View>
               <View style={styles.chatbotButtons}>
@@ -250,14 +252,14 @@ const Home = () => {
                   onPress={() => handleChatRouting("new")}
                 >
                   <Ionicons name="add-circle" size={18} color="white" />
-                  <Text style={styles.startChatText}>Start New Chat</Text>
+                  <Text style={styles.startChatText}>{t('homePage.chatStartText')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.startChatButton}
                   onPress={() => handleChatRouting("history")}
                 >
                   <Ionicons name="chatbubbles" size={18} color="white" />
-                  <Text style={styles.startChatText}>See All Chats</Text>
+                  <Text style={styles.startChatText}>{t('homePage.chatAllChatsText')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -270,14 +272,14 @@ const Home = () => {
 
           {/* Recent Chats */}
           <View style={styles.recentChatsContainer}>
-            <Text style={styles.recentChatsTitle}>Recent Chats</Text>
+            <Text style={styles.recentChatsTitle}>{t('homePage.chatRecentText')}</Text>
             {isLoading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={theme.progressColor} />
               </View>
             ) : error ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>Failed to load chats</Text>
+                <Text style={styles.errorText}>{t('homePage.chatErrorText')}</Text>
               </View>
             ) : chats && chats.length > 0 ? (
               chats.map((chat) => (
@@ -305,7 +307,7 @@ const Home = () => {
                 </TouchableOpacity>
               ))
             ) : (
-              <Text style={styles.noChatsText}>No recent chats</Text>
+              <Text style={styles.noChatsText}>{t('homePage.chatEmptyText')}</Text>
             )}
           </View>
         </View>
@@ -633,9 +635,10 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.textDark ? theme.textDark : theme.text,
     },
     chatbotButtons: {
-      flexDirection: "row",
+      width: "100%",
+      flexDirection: "column",
       alignItems: "center",
-      gap: 15,
+      gap: 10,
     },
 
     chatbotImageContainer: {
@@ -719,7 +722,7 @@ const getStyles = (theme: ThemeColors) =>
     startChatButton: {
       flexDirection: "row",
       alignItems: "center",
-      backgroundColor: "rgba(0,0,0,0.2)",
+      backgroundColor: theme.cardBackground,
       paddingHorizontal: 12,
       paddingVertical: 8,
       borderRadius: 20,

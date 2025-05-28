@@ -8,8 +8,11 @@ import { Credentials, useAuth0 } from 'react-native-auth0';
 import { ApiCall } from '@/utils/ApiCall';
 import { useUserData } from '@/context/UserDataContext';
 import { useToken } from '@/context/TokenContext';
+import '@/i18n';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
+
 const data = [
   {
     id: '1',
@@ -28,6 +31,7 @@ const data = [
   },
 ]
 const Page = () => {
+    const { t } = useTranslation();
   const router = useRouter();
   const { authorize, isLoading } = useAuth0();
     const { refreshData } = useUserData();
@@ -67,7 +71,7 @@ return (
     <CustomCarousel data={data} width={width} />
     <View style={styles.footer}>
       <TouchableOpacity onPress={onLogin} style={styles.loginButton}>
-        <Text> Continue to Login </Text>
+        <Text> {t('home.loginButtonText')}</Text>
         <FontAwesome6 name="arrow-right-long" size={24} color="black" />
       </TouchableOpacity>
     </View>

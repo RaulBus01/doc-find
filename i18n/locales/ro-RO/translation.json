@@ -1,0 +1,234 @@
+
+{
+  "language": "Limba",
+  "date":"ro-RO",
+  "dateToday":"Astăzi la",
+  "dateYesterday":"Ieri la",
+  "years":"ani",
+  "login": {
+     "welcomeText": "Bine ați revenit",
+     "subText": "Vă rugăm să vă conectați pentru a continua",
+     "loginButtonText": "Conectare cu Auth0",
+     "newUserText": "Ești nou ? Vedeți ce oferim"
+  },
+  "loading": {
+    "loadingText": "Încărcare...",
+    "loadingErrorText": "Eroare la încărcarea datelor"
+  },
+   "home":{
+    "titleFirst":"Primul element",
+    "titleSecond":"Al doilea element",
+    "titleThird":"Al treilea element",
+    "loginButtonText":"Continuați spre autentificare"
+  },
+  "gender":{
+    "Male": "Masculin",
+    "Female": "Feminin"
+  },
+  "homePage":{
+    "ProfileSectionTitle":"Profilele tale",
+    "ProfileCardText":"Adăugați un nou profil",
+    "ProfileViewText":"Vizualizați profilele",
+    "SymptomsSectionTitle":"Care sunt simptomele tale?",
+    "cough":"Tuse",
+    "fever":"Febră",
+    "headache":"Dureri de cap",
+    "morning":"Dimineața",
+    "afternoon":"După-amiaza",
+    "evening":"Seara",
+    "good":"Bună",
+    "chatSectionTitle":"Chatbot AI",
+     "chatCountNoChats":"Nu sunt conversații",
+     "chatCountTotalChats":"Conversații totale",
+     "chatStatusText":"24/7 disponibil",
+     "chatStartText":"Începeți o conversație",
+     "chatAllChatsText":"Toate conversațiile",
+     "chatRecentText":"Conversații recente",
+     "chatErrorText":"Eroare la încărcarea conversațiilor",
+      "chatEmptyText":"Nu există conversații disponibile"
+  },
+  "tabbar": {
+    "home": "Acasă",
+    "map": "Hartă",
+    "chat": "Chat",
+    "account": "Cont"
+  }
+  ,
+  "account":{
+    "sectionTitle":"Contul tău",
+    "emailText":"Email",
+    "passwordText":"Parolă",
+    "passwordSubText":"Modificați parola",
+    "profileText":"Profile Medicale",
+    "profileSubText":"Organizați-vă profilele medicale",
+    "preferencesText":"Preferințe",
+    "darkModeText":"Mod întunecat",
+    "darkModeSubText":"Activați modul întunecat",
+    "languageText":"Limbă",
+    "languageSubText":"Modificați limba aplicației",
+    "aboutText":"Despre",
+    "aboutSubText":"Informații despre aplicație",
+    "termsText":"Termeni și condiții",
+    "termsSubText":"Citiți termenii și condițiile",
+    "logoutText":"Deconectare"
+  },
+   "chat":{
+    "chatHeaderTitle":"Asistent AI",
+    "chatProfileActiveTitle":"Profil activ",
+    "chatProfileInactiveTitle":"Profil inactiv",
+    "chatContextTitle":"Datele Profilului",
+    "chatContextSubTitle":"Folosiți datele profilului",
+    "chatContextSubTitle1":"Alegeți un profil pentru  a îmbunătăți răspunsurile",
+    "chatContextSubTitle2":"Folosiți datele profilului pentru a îmbunătăți răspunsurile",
+    "chatContextDisabledText":"Fara date de profil, AI va oferi răspunsuri generale.",
+    "chatCreateText":"Creează un nou profil",
+    "chatNoProfileText":"Nu există profiluri disponibile",
+    "chatMessageInputPlaceholder":"Scrieți un mesaj...",
+     "welcomeMessages": [
+      "Salut! Sunt DocFind, asistentul tău virtual de sănătate. Te rog să îmi spui simptomele tale și te voi ajuta să identifici potențialele afecțiunile . Dacă ai nevoie de asistență imediată, pot găsi și servicii de urgență în apropiere.",
+      "Salutări de la DocFind. Te rog să îmi descrii simptomele tale și îți voi oferi o listă de boli posibile. Pentru situații urgente, te pot îndrepta către unități de îngrijire de urgență din zona ta.",
+      "Bine ai venit la DocFind, resursa ta de sănătate. Împărtășește simptomele tale și îți voi sugera diagnostice potențiale. Dacă ai nevoie de asistență imediată, pot găsi servicii de urgență aproape de locația ta.",
+      "DocFind este aici să te sprijine. Oferă detalii despre simptomele tale și le voi analiza pentru afecțiuni posibile. Dacă situația este critică, pot identifica opțiuni de tratament de urgență din apropiere.",
+      "Bine ai venit la DocFind. Sunt echipat să te ajut să îți interpretezi simptomele și să explorezi boli potențiale. În caz de urgență, pot asista și prin localizarea unităților medicale din apropiere."
+    ]
+
+  },
+  "chatHistory":{
+    "chatHistoryTitle":"Istoricul conversațiilor",
+    "chatHistoryEmptyText":"Nu există conversații disponibile",
+    "chatStartText":"Începeți o conversație",
+    "chatDeleteText":"Ștergeți conversația",
+    "chatDeleteConfirmText":"Sigur doriți să ștergeți această conversație?",
+    "chatDeleteConfirmButtonText":"Ștergeți",
+    "chatDeleteCancelButtonText":"Anulați"
+  },
+  "profile":{
+    "profileLoadingText":"Încărcare profil...",
+    "profileHeaderTitle":"Detalii profil",
+    "profileEditText":"Editează profilul",
+    "profileHealthIndicationsTitle":"Indicatori de Sănătate",
+    "profileMedicationsTitle":"Medicamente",
+    "profileAllergiesTitle":"Alergii",
+    "profileMedicalHistoryTitle":"Istoric Medical",
+    "profileCreated":"Creat",
+    "profileLastUpdated":"Ultima actualizare"
+
+  },
+  "profileHistory":{
+    "profileHeaderTitle":"Profilele tale",
+    "profileSubHeaderTitle":"Organizați-vă profilele medicale",
+    "profileNoProfileText":"Nu există profiluri disponibile",
+    "profileAddText":"Adăugați un nou profil medical",
+    "profileCreateButtonText":"Creează un profil"
+    
+  },
+  "profileNew":{
+    "profileHeaderTitle":"Creează un nou profil",
+    "profileNameTitle":"Care este numele tău?",
+    "profileNamePlaceholder":"Introduceți numele",
+    "profileAgeText":"Vârstă",
+    "profileAgePlaceholder":"Introduceți anul nașterii",
+    "profileBirthYearTitle":"În ce an s-a născut ",
+    "profileGenderMale":"Masculin",
+    "profileGenderFemale":"Feminin",
+    "profileGenderPlaceholder":"Selectați genul",
+    "profileSmokerTitle":"este fumător",
+    "profileHypertensionTitle":"are hipertensiune arterială",
+    "profileDiabetesTitle":"are diabet",
+    "profileSaveButtonText":"Salvați profilul",
+    "profileCancelButtonText":"Anulați",
+    "profileStep":"Pas",
+    "profileStepOf":"din",
+    "profileButtonNext":"Următorul",
+    "profileButtonBack":"Înapoi",
+    "profileButtonSave":"Salvați",
+    "profileSummaryTitle":"Rezumat profil",
+    "profileSummaryName":"Nume:",
+    "profileSummaryGender":"Gen:",
+    "profileSummarySmoker":"Fumător:",
+    "profileSummaryHypertension":"Hipertensiune arterială:",
+    "profileSummaryDiabetes":"Diabet:",
+    "profileSummaryBirthYear":"Anul nașterii:"
+  },
+  "editProfile":{
+    "headerTitle": "Editează profilul",
+    "personalTitle": "Informații personale",
+    "nameTitle": "Nume",
+    "genderTitle": "Gen",
+    "birthYear": "Anul nașterii",
+    "selectBirthYear": "Selectați anul nașterii",
+    "healthIndicatorsTitle": "Indicatori de sănătate",
+    "smokeTitle": "Este fumător?",
+    "hypertensionTitle": "Are hipertensiune arterială?",
+    "diabetesTitle": "Are diabet?",
+    "saveTitle": "Salvează profilul"
+  },
+  "allergies":{
+    "error": "Eroare la încărcarea alergiilor",
+    "warning": "Introduceți o alergie",
+    "errorAdd": "Eroare la adăugarea alergiei",
+    "warningExists": "Alergia există deja",
+    "successAdd": "Alergia a fost adăugată",
+    "deleteError": "Eroare la ștergerea alergiei",
+    "successDelete": "Alergia a fost ștearsă",
+    "title": "Alergii",
+    "emptyText": "Nu există alergii adăugate",
+    "addText": "Adăugați o alergie folosind formularul de mai jos",
+    "tapToSelect": "Atingeți pentru a selecta o alergie",
+    "allergyName": "Numele alergiei",
+    "severityText":"Reacție severă",
+    "addButtonText": "Adăugați alergia"
+  },
+  "medications":{
+    "error": "Eroare la încărcarea medicamentelor",
+    "warning": "Introduceți un medicament",
+    "errorAdd": "Eroare la adăugarea medicamentului",
+    "warningExists": "Medicamentul există deja",
+    "successAdd": "Medicamentul a fost adăugat",
+    "deleteError": "Eroare la ștergerea medicamentului",
+    "successDelete": "Medicamentul a fost ștearsă",
+    "title": "Medicamente",
+    "emptyText": "Nu există medicamente adăugate",
+    "addText": "Adăugați un medicament folosind formularul de mai jos",
+    "tapToSelect": "Atingeți pentru a selecta un medicament",
+    "medicationName": "Numele medicamentului",
+    "dosageText":"Administrat zilnic",
+    "addButtonText": "Adăugați medicamentul"
+  },
+  "medicalHistory":{
+    "error": "Eroare la încărcarea istoricului medical",
+    "warning": "Introduceți un istoric medical",
+    "errorAdd": "Eroare la adăugarea istoricului medical",
+    "warningExists": "Istoricul medical există deja",
+    "successAdd": "Istoricul medical a fost adăugat",
+    "deleteError": "Eroare la ștergerea istoricului medical",
+    "successDelete": "Istoricul medical a fost șters",
+    "title": "Istoric Medical",
+    "editTitle": "Editează Istoricul Medical",
+    "emptyText": "Nu există istoric medical adăugat",
+    "addText": "Adăugați un istoric medical folosind butonul de mai jos",
+    "conditionDetails": "Detalii despre afecțiune",
+    "conditionPlaceholder": "Condiție (ex: astm, diabet)",
+    "selectYear": "Selectați anul",
+    "diagnosisYear": "Anul diagnosticării",
+    "treatmentDetails": "Detalii despre tratament",
+    "medicinesDetails": "Tratament (opțional)",
+    "additionalNotes": "Note suplimentare (opțional)",
+    "currentStatus": "Stare actuală",
+    "saveButtonText": "Salvați istoricul medical"
+  },
+    "healthIndicators": {
+    "diabetic": "Diabetic",
+    "hypertensive": "Hipertensiv",
+    "smoker": "Fumător"
+  },
+  "healthIndicatorValues": {
+    "Yes": "Da",
+    "No": "Nu", 
+    "I don't know": "Nu știu",
+    "I used to": "A fost"
+  }
+  
+
+
+}

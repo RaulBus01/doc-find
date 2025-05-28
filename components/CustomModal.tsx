@@ -1,6 +1,7 @@
 import { ThemeColors } from '@/constants/Colors';
 import { useTheme } from '@/context/ThemeContext';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
@@ -17,6 +18,7 @@ interface CustomModalProps {
 const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible, modalMessage,modalTitle,onConfirmed }) => {
    const { theme } = useTheme();
     const styles = getStyles(theme);
+  const { t } = useTranslation();
   if (!modalVisible) return null;
   return (
     <SafeAreaProvider>
@@ -40,7 +42,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible
               <TouchableOpacity
                 style={[styles.button, styles.buttonClose]}
                 onPress={() => setModalVisible(!modalVisible)}>
-                <Text style={styles.textStyle}>Cancel </Text>
+                <Text style={styles.textStyle}>{t('chatHistory.chatDeleteCancelButtonText')}</Text>
 
               </TouchableOpacity>
               <TouchableOpacity
@@ -49,7 +51,7 @@ const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible
                   setModalVisible(!modalVisible);
                   if (onConfirmed) onConfirmed();
                 }}>
-                <Text style={styles.textStyle}>Confirm</Text>
+                <Text style={styles.textStyle}>{t('chatHistory.chatDeleteConfirmButtonText')}</Text>
               </TouchableOpacity>
               </View>
             </View>

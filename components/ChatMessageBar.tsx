@@ -22,6 +22,7 @@ import {MessageBarStyles} from "@/components/ChatMessageBarStyle";
 import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { useTranslation } from "react-i18next";
 
 
 const ATouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
@@ -206,6 +207,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
     collapseItems();
     onModalPress();
   };
+  const {t} = useTranslation();
 
   
 
@@ -229,7 +231,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
           <Animated.Text style={styles.collapsedText}>
             {message.length > 0 
     ? message.replace(/\s+/g, ' ').trim().slice(0, 20) + (message.replace(/\s+/g, ' ').trim().length > 20 ? "..." : "")
-    : "Type a message..."}
+    : t('chat.chatMessageInputPlaceholder')}
           </Animated.Text>
            {isStreaming && (
                 <TouchableOpacity onPress={onAbortStream} style={styles.iconButton}>
@@ -247,7 +249,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
             <TextInput
               ref={inputRef}
               textAlignVertical="top"
-              placeholder="Type your symptoms here..."
+              placeholder={t('chat.chatMessageInputPlaceholder')}
               placeholderTextColor={theme.text}
               multiline
               numberOfLines={10}
@@ -255,6 +257,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
               selectionColor={theme.red}
               onChangeText={onChangeText}
               onFocus={onInputFocus}
+              
               style={[
                 styles.messageInput]}
             />

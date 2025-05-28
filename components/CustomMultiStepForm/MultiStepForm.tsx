@@ -5,6 +5,7 @@ import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 
 import { FontAwesome6, Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native-gesture-handler';
 import { ThemeColors } from '@/constants/Colors';
+import { useTranslation } from 'react-i18next';
 
 
 interface Step {
@@ -33,6 +34,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
   const styles = getStyles(theme);
   const progressAnimated = useSharedValue(0);
   const contentOpacity = useSharedValue(1);
+  const { t } = useTranslation();
 
   useEffect(() => {
     progressAnimated.value = withSpring((currentStep + 1) / steps.length, {
@@ -85,7 +87,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
           <Animated.View style={[styles.progressFill, animatedStyle]} />
         </View>
         <Text style={styles.stepIndicator}>
-          Step {currentStep + 1} of {steps.length}
+          {t('profileNew.profileStep')} {currentStep + 1} {t('profileNew.profileStepOf')} {steps.length}
         </Text>
       </View>
 
@@ -96,7 +98,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
           disabled={currentStep === 0}
         >
           <Ionicons name="chevron-up-circle" size={24} color={theme.text} />
-          <Text style={styles.buttonText}>Back</Text>
+          <Text style={styles.buttonText}>{t('profileNew.profileButtonBack')}</Text>
         </Pressable>
       </View>
 
@@ -114,7 +116,7 @@ export const MultiStepForm: React.FC<MultiStepFormProps> = ({
           onPress={handleNext}
         >
           <Text style={styles.buttonText}>
-            {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+            {currentStep === steps.length - 1 ? t('profileNew.profileButtonSave') : t('profileNew.profileButtonNext')}
           </Text>
           <FontAwesome6 name="arrow-right-long" size={24} color={theme.text} />
         </Pressable>

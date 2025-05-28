@@ -13,12 +13,14 @@ import CustomInput from "@/components/CustomInput/CustomInput";
 import  { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileAllergies,getAllergiesSuggestions,deleteAllergy, getExistingAllergiesByName, getExistingAllergiesById, insertAllergy } from "@/utils/LocalDatabase";
+import { useTranslation } from "react-i18next";
 
 export default function AllergiesScreen() {
   const { id } = useLocalSearchParams();
   const { theme } = useTheme();
   const drizzleDB = useDatabase();
   const router = useRouter();
+  const {t} = useTranslation();
   
   const nameInputRef = React.useRef<TextInput>(null);
 
@@ -31,7 +33,7 @@ export default function AllergiesScreen() {
   const fetchProfileAllergies = async () => {
     try {
       if (!id) {
-        Toast.error("Missing profile ID", "top");
+        Toast.error(t('allergies.error'), "top");
         return;
       }
       
@@ -39,7 +41,7 @@ export default function AllergiesScreen() {
       setProfileAllergiesList(result || []);
     } catch (error) {
       setProfileAllergiesList([]);
-      Toast.error("Failed to load allergies", "top");
+        Toast.error(t('allergies.error'), "top");
     }
   };
   
@@ -63,7 +65,7 @@ export default function AllergiesScreen() {
       setShowSuggestions(results.length > 0);
     }
     catch (error) {
-      console.error("Error searching allergies:", error);
+      Toast.error(t('allergies.error'), "top");
       setSuggestedAllergies([]);
       setShowSuggestions(false);
     }
@@ -88,7 +90,7 @@ export default function AllergiesScreen() {
   
   const handleAddAllergy = async () => {
     if (!allergyName.trim()) {
-      Toast.warn("Please enter an allergy name", "top");
+      Toast.warn(t('allergies.warning'), "top");
       return;
     }
     
@@ -103,7 +105,7 @@ export default function AllergiesScreen() {
         // Create new allergy if it doesn't exist
         const insertResult = await insertAllergy(drizzleDB, allergyName.trim());
         if (!insertResult) {
-          Toast.error("Failed to add allergy", "top");
+              Toast.error(t('allergies.errorAdd'), "top");
           return;
         }
         allergyId = insertResult.id;
@@ -115,7 +117,7 @@ export default function AllergiesScreen() {
       const existingProfileAllergy =  await getExistingAllergiesById(drizzleDB, parseInt(id as string, 10), allergyId);
         
       if (existingProfileAllergy) {
-        Toast.warn("Allergy already exists in profile", 'top');
+        Toast.error(t('allergies.warningExists'), "top");
         return;
       }
       
@@ -130,14 +132,14 @@ export default function AllergiesScreen() {
         })
         .execute();
       
-      Toast.success("Allergy added successfully", "top");
+      Toast.success(t('allergies.successAdd'), "top");
       setAllergyName("");
       setIsSevere(false);
       fetchProfileAllergies();
       
     } catch (error) {
       console.error("Error adding allergy:", error);
-      Toast.error("Failed to add allergy", "top");
+      Toast.error(t('allergies.errorAdd'), "top");
     }
   };
 
@@ -145,15 +147,15 @@ export default function AllergiesScreen() {
     try {
       const result = await deleteAllergy(drizzleDB, parseInt(id as string, 10), allergyId);
       if (!result) {
-        Toast.error("Failed to delete allergy", "top");
+         Toast.error(t('allergies.deleteError'), "top");
         return;
       }
-      Toast.success("Allergy deleted successfully", "top");
+       Toast.success(t('allergies.successDelete'), "top");
       fetchProfileAllergies();
     }
     catch (error) {
       console.error("Error deleting allergy:", error);
-      Toast.error("Failed to delete allergy", "top");
+      Toast.error(t('allergies.deleteError'), "top");
     }
   }
 
@@ -164,7 +166,7 @@ export default function AllergiesScreen() {
    <View style={[styles.container, { paddingBottom: bottom }]}>
         {/* Header */}
         <View style={[styles.headerContainer, { paddingTop: top }]}>
-          <Text style={styles.header}>Medical History</Text>
+          <Text style={styles.header}>{t('allergies.title')}</Text>
           <Pressable onPress={handleBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color={theme.textLight ? theme.textLight : theme.text} />
           </Pressable>
@@ -198,8 +200,8 @@ export default function AllergiesScreen() {
             <View style={styles.emptyIconContainer}>
               <MaterialCommunityIcons name="allergy" size={40} color="#fff" />
             </View>
-            <Text style={styles.emptyText}>No allergies found</Text>
-            <Text style={styles.emptySubtext}>Add allergies using the form below</Text>
+            <Text style={styles.emptyText}>{t('allergies.emptyText')}</Text>
+            <Text style={styles.emptySubtext}>{t('allergies.addText')}</Text>
           </View>
         }
       />
@@ -212,7 +214,7 @@ export default function AllergiesScreen() {
             exiting={FadeOut.duration(200)}
             style={styles.suggestionsContainer}
           >
-            <Text style={styles.suggestionHelpText}>Tap to select an allergy</Text>
+            <Text style={styles.suggestionHelpText}>{t('allergies.tapToSelect')}</Text>
             {suggestedAllergies.map((allergy) => (
               <TouchableOpacity
                 key={allergy.id}
@@ -227,7 +229,7 @@ export default function AllergiesScreen() {
         
         <View style={styles.inputRow}>
           <CustomInput
-            placeholder="Allergy name"
+            placeholder={t('allergies.allergyName')}
             value={allergyName}
             onChangeText={searchAllergies}
             onInputFocus={() => {
@@ -246,7 +248,7 @@ export default function AllergiesScreen() {
         <View style={styles.severityRow}>
           <View style={styles.severityTextContainer}>
             <MaterialCommunityIcons name="hospital-box-outline" size={24} color={theme.text} />
-            <Text style={styles.severityText}>Severe reaction?</Text>
+            <Text style={styles.severityText}>{t('allergies.severityText')} ?</Text>
           </View>
           <Switch
             value={isSevere}
@@ -261,7 +263,7 @@ export default function AllergiesScreen() {
           onPress={handleAddAllergy}
         >
           <Ionicons name="add" size={22} color={theme.textLight ? theme.textLight : theme.text} />
-          <Text style={styles.addButtonText}>Add Allergy</Text>
+          <Text style={styles.addButtonText}>{t('allergies.addButtonText')}</Text>
         </Pressable>
       </View>
     </View>
@@ -360,6 +362,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   emptyText: {
     color: theme.text,
     fontSize: 20,
+     textAlign: "center",
     fontFamily: "Roboto-Bold",
     marginBottom: 8,
   },

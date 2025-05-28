@@ -22,10 +22,11 @@ import CustomBottomSheetModal, {
   Ref,
 } from "@/components/CustomBottomSheetModal";
 import { formatDate } from "@/utils/Date";
-import { healthIndicatorConfig } from "@/utils/HealthIndicatorInterface";
+import { getHealthIndicatorLabel, healthIndicatorConfig,genderValueKeys,getGenderValue } from "@/utils/HealthIndicatorInterface";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
 import { deleteProfile, getProfileHealthIndicators, getProfiles } from "@/utils/LocalDatabase";
+import { useTranslation } from "react-i18next";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -41,6 +42,7 @@ const HistoryProfile = () => {
     null
   );
   const {userId} = useUserData();
+  const {t} = useTranslation();
 
  
 
@@ -113,9 +115,9 @@ const HistoryProfile = () => {
   
       <View style={[styles.header, { paddingTop: top + 10 }]}>
         <View>
-          <Text style={styles.headerTitle}>Profiles</Text>
+          <Text style={styles.headerTitle}>{t('profileHistory.profileHeaderTitle')}</Text>
           <Text style={styles.headerSubtitle}>
-            Manage your health profiles
+            {t('profileHistory.profileSubHeaderTitle')}
           </Text>
         </View>
         <TouchableOpacity style={styles.addButton} onPress={handleAddProfile}>
@@ -148,19 +150,20 @@ const HistoryProfile = () => {
                 size={60}
                 color={theme.text}
               />
-              <Text style={styles.emptyText}>No profiles found</Text>
+              <Text style={styles.emptyText}>{t('profileHistory.profileNoProfileText')}</Text>
               <Text style={styles.emptySubtext}>
-                Create a profile to get started
+               {t('profileHistory.profileAddText')}
               </Text>
               <TouchableOpacity
                 style={styles.createButton}
                 onPress={handleAddProfile}
               >
-                <Text style={styles.createButtonText}>Create Profile</Text>
+                <Text style={styles.createButtonText}>{t('profileHistory.profileCreateButtonText')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
             profilesData.map((profile) => (
+            
               <View style={styles.profileCardWrapper} key={profile.id}>
                 <TouchableOpacity
                   style={styles.profileTouchable}
@@ -190,7 +193,10 @@ const HistoryProfile = () => {
                               color={theme.text}
                             />
                             <Text style={styles.profileMetaText}>
-                              {profile.gender}
+                              {
+                                getGenderValue(profile.gender as keyof typeof genderValueKeys,t)
+
+                                }
                             </Text>
                           </View>
                           <View style={styles.metaSeparator} />
@@ -201,7 +207,7 @@ const HistoryProfile = () => {
                               color={theme.text}
                             />
                             <Text style={styles.profileMetaText}>
-                              {profile.age} years
+                              {profile.age} {t('years')}
                             </Text>
                           </View>
                         </View>
@@ -240,7 +246,8 @@ const HistoryProfile = () => {
                                 color={theme.text}
                               />
                               <Text style={styles.indicatorText}>
-                                {config.label}
+                                {getHealthIndicatorLabel(
+                                  key as keyof typeof healthIndicatorConfig,t)} 
                               </Text>
                               </View>
                           )
@@ -257,6 +264,7 @@ const HistoryProfile = () => {
                         />
                         <Text style={styles.lastUpdatedText}>
                           {formatDate(
+                            t,
                             new Date(profile.updated_at).toISOString()
                           )}
                         </Text>
@@ -334,6 +342,7 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.text,
       fontSize: 20,
       fontFamily: "Roboto-Bold",
+      textAlign: "center",
       marginTop: 20,
     },
     emptySubtext: {
@@ -341,12 +350,13 @@ const getStyles = (theme: ThemeColors) =>
       fontSize: 14,
       opacity: 0.8,
       marginTop: 8,
+      textAlign: "center",
       marginBottom: 20,
     },
     createButton: {
       paddingVertical: 12,
       paddingHorizontal: 24,
-      backgroundColor: theme.profileActionBackground,
+      backgroundColor: theme.progressColor,
       borderRadius: 25,
       marginTop: 10,
     },

@@ -23,6 +23,7 @@ import { secureGetValueFor } from "@/utils/SecureStorage";
 import { Switch } from "react-native-gesture-handler";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
+import { useTranslation } from "react-i18next";
 
 const BOTTOM_TAB_HEIGHT = 80;
 
@@ -62,12 +63,14 @@ export default function Account() {
     try {
       await clearSession();
       await clearToken();
-      await clearUserData(); // Make sure this has await
+      await clearUserData();
       router.replace("/login");
     } catch (e) {
       console.error("Error during logout:", e);
     }
   };
+
+  const {t} = useTranslation();
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -104,7 +107,7 @@ export default function Account() {
         >
           {/* Account Settings */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Account</Text>
+            <Text style={styles.sectionTitle}>{t('account.sectionTitle')}</Text>
             
             <View style={styles.optionCard}>
               <Pressable 
@@ -116,7 +119,7 @@ export default function Account() {
                   <Ionicons name="mail" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>E-mail</Text>
+                  <Text style={styles.optionTitle}>{t('account.emailText')}</Text>
                   <Text style={styles.optionSubtitle}>{user?.email}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
@@ -133,8 +136,8 @@ export default function Account() {
                   <Ionicons name="lock-closed" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>Password</Text>
-                  <Text style={styles.optionSubtitle}>Change your password</Text>
+                  <Text style={styles.optionTitle}>{t('account.passwordText')}</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.passwordSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -150,8 +153,8 @@ export default function Account() {
                   <FontAwesome5 name="user-friends" size={18} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>Health Profiles</Text>
-                  <Text style={styles.optionSubtitle}>Manage your health profiles</Text>
+                  <Text style={styles.optionTitle}>{t('account.profileText')}</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.profileSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable> 
@@ -160,7 +163,7 @@ export default function Account() {
           
           {/* Preferences */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Preferences</Text>
+            <Text style={styles.sectionTitle}>{t('account.preferencesText')}</Text>
             
             <View style={styles.optionCard}>
               <Pressable 
@@ -172,8 +175,8 @@ export default function Account() {
                   <Ionicons name="notifications" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>Notifications</Text>
-                  <Text style={styles.optionSubtitle}>Manage your notifications</Text>
+                  <Text style={styles.optionTitle}>{t('account.languageText')}</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.languageSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -189,9 +192,9 @@ export default function Account() {
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={styles.optionTitle}>
-                    Dark Mode
+                    {t('account.darkModeText')}
                   </Text>
-                  <Text style={styles.optionSubtitle}>Toggle appearance theme</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.darkModeSubText')}</Text>
                 </View>
                 <Switch
                   value={isDark}
@@ -207,7 +210,7 @@ export default function Account() {
           
           {/* About */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About</Text>
+            <Text style={styles.sectionTitle}> {t('account.aboutText')}</Text>
             
             <View style={styles.optionCard}>
               <Pressable 
@@ -219,8 +222,8 @@ export default function Account() {
                   <Ionicons name="information-circle" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>About</Text>
-                  <Text style={styles.optionSubtitle}>Learn more about the app</Text>
+                  <Text style={styles.optionTitle}>{t('account.aboutText')}</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.aboutSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -236,8 +239,8 @@ export default function Account() {
                   <Ionicons name="document-text" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>Terms of Use</Text>
-                  <Text style={styles.optionSubtitle}>Read our terms of use</Text>
+                  <Text style={styles.optionTitle}>{t('account.termsText')}</Text>
+                  <Text style={styles.optionSubtitle}>{t('account.termsSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -254,7 +257,7 @@ export default function Account() {
             android_ripple={{ color: theme.pressedBackground }}
           >
             <Ionicons name="log-out" size={18} color="#fff" />
-            <Text style={styles.logoutText}>Log Out</Text>
+            <Text style={styles.logoutText}>{t('account.logoutText')}</Text>
           </Pressable>
           
         
