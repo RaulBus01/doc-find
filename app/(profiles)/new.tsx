@@ -21,10 +21,10 @@ import  {
 } from '@gorhom/bottom-sheet';
 
 import { addProfile } from "@/utils/LocalDatabase";
-import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+
 import { useTranslation } from "react-i18next";
 import { getHealthIndicatorValue,getGenderValue,  genderValueKeys } from '@/utils/HealthIndicatorInterface'; 
-
+import YearPickerBottomSheet from "@/components/modals/Years";
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -309,16 +309,14 @@ const getChoiceStyle = (choice: string) => {
       />
 
     
-      <CustomBottomSheetModal
+      <YearPickerBottomSheet
         ref={bottomSheetModalRef}
         index={1}
         onSelectYear={(year: number) => {
           setFormData((prev) => ({ ...prev, birthYear: year }));
           bottomSheetModalRef.current?.dismiss();
         }}
-        type="years"
         />
-
     </View>
   );
 };

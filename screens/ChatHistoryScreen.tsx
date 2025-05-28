@@ -10,12 +10,10 @@ import {
   FlatList,
   StyleSheet,
   TouchableOpacity,
-  RefreshControl,
+
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import CustomBottomSheetModal, {
-  Ref,
-} from "../components/CustomBottomSheetModal";
+
 import { useFocusEffect, useRouter } from "expo-router";
 import CustomModal from "@/components/CustomModal";
 import { useTheme } from "@/context/ThemeContext";
@@ -23,12 +21,15 @@ import { Ionicons } from "@expo/vector-icons";
 import { ThemeColors } from "@/constants/Colors";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
+import OptionsBottomSheet from "@/components/modals/Options";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
   const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const { token, isLoading, error } = useToken();
+  type Ref = BottomSheetModal;
   const bottomSheetModalRef = useRef<Ref>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
@@ -106,12 +107,11 @@ const ChatHistoryScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <CustomBottomSheetModal
+      <OptionsBottomSheet
         index={1}
         onDelete={handleDeleteChat}
         onEdit={handleEditChat}
         ref={bottomSheetModalRef}
-        type="more"
       />
 
       {chatHistory.length > 0 ? (

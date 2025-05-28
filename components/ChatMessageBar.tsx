@@ -77,6 +77,18 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
     }
   };
 
+  const handleClearText = () => {
+    setMessage("");
+    inputRef.current?.focus();
+  }
+
+  const openModal = () => {
+    onModalPress();
+    setIsFocused(false);
+    setIsTabBarVisible(true);
+    Keyboard.dismiss();
+  }
+
   return (
     <View style={[styles.container]}>
       {/* Message bar that changes size based on focus */}
@@ -90,7 +102,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
           <Ionicons name="chatbubble-outline" size={22} color={theme.text} />
           <TextInput
               ref={inputRef}
-              textAlignVertical={isFocused ? "top" : "center"}
+              textAlignVertical="center"
               placeholder={t('chat.chatMessageInputPlaceholder')}
               placeholderTextColor={theme.text}
               multiline={isFocused}
@@ -108,6 +120,11 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
               editable={true}
               pointerEvents={isFocused ? "auto" : "none"}
             />
+            {isFocused && message.trim().length > 0 && (
+            <TouchableOpacity onPress={handleClearText} style={styles.clearButton}>
+              <Ionicons name="close-circle" size={20} color={theme.text} />
+            </TouchableOpacity>
+          )}
            {isStreaming ? (
           <TouchableOpacity onPress={onAbortStream} style={styles.iconButton}>
             <Ionicons name="stop-circle-outline" size={24} color={theme.text} />

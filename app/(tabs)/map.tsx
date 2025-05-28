@@ -1,9 +1,7 @@
 import React, {
-  act,
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -12,12 +10,9 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
-  Image,
-  Text,
 } from "react-native";
 import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
-import { useNavigation } from "@react-navigation/native";
 import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Colors, ThemeColors } from "@/constants/Colors";
 import CustomSearchBar from "@/components/searchBar/searchBar";
@@ -26,19 +21,17 @@ import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
   secureGetValueFor,
-  secureSave,
+
   secureSaveObject,
 } from "@/utils/SecureStorage";
 import { fetchNearbyPlaces } from "@/utils/MapsDetails";
 import { GooglePlaceDetails, MapsTypes } from "@/interface/Interface";
 import {
-  BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetScrollView,
-  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
-import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+import PlaceDetailsBottomSheet from "@/components/modals/PlaceDetails";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -291,13 +284,13 @@ export default function Map() {
 
       <CustomSearchBar onSearch={handleSearch} />
 
-      <CustomBottomSheetModal ref={bottomSheetModalRef} type="placeDetails">
+      <PlaceDetailsBottomSheet ref={bottomSheetModalRef}>
         {({ data }) => (
           <BottomSheetScrollView style={{ padding: 20 }}>
             <PlaceDetails data={data} theme={theme} />
           </BottomSheetScrollView>
         )}
-      </CustomBottomSheetModal>
+      </PlaceDetailsBottomSheet>
     </View>
   );
 }

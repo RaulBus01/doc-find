@@ -6,10 +6,9 @@ import {
   Pressable,
   TextInput,
   ScrollView,
-  KeyboardAvoidingView,
-  Platform,
+
 } from "react-native";
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useRef } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
 import {
   SafeAreaView,
@@ -17,7 +16,6 @@ import {
 } from "react-native-safe-area-context";
 import {
   Ionicons,
-  MaterialIcons,
   FontAwesome5,
   FontAwesome,
 } from "@expo/vector-icons";
@@ -25,17 +23,16 @@ import { ThemeColors } from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
 import CustomInput from "@/components/CustomInput/CustomInput";
 import { getStatusColor } from "@/utils/utilsFunctions";
-import { medicalHistory, MedicalHistoryEntryInput } from "@/database/schema";
+import {  MedicalHistoryEntryInput } from "@/database/schema";
 import { Toast } from "toastify-react-native";
 import { useDatabase } from "@/hooks/useDatabase";
 import { addProfileMedicalHistory } from "@/utils/LocalDatabase";
 import {
-  BottomSheetBackdrop,
-  BottomSheetFlatList,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+
 import { useTranslation } from "react-i18next";
+import YearPickerBottomSheet from "@/components/modals/Years";
 
 const AddMedicalHistoryPage = () => {
   const { id } = useLocalSearchParams();
@@ -284,7 +281,7 @@ const AddMedicalHistoryPage = () => {
         </TouchableOpacity>
       </View>
 
-      <CustomBottomSheetModal
+      <YearPickerBottomSheet
         ref={bottomSheetModalRef}
         index={1}
        onSelectYear={(year: number) => {
@@ -294,7 +291,6 @@ const AddMedicalHistoryPage = () => {
       }));
           bottomSheetModalRef.current?.dismiss();
         }}
-        type="years"
         />
 
     </SafeAreaView>

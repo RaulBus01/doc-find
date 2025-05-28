@@ -17,8 +17,8 @@ import CustomInput from "@/components/CustomInput/CustomInput";
 import { getStatusColor } from "@/utils/utilsFunctions";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
 import { useTranslation } from "react-i18next";
+import YearPickerBottomSheet from "@/components/modals/Years";
 
 const EditMedicalPage = () => {
   const { id, profileId } = useLocalSearchParams();
@@ -314,14 +314,13 @@ const [originalData, setOriginalData] = useState<MedicalHistoryEntryInput | null
         </TouchableOpacity>
       </View>
       
-      <CustomBottomSheetModal
+      <YearPickerBottomSheet
         ref={bottomSheetModalRef}
         index={1}
         onSelectYear={(year: number) => {
           setFormData((prev) => ({ ...prev, diagnosis_date: year.toString() }));
           bottomSheetModalRef.current?.dismiss();
         }}
-        type="years"
       />
 
     </SafeAreaView>

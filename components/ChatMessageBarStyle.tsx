@@ -5,11 +5,13 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
   StyleSheet.create({
     container: {
     paddingBottom: bottom,
-    backgroundColor: theme.background,
+    backgroundColor: "transparent",
+
     },
     contentView: {
     flexDirection: 'row',
     alignItems: 'flex-end',
+    backgroundColor:"transparent",
     },
     collapsedBar: {
       flexDirection: "row",
@@ -101,11 +103,10 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
       alignItems: "center",
       marginRight: 10,
     },
-    toolbarContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
+      clearButton: {
+    padding: 4,
+    marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   });

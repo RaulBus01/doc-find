@@ -18,17 +18,16 @@ import {
 } from "@/utils/LocalDatabase";
 import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import CustomBottomSheetModal from "@/components/CustomBottomSheetModal";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
 import { 
-  healthIndicatorConfig, 
   getHealthIndicatorLabel, 
   getHealthIndicatorValue,
   healthIndicatorValueKeys,
   getGenderValue,
   genderValueKeys
 } from "@/utils/HealthIndicatorInterface";
+import YearPickerBottomSheet from "@/components/modals/Years";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();
@@ -399,14 +398,13 @@ const EditProfilePage = () => {
       </View>
       
       {/* Bottom Sheet for Year Selection */}
-      <CustomBottomSheetModal
+      <YearPickerBottomSheet
         ref={bottomSheetModalRef}
         index={1}
         onSelectYear={(year: number) => {
           setFormData((prev) => ({ ...prev, birthYear: year }));
           bottomSheetModalRef.current?.dismiss();
         }}
-        type="years"
       />
     </SafeAreaView>
   );

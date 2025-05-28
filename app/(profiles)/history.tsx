@@ -18,18 +18,19 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import CustomBottomSheetModal, {
-  Ref,
-} from "@/components/CustomBottomSheetModal";
+
 import { formatDate } from "@/utils/Date";
 import { getHealthIndicatorLabel, healthIndicatorConfig,genderValueKeys,getGenderValue } from "@/utils/HealthIndicatorInterface";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
 import { deleteProfile, getProfileHealthIndicators, getProfiles } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import OptionsBottomSheet from "@/components/modals/Options";
+import bottomSheetModal from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetModal";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
+  type Ref = bottomSheetModal;
   const { theme } = useTheme();
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
@@ -278,11 +279,10 @@ const HistoryProfile = () => {
         </View>
       </Animated.ScrollView>
 
-      <CustomBottomSheetModal
+      <OptionsBottomSheet
         index={0}
         onDelete={handleDelete}
         ref={bottomSheetModalRef}
-        type="more"
       />
   
   </SafeAreaView>
