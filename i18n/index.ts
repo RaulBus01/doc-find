@@ -15,7 +15,7 @@ const resources = {
 
 const initI18n = async () => {
   let savedLanguage = await AsyncStorage.getItem("language");
-  savedLanguage='en-US';
+  // savedLanguage='en-US';
 
   if (!savedLanguage) {
     savedLanguage = Localization.getLocales()[0].languageTag;

@@ -4,20 +4,18 @@ import { StyleSheet } from "react-native";
 export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
   StyleSheet.create({
     container: {
-      position: "relative",
-      paddingBottom: bottom,
+    paddingBottom: bottom,
+    backgroundColor: theme.background,
     },
     contentView: {
-      flexDirection: "row",
-      alignItems: "center",
-      backgroundColor: theme.progressColor,
-      borderTopLeftRadius: 25,
-      borderTopRightRadius: 25,
-      minHeight: 50,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     },
     collapsedBar: {
       flexDirection: "row",
       alignItems: "center",
+
+      flex: 1,
       backgroundColor: theme.backgroundDark,
       borderRadius: 22,
       marginHorizontal: 15,
@@ -25,7 +23,7 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
       marginTop: 5,
       gap: 10,
       paddingVertical: 12,
-      paddingHorizontal: 15,
+      paddingHorizontal: 12,
       elevation: 3,
     },
     collapsedText: {
@@ -53,24 +51,16 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
     },
 
     messageInput: {
-      minHeight: 50,
-      borderTopLeftRadius: 25,
-      borderTopRightRadius: 25,
-      backgroundColor: theme.blue,
+      minHeight: 40,
+      flex: 1,
       color: theme.text,
       fontSize: 16,
-      paddingTop: 10,
-      paddingHorizontal: 25,
       lineHeight: 26,
-      borderWidth: StyleSheet.hairlineWidth,
       borderColor: "transparent",
+  
     },
     iconButton: {
-      width: 40,
-      height: 40,
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: 20,
+      padding: 8,
     },
     activeIconButton: {
       width: 40,
@@ -86,7 +76,10 @@ export const MessageBarStyles = (theme: ThemeColors, bottom: number) =>
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 20,
-      backgroundColor:"transparent",
+      backgroundColor: theme.blue,
+    },
+    disabledButton: {
+      backgroundColor: `${theme.blue}50`,
     },
     actionButtonsContainer: {
       flexDirection: "row",
