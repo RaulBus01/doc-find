@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -24,7 +24,12 @@ import { Switch } from "react-native-gesture-handler";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
+import { changeLanguage } from "@/i18n";
+
 import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
+
+import LanguagePicker from "../../components/modals/Language";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const BOTTOM_TAB_HEIGHT = 80;
 
@@ -34,15 +39,38 @@ export default function Account() {
   const { clearUserData } = useUserData();
 
   const [user, setUser] = useState<User | null>(null);
+  const languagePickerRef = useRef<BottomSheetModal>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
-  const { theme, toggleTheme,isDark } = useTheme();
+  const { theme, toggleTheme, isDark } = useTheme();
   const styles = getStyles(theme);
   const isOffline = useOfflineStatus();
+  const { t, i18n } = useTranslation();
 
   const handleChangeTheme = () => {
     toggleTheme();
   }
+
+  const handleLanguageSelect = async (languageCode: string) => {
+    await changeLanguage(languageCode);
+  };
+
+  const getCurrentLanguageName = () => {
+    const languageNames: { [key: string]: string } = {
+      'en-US': 'English',
+      'ro-RO': 'Română',
+      'fr-FR': 'Français',
+      'es-ES': 'Español',
+      'de-DE': 'Deutsch',
+      'it-IT': 'Italiano',
+      'pt-PT': 'Português',
+    };
+    return languageNames[i18n.language] || 'English';
+  };
+
+  const openLanguagePicker = () => {
+    languagePickerRef.current?.present();
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -71,8 +99,6 @@ export default function Account() {
       console.error("Error during logout:", e);
     }
   };
-
-  const {t} = useTranslation();
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -171,15 +197,15 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Notifications")} 
+                onPress={openLanguagePicker}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.RedIconBackground}]}>
-                  <Ionicons name="notifications" size={20} color={theme.text} />
+                  <Ionicons name="language" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={styles.optionTitle}>{t('account.languageText')}</Text>
-                  <Text style={styles.optionSubtitle}>{t('account.languageSubText')}</Text>
+                  <Text style={styles.optionSubtitle}>{getCurrentLanguageName()}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -266,6 +292,11 @@ export default function Account() {
         
         </ScrollView>
      
+      <LanguagePicker
+        ref={languagePickerRef}
+        onLanguageSelect={handleLanguageSelect}
+        currentLanguage={i18n.language}
+      />
     </SafeAreaView>
   );
 }

@@ -26,7 +26,6 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(true);
     try {
       const accessToken = await secureGetValueFor("accessToken");
-      console.log("Access Token: ", accessToken);
       setToken(accessToken);
       setError(null);
     } catch (e: any) {
