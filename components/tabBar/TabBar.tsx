@@ -1,55 +1,76 @@
 import { View, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import TabBarButton from './TabBarButton';
-import { Colors } from '@/constants/Colors';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
+import { TabBarVisibilityContext } from '@/context/TabBarContext';
+import { useTranslation } from 'react-i18next';
 
 type AllowedRoute = {
   name: string;
   path: string;
   iconDefault: string;
   iconFocused: string;
+  order: number;
 };
 
 type TabBarProps = {
   state: any;
   descriptors: any;
   navigation: any;
-  IsTabBarVisible: boolean;
+
 };
 
-const allowedRoutes: AllowedRoute[] = [
-  { name: 'Home', path: 'index', iconFocused: 'home', iconDefault: 'home-outline' },
-  { name: 'Map', path: 'map', iconFocused: 'map', iconDefault: 'map-outline' },
-  { name: 'Account', path: 'account', iconFocused: 'person', iconDefault: 'person-outline' },
-  { name: 'Chat', path: 'chat', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline' },
+
+const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
+  // Shared value to control vertical translation
+  const { isTabBarVisible } = useContext(TabBarVisibilityContext);
+  const translateY = useSharedValue(50); 
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
+  const {t} = useTranslation();
+  const allowedRoutes: AllowedRoute[] = [
+  { name: t('tabbar.home'), path: 'index', iconFocused: 'home', iconDefault: 'home-outline', order: 1 },
+  { name: t('tabbar.map'), path: 'map', iconFocused: 'map', iconDefault: 'map-outline', order: 2 },
+  { name: t('tabbar.chat'), path: '(chat)', iconFocused: 'chatbubbles', iconDefault: 'chatbubbles-outline', order: 3 },
+  { name: t('tabbar.account'), path: 'account', iconFocused: 'person', iconDefault: 'person-outline', order: 4 },
 ];
 
-const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBarVisible }) => {
-  // Shared value to control vertical translation
-  const translateY = useSharedValue(50); 
 
   useEffect(() => {
-    translateY.value = withTiming(IsTabBarVisible ? 0 : 50, { duration: 300 });
-  }, [IsTabBarVisible, translateY]);
+    translateY.value = withTiming(isTabBarVisible ? 0 : 50, { duration: 300 });
+  }, [isTabBarVisible, translateY]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: translateY.value }],
   }));
 
+  // Use a stable reference with useMemo to prevent unnecessary re-renders
+  const filteredRoutes = useMemo(() => 
+    state.routes.filter((route: { name: string }) =>
+      allowedRoutes.some(allowed => allowed.path === route.name)
+    ), 
+  [state.routes]);
+
+  // Use useMemo to prevent unnecessary re-renders
+  const orderedRoutes = useMemo(() => {
+    return [...filteredRoutes].sort((a, b) => {
+      const aIndex = allowedRoutes.find(allowed => allowed.path === a.name)?.order;
+      const bIndex = allowedRoutes.find(allowed => allowed.path === b.name)?.order;
+      return aIndex! - bIndex!;
+    });
+  }, [filteredRoutes]);
+
   return (
-    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={IsTabBarVisible ? 'auto' : 'none'}>
-      {state.routes
-        .filter((route: { name: string }) => {
-          return allowedRoutes.find(allowed => allowed.path === route.name);
-        })
-        .map((route: { key: string | number; name: string }, index: any) => {
+    <Animated.View style={[styles.container, animatedStyle]} pointerEvents={isTabBarVisible ? 'auto' : 'none'}>
+      {orderedRoutes?.map((route: { key: string | number; name: string }, index: any) => {
           const { options } = descriptors[route.key];
           const matchingRoute = allowedRoutes.find(allowed => allowed.path === route.name);
           if (!matchingRoute) return null;
           const label =
             options.tabBarLabel ?? options.title ?? matchingRoute.name;
-          const isFocused = state.index === index;
+          const isFocused = state.routes[state.index].name === route.name;
           const onPress = () => {
           
             const event = navigation.emit({
@@ -69,9 +90,10 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
           };
 
           return (
+            
             <TabBarButton
               key={route.key}
-              color={Colors.light.tabIconDefault}
+              color={theme.text}
               isFocused={isFocused}
               label={label}
               iconDefault={matchingRoute.iconDefault}
@@ -85,7 +107,7 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation, IsTabBa
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
     bottom: 0,
     position: 'absolute',
@@ -94,14 +116,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 50,
-    backgroundColor: 'white',
-    borderTopWidth: 0.5,
-    borderTopColor: Colors.light.lightgreen,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.5,
-    elevation: 5,
+    backgroundColor: theme.tabbarBackground,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    borderWidth: 0.5,
   }
 });
 

@@ -1,34 +1,80 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+interface ThemeColors {
+  text: string;
+  textDark?: string;
+  textLight?: string;
+  background: string;
+  backgroundDark: string;
+  progressColor: string;
+  tabbarBackground: string;
+  lightGreen: string;
+  blue: string;
 
+  red: string; 
+  cardBackground: string;
+  pressedBackground: string;
+  separator: string;
+  avatarBackground: string;
+  profileActionBackground: string;
+  BlueIconBackground: string;
+  VioletIconBackground: string;
+  GreenIconBackground: string;
+  RedIconBackground: string;
+  YellowIconBackground: string;
+  LightBlueIconBackground: string;
+  LightVioletIconBackground: string;
+}
 
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
-export const Colors = {
+export const Colors: { light: ThemeColors; dark: ThemeColors } = {
   light: {
-    text: '#201B1B',
-    textlight: '#FFFFFF',
+    text: '#222B24',
+    textLight: '#F6F6F6',
+    background:"#F6F6F6",
+    backgroundDark:"#e2e2e2",
+    tabbarBackground:"#F2F2F2",
+    lightGreen:"#84cc15",
+    progressColor:"#4CAF50",
+    blue:"#3c82f6",
+    red:"#FF5722",
 
-    background: '#B7BEA7',
-    lightbackground: '#F6F3D4',
-    mediumbackground: '#EBF696',
-    darkbackground: '#8E935F',
-    lightgreen:'#B6E13D',
-    tint: '#F6F3D4',
-    icon: '#687076',
-    tabIconDefault: '#002B20',
-    tabIconSelected: '#BDB99D'
+    cardBackground: 'rgba(141, 141, 141, 0.18)',
+    pressedBackground: 'rgba(36, 29, 29, 0.05)',
+    separator: 'rgba(34, 29, 29, 0.49)', 
+    avatarBackground: 'rgba(255, 255, 255, 0.55)',
+    profileActionBackground: 'rgba(255, 255, 255, 0.53)',
+  
+    BlueIconBackground: 'rgba(59, 130, 246, 0.25)',
+    VioletIconBackground: 'rgba(138, 92, 246, 0.15)',
+    GreenIconBackground: 'rgba(176, 223, 107, 0.25)',
+    RedIconBackground: 'rgba(239, 68, 68, 0.5)',
+    YellowIconBackground: 'rgba(251, 191, 36, 0.25)',
+    LightBlueIconBackground: 'rgba(59, 130, 246, 0.25)',
+    LightVioletIconBackground: 'rgba(124, 58, 237, 0.25)',
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: '#e4e4e4',
+    textDark: '#222B24',
+    background:"#111b14",
+    backgroundDark:"#1c2a1b",
+    tabbarBackground:"#2f3c33",
+    lightGreen:"#84cc16",
+    progressColor:"#3b893d",
+    blue:"#1f3354",
+    red: '#db3908', 
+
+    cardBackground: 'rgba(255, 255, 255, 0.1)',
+    pressedBackground: 'rgba(92, 92, 92, 0.25)',
+    separator: 'rgba(255, 255, 255, 0.56)',
+    avatarBackground: 'rgba(255, 255, 255, 0.2)',
+    profileActionBackground: 'rgba(255, 255, 255, 0.15)',
+ 
+    BlueIconBackground: 'rgba(59, 130, 246, 0.25)',
+    VioletIconBackground: 'rgba(138, 92, 246, 0.25)',
+    GreenIconBackground: 'rgba(52, 211, 153, 0.25)',
+    RedIconBackground: 'rgba(239, 68, 68, 0.25)', 
+    YellowIconBackground: 'rgba(251, 191, 36, 0.25)',
+    LightBlueIconBackground: 'rgba(59, 130, 246, 0.25)',
+    LightVioletIconBackground: 'rgba(124, 58, 237, 0.25)',
   },
 };
+
+export type { ThemeColors };

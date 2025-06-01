@@ -2,111 +2,189 @@ import React, { useState } from 'react';
 import {
   View,
   TextInput,
-  TouchableOpacity,
   StyleSheet,
   Animated,
   Keyboard,
+  FlatList,
+  Text,
 } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/constants/Colors';
+import { useTheme } from '@/context/ThemeContext';
+import { ThemeColors } from '@/constants/Colors';
+import * as ExpoGooglePlaces from "expo-google-places";
+import { secureGetValueFor } from '@/utils/SecureStorage';
+import * as Location from "expo-location";
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
   placeholder?: string;
+  onLocationSelect?: (coordinates: { latitude: number; longitude: number }) => void;
 }
 
 const CustomSearchBar: React.FC<SearchBarProps> = ({ 
   onSearch, 
+  onLocationSelect,
   placeholder = "Search location..."
 }) => {
   const [searchText, setSearchText] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const animatedWidth = new Animated.Value(1);
+  const [predictions, setPredictions] = useState<any[]>([]);
+  const [showPredictions, setShowPredictions] = useState(false);
 
-  const handleFocus = () => {
-    setIsFocused(true);
-    Animated.spring(animatedWidth, {
-      toValue: 1.02,
-      useNativeDriver: true,
-      speed: 20,
-    }).start();
-  };
-
-  const handleBlur = () => {
-    setIsFocused(false);
-    Animated.spring(animatedWidth, {
-      toValue: 1,
-      useNativeDriver: true,
-      speed: 20,
-    }).start();
-  };
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
 
   const clearSearch = () => {
     setSearchText('');
+    setPredictions([]);
+    setShowPredictions(false);
     onSearch('');
     Keyboard.dismiss();
   };
 
-  return (
-    <Animated.View 
-      style={[
-        styles.container,
-        {
-          transform: [{ scale: animatedWidth }],
-          shadowOpacity: isFocused ? 0.3 : 0.2,
+  const fetchPredictions = async (search: string) => {
+    if (search.length < 2) {
+      setPredictions([]);
+      setShowPredictions(false);
+      return;
+    }
+
+    try {
+      const lastLocation = await secureGetValueFor("lastLocation");
+      const lastLocationParsed = JSON.parse(lastLocation!) as Location.LocationObject;
+
+      const predictions = await ExpoGooglePlaces.fetchPredictionsWithSession(search, {
+        origin: {
+          latitude: (lastLocationParsed?.coords.latitude || 45.75),
+          longitude: (lastLocationParsed?.coords.longitude || 21.22),
+        },
+        locationBias: {
+          northEastBounds: {
+            latitude: (lastLocationParsed?.coords.latitude || 45.75),
+            longitude: (lastLocationParsed?.coords.longitude || 21.22),
+          },
+          southWestBounds: {
+            latitude: (lastLocationParsed?.coords.latitude || 45.75),
+            longitude: (lastLocationParsed?.coords.longitude || 21.22),
+          }
+        },
+      });
+      
+      setPredictions(predictions);
+      setShowPredictions(predictions.length > 0);
+    } catch (error) {
+    
+      setPredictions([]);
+      setShowPredictions(false);
+    }
+  };
+
+  const selectPrediction = async (prediction:ExpoGooglePlaces.AutocompletePrediction) => {
+
+    setSearchText(prediction.primaryText);
+    setPredictions([]);
+    setShowPredictions(false);
+    onSearch(prediction.primaryText);
+    Keyboard.dismiss();
+
+
+    if (prediction.placeID && onLocationSelect) {
+      try {
+       
+        const placeDetails = await ExpoGooglePlaces.fetchPlaceWithSession(prediction.placeID);
+
+        
+        if (placeDetails.coordinate) {
+          onLocationSelect({
+            latitude: placeDetails.coordinate.latitude,
+            longitude: placeDetails.coordinate.longitude
+          });
         }
-      ]}
+      } catch (error) {
+      
+      }
+    }
+  };
+
+  const renderPredictionItem = ({ item }: { item: any }) => (
+    <Pressable
+      style={styles.predictionItem}
+      onPress={() => selectPrediction(item)}
     >
-      <View style={styles.searchIcon}>
-        <Ionicons name="search" size={20} color={Colors.light.text} />
+      <Ionicons name="location-outline" size={16} color={theme.text} style={styles.predictionIcon} />
+      <View style={styles.predictionTextContainer}>
+        <Text style={styles.predictionPrimaryText}>
+          {item.primaryText || item.description}
+        </Text>
+        {item.secondaryText && (
+          <Text style={styles.predictionSecondaryText}>
+            {item.secondaryText}
+          </Text>
+        )}
       </View>
-      
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={Colors.light.text + '80'}
-        value={searchText}
-        onChangeText={(text) => {
-          setSearchText(text);
-          onSearch(text);
-        }}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-      />
-      
-      {searchText.length > 0 && (
-        <TouchableOpacity 
-          style={styles.clearButton}
-          onPress={clearSearch}
-        >
-          <Ionicons name="close-circle" size={20} color={Colors.light.text} />
-        </TouchableOpacity>
+    </Pressable>
+  );
+
+  return (
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <View style={styles.searchIcon}>
+          <Ionicons name="search" size={20} color={theme.text} />
+        </View>
+        
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          placeholderTextColor={theme.text}
+          value={searchText}
+          onChangeText={(text) => {
+            setSearchText(text);
+            fetchPredictions(text);
+          }}
+        />
+       
+        {searchText.length > 0 && (
+          <Pressable 
+            style={styles.clearButton}
+            onPress={clearSearch}
+          >
+            <Ionicons name="close-circle" size={20} color={theme.text} />
+          </Pressable>
+        )}
+      </View>
+
+      {showPredictions && (
+        <View style={styles.predictionsContainer}>
+          <FlatList
+            data={predictions}
+            renderItem={renderPredictionItem}
+            keyExtractor={(item, index) => `${item.placeId || index}`}
+            style={styles.predictionsList}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            
+          />
+        </View>
       )}
-    </Animated.View>
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
+  wrapper: {
     position: 'absolute',
-    top: 20,
-    left:50,
+    top: 50,
+    left: 50,
     right: 50,
     width: '75%',
+    zIndex: 1,
+  },
+  container: {
     height: 50,
-    backgroundColor: Colors.light.textlight,
+    backgroundColor: theme.tabbarBackground,
     borderRadius: 12,
     flexDirection: 'row',
-    
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowRadius: 8,
-    elevation: 10,
-    zIndex: 1,
   },
   searchIcon: {
     paddingLeft: 15,
@@ -115,11 +193,45 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: Colors.light.text,
+    color: theme.text,
     paddingVertical: 8,
   },
   clearButton: {
     padding: 15,
+  },
+  predictionsContainer: {
+    backgroundColor: theme.tabbarBackground,
+    borderRadius: 12,
+    marginTop: 5,
+    maxHeight: 200,
+
+    elevation: 5,
+  },
+  predictionsList: {
+    maxHeight: 200,
+  },
+  predictionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderBottomWidth: 0.5,
+    borderBottomColor: theme.text + '20',
+  },
+  predictionIcon: {
+    marginRight: 10,
+  },
+  predictionTextContainer: {
+    flex: 1,
+  },
+  predictionPrimaryText: {
+    color: theme.text,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  predictionSecondaryText: {
+    color: theme.text + '80',
+    fontSize: 14,
+    marginTop: 2,
   },
 });
 

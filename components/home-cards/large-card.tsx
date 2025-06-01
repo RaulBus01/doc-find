@@ -1,59 +1,66 @@
-import { View, Text, StyleSheet } from 'react-native'
-import React from 'react'
-import { Colors } from '@/constants/Colors'
-import { Ionicons } from '@expo/vector-icons'
+import {Text, StyleSheet, View } from "react-native";
+import React from "react";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { Pressable } from "react-native-gesture-handler";
+import { useTheme } from "@/context/ThemeContext";
+import { ThemeColors } from "@/constants/Colors";
 
 interface LargeCardProps {
-    text:string
-    icon:string
-    color:string 
-
+  text: string;
+  icon: string;
+  color: string;
+  onPress: () => void;
 }
 
-const LargeCard = ({text,icon,color}:LargeCardProps) => {
+const LargeCard = ({ text, icon, color,onPress }: LargeCardProps) => {
+   const { theme } = useTheme();
+    const styles = getStyles(theme);
   return (
-    <View style={[stylesLarge.container, {backgroundColor:color}]}>
+    <Pressable
+         onPress={onPress}
+         style={styles.container}
+       >
+      <View style={[styles.cardContainer, {backgroundColor: color}]}>
+        <Text style={styles.text}>{text}</Text>
+        <FontAwesome5 name={icon.toLowerCase()} size={28} color={theme.text} />
+        </View>
         
-        <Text style={stylesLarge.text}>Name: </Text>
-        <Text style={stylesLarge.text}>Age: </Text>
-        <Text style={stylesLarge.text}>Sex:</Text>
-        <Text style={stylesLarge.text}>Blood Group:</Text>
-        
-      
-    </View>
-  )
-}
+         </Pressable>
+  );
+};
 
-
-const stylesLarge = StyleSheet.create({
+const getStyles = (theme: ThemeColors) => StyleSheet.create({
   container: {
-    flexDirection: 'column',
-    marginHorizontal: 8,
-    marginVertical: 6,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
-    width: 190,
-    height: 160,
-    borderRadius: 24,
-    padding: 16,
-    boxShadow: '5px 5px 5px 1px rgba(0,0,0,0.1)',
-    elevation: 10,
-    gap: 8,
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+    width: 160,
+    height: 120,
+    borderRadius: 25,
+    marginHorizontal: 5,
+   
   },
+  cardContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 25,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    width: "100%",
+    height: "100%",
+
+  },
+ 
   text: {
     fontSize: 14,
-    fontFamily: 'Roboto-Medium',
-    color: Colors.light.text,
+    fontFamily: "Roboto-Medium",
+    color: theme.text,
     letterSpacing: 0.3,
     opacity: 0.9,
     lineHeight: 20,
   },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-    color: Colors.light.text,
-    opacity: 1,
-  }
-})
-export default LargeCard
+});
+export default LargeCard;

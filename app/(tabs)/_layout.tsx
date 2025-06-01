@@ -1,35 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs } from "expo-router";
 import TabBar from "@/components/tabBar/TabBar";
-import { StatusBar } from "react-native";
-import { Colors } from "@/constants/Colors";
-import { TabBarVisibilityContext } from "@/context/TabBarContext";
+import { TabBarVisibilityProvider } from "@/context/TabBarContext";
 import * as SplashScreen from "expo-splash-screen";
+import { useSQLiteContext } from "expo-sqlite";
+import { useDrizzleStudio } from "expo-drizzle-studio-plugin";
 
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
-  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
-
-  return (
+  const database = useSQLiteContext();
+  useDrizzleStudio(database);
   
-      <TabBarVisibilityContext.Provider
-        value={{ isTabBarVisible, setIsTabBarVisible }}
-      >
-        <StatusBar
-          backgroundColor={Colors.light.tint}
-          barStyle={"dark-content"}
-        />
-        <Tabs
-          screenOptions={{
-            headerShown: false,
-          }}
-          tabBar={(props) => (
-            <TabBar {...props} IsTabBarVisible={isTabBarVisible} />
-          )}
-        />
-      </TabBarVisibilityContext.Provider>
-    
+  return (
+    <TabBarVisibilityProvider>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
+          animation: "none",
+        }}
+        tabBar={(props) => (
+          <TabBar {...props}  />
+        )}
+      />
+    </TabBarVisibilityProvider>
   );
 }
