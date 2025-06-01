@@ -7,7 +7,6 @@ export const streamModelResponse = async (
   message: string,
   onChunk: (chunk: any) => void,
   chatId: number,
-  modelType:AIModel = AIModel.MISTRAL_SMALL,
   context?: any,
   abortSignal?: AbortSignal,
 ) => {
@@ -17,7 +16,7 @@ export const streamModelResponse = async (
 
   try {
  
-    await ApiCall.stream("/completion/stream-and-save", token, { message,chatId,context,modelType}, onChunk,abortSignal);
+    await ApiCall.stream("/completion/stream-and-save", token, { message,chatId,context}, onChunk,abortSignal);
   } catch (error) {
  
     

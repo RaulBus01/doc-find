@@ -63,7 +63,7 @@ const ProfileScreen = () => {
     
     fetchProfile();
     
-    // No cleanup function needed in this case
+
   }, [profileId, userId, drizzleDB])
 );
 
@@ -254,7 +254,7 @@ const getChoiceStyle = (choice: string) => {
   );
 };
 
-// Update the styles in the getStyles function
+
 
 const getStyles = (theme: ThemeColors) =>
   StyleSheet.create({

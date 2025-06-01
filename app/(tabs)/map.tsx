@@ -32,6 +32,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
 import PlaceDetailsBottomSheet from "@/components/modals/PlaceDetails";
+import { Toast } from "toastify-react-native";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -41,7 +42,7 @@ export default function Map() {
   const styles = getStyles(theme);
   const mapRef = useRef<MapView>(null);
   const [search, setSearch] = useState("");
-  const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); // Consume context
+  const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); 
   const [places, setPlaces] = useState<GooglePlaceDetails[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("doctor");
   const [isLoading, setIsLoading] = useState(false);
@@ -138,14 +139,13 @@ export default function Map() {
     await secureSaveObject("lastLocation", location);
   };
   const fetchPlacesInViewport = async (region: Region, type: string) => {
-    console.log("Fetching places in viewport:", region, type);
     fetchNearbyPlaces(region, type)
       .then((places) => {
         setPlaces(places);
         setLastRegion(region);
       })
       .catch((error) => {
-        console.error("Error fetching places:", error);
+      
       })
       .finally(() => {
         setIsLoading(false);
@@ -197,12 +197,33 @@ export default function Map() {
     doctor: require("@/assets/images/doctorIcon.png"),
   };
 
+
+  const handleLocationSelect = (coordinates: { latitude: number; longitude: number }) => {
+
+    mapRef.current?.animateToRegion({
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    }, 1000);
+
+    const newRegion = {
+      latitude: coordinates.latitude,
+      longitude: coordinates.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    };
+    
+    fetchPlacesInViewport(newRegion, activeFilter);
+  };
+
   return (
     <View style={styles.container}>
       <MapView
         customMapStyle={mapStyle}
         style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
         provider={PROVIDER_GOOGLE}
+      
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={true}
@@ -282,7 +303,10 @@ export default function Map() {
         ))}
       </View>
 
-      <CustomSearchBar onSearch={handleSearch} />
+      <CustomSearchBar 
+        onSearch={handleSearch} 
+        onLocationSelect={handleLocationSelect}
+      />
 
       <PlaceDetailsBottomSheet ref={bottomSheetModalRef}>
         {({ data }) => (

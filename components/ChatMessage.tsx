@@ -75,7 +75,7 @@ const ChatMessage = ({
       flexWrap: 'wrap',    
       width: '100%',        
     },
-    // Style for code blocks which often cause overflow
+
     code_block: {
       backgroundColor: theme.cardBackground,
       padding: 8,

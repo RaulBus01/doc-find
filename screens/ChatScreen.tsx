@@ -35,6 +35,7 @@ import { useDatabase } from "@/hooks/useDatabase";
 import { getProfiles, getCompleteProfileData } from "@/utils/LocalDatabase";
 import { Toast } from "toastify-react-native";
 import { useTranslation } from "react-i18next";
+import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
 
 const ChatScreen = () => {
   let { id,symptom } = useLocalSearchParams<{ id: string,symptom:string }>();
@@ -62,6 +63,7 @@ const ChatScreen = () => {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const {t} = useTranslation();
+  const isOffline = useOfflineStatus();
 
   const handleAbortStream = () => {
     if (abortControllerRef.current) {
@@ -123,6 +125,11 @@ const ChatScreen = () => {
         console.error("Error", userId, token);
         return;
       }
+      if (isOffline) {
+        Toast.error(t('chat.chatOfflineError'));
+        return;
+      }
+
       if (isStreaming) return; 
 
       const messageContent = message.trim();
@@ -171,7 +178,7 @@ const ChatScreen = () => {
       // First check if we should use profile data
       let contextData = undefined;
       if (useProfileContext && selectedProfileId) {
-        // Get complete profile data using our utility function
+     
         const profileData = await getCompleteProfileData(
           drizzleDB,
           parseInt(selectedProfileId, 10)
@@ -179,7 +186,7 @@ const ChatScreen = () => {
 
 
         if (profileData) {
-          // Format according to your backend expectations
+        
           contextData = {
             age: profileData.age,
             gender: profileData.gender,
@@ -216,15 +223,13 @@ const ChatScreen = () => {
           );
         },
         parseInt(chatIdRef.current!),
-        AIModel.MISTRAL_SMALL,
+  
         contextData,
         abortControllerRef.current.signal
       );
       }
       catch (error) {
         const errorMessage = error instanceof Error ? error : new Error(String(error));
-     
-        console.log("Stream aborted by user.",errorMessage);
       }
       
       finally {
@@ -273,14 +278,13 @@ const ChatScreen = () => {
 
   const handleProfileSelect = (profileId: string) => {
     if (!useProfileContext) {
-      // If profile context is disabled, don't allow selection
+
       return;
     }
 
     if (selectedProfileId === profileId) {
       setSelectedProfileId(null); // Deselect if already selected
     } else {
-      console.log("Selected profile ID:", profileId);
       setSelectedProfileId(profileId);
     }
     profilesBottomSheetRef.current?.close();
@@ -400,9 +404,11 @@ const ChatScreen = () => {
             />
           </TouchableOpacity>
         </View>
+    
       </View>
 
       <View style={styles.content}>
+       {isOffline && <OfflineIndicator />}
         <FlatList
           ref={flatListRef}
           style={styles.chatContainer}
@@ -561,7 +567,6 @@ const getStyles = (theme: ThemeColors) =>
     },
     headerTitleContainer: {
       alignItems: "center",
-      // flex: 1,
     },
     deactivatedProfileBadge: {
       flexDirection: "row",
@@ -644,7 +649,7 @@ const getStyles = (theme: ThemeColors) =>
     },
     profileInfo: {
       flex: 1,
-      marginRight: 10, // Add some margin to create space between text and checkmark
+      marginRight: 10, 
     },
     profileName: {
       fontSize: 16,

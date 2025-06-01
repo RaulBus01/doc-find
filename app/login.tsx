@@ -9,6 +9,9 @@ import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
 import { useUserData } from "@/context/UserDataContext";
 import { useToken } from "@/context/TokenContext";
 import { useTranslation } from "react-i18next";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { ThemeColors } from "@/constants/Colors";
+import { useTheme } from "@/context/ThemeContext";
 
 const { width } = Dimensions.get('window');
 
@@ -17,6 +20,8 @@ export default function AuthorizationScreen() {
   const { t } = useTranslation();
   const { refreshData } = useUserData();
   const { refreshToken } = useToken();
+  const {theme} = useTheme();
+  const styles = getStyles(theme);
 
 
   const onLogin = async () => {
@@ -59,11 +64,10 @@ export default function AuthorizationScreen() {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image 
-          source={require('../assets/images/favicon.png')} 
+          source={require('../assets/images/logo.png')} 
           style={styles.logo}
           resizeMode="contain"
         />
-        <Text style={styles.appName}>DocFind</Text>
       </View>
 
       <View style={styles.contentContainer}>
@@ -97,10 +101,11 @@ export default function AuthorizationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.background,
     padding: 24,
   },
   loadingContainer: {
@@ -114,14 +119,14 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 250,
+    height: 100,
   },
   appName: {
     fontSize: 28,
     fontWeight: 'bold',
     marginTop: 10,
-    color: '#333',
+    color: theme.text,
   },
   contentContainer: {
     alignItems: 'center',
@@ -131,12 +136,12 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.text,
     marginBottom: 10,
   },
   subText: {
     fontSize: 16,
-    color: '#666',
+    color: theme.text,
     marginBottom: 40,
   },
   loginButton: {
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   loginButtonText: {
-    color: '#fff',
+    color: theme.text,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -178,7 +183,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   newUserText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#0056b3',
   },
 }); 

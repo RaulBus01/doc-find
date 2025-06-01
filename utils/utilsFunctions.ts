@@ -1,17 +1,15 @@
 import { ThemeColors } from "@/constants/Colors";
 
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
-
 
 
 export const getStatusColor = (theme:ThemeColors,statusValue: string) => {
     switch(statusValue.toLowerCase()) {
       case 'ongoing':
-        return theme.YellowIconBackground; // Yellow
+        return theme.YellowIconBackground;
       case 'resolved':
-        return theme.GreenIconBackground; // Green
+        return theme.GreenIconBackground; 
       case 'chronic':
-        return theme.RedIconBackground; // Red
+        return theme.RedIconBackground; 
       default:
         return theme.text;
     }

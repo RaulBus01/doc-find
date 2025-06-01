@@ -33,10 +33,9 @@ const CustomCarousel = ({ data,width }: CustomCarouselProps) => {
         <View
           style={styles.carouselItem}
         >
-          <Text>{data[index].title}</Text>
           <Animated.Image 
             source={data[index].image}
-            style={{ width: "60%", height: "60%", backgroundColor:"lightgreen", resizeMode:"contain" }}
+            style={styles.image}
             />
 
           
@@ -63,11 +62,15 @@ const styles = StyleSheet.create({
   },
   carouselItem: {
     flex: 1,
-    backgroundColor: "lightblue",
+    
     justifyContent: "center",
     alignItems: "center",
 
   },
+  image:{
+    width: "100%", height: "90%",  resizeMode:"contain",
+    borderRadius: 25,
+  }
  
 });
  

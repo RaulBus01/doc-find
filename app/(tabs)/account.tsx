@@ -24,6 +24,7 @@ import { Switch } from "react-native-gesture-handler";
 import { useUserData } from "@/context/UserDataContext";
 import { ThemeColors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
+import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
 
 const BOTTOM_TAB_HEIGHT = 80;
 
@@ -37,6 +38,7 @@ export default function Account() {
   const scrollOffset = useScrollViewOffset(scrollRef);
   const { theme, toggleTheme,isDark } = useTheme();
   const styles = getStyles(theme);
+  const isOffline = useOfflineStatus();
 
   const handleChangeTheme = () => {
     toggleTheme();
@@ -85,7 +87,7 @@ export default function Account() {
         {/* Header Profile Section */}
         <Animated.View style={[styles.header, headerAnimatedStyle]}>
           <View style={styles.profileHeader}>
-            <View style={styles.avatarContainer}>
+            <View style={[styles.avatarContainer, { backgroundColor: isOffline ? theme.red : theme.progressColor }]}>
               <Image source={{ uri: user?.picture }} style={styles.avatar} />
             </View>
             <View style={styles.profileInfo}>
@@ -94,8 +96,9 @@ export default function Account() {
               </Text>
               <Text style={styles.profileEmail}>{user?.email}</Text>
             </View>
+            
           </View>
-          
+          <OfflineIndicator />
         
         </Animated.View>
         
@@ -112,7 +115,7 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Edit Profile")} // Changed from onPressIn
+                onPress={() => console.log("Edit Profile")} 
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.BlueIconBackground}]}>
@@ -129,7 +132,7 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Change Password")} // Changed from onPressIn
+                onPress={() => console.log("Change Password")} 
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.VioletIconBackground}]}>
@@ -168,7 +171,7 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Notifications")} // Changed from onPressIn
+                onPress={() => console.log("Notifications")} 
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.RedIconBackground}]}>
@@ -215,7 +218,7 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("About")} // Changed from onPressIn
+                onPress={() => console.log("About")} 
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightBlueIconBackground}]}>
@@ -232,7 +235,7 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Terms of Use")} // Changed from onPressIn
+                onPress={() => console.log("Terms of Use")} 
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightVioletIconBackground}]}>
@@ -361,7 +364,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 14,
     paddingHorizontal: 16,
-    backgroundColor: theme.pressedBackground, // Apply the background color
+    backgroundColor: theme.pressedBackground, 
   },
   optionIcon: {
     width: 40,
@@ -408,7 +411,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.red ? theme.red + 'CC' : '#F43F5E' + 'CC', // Example: Add opacity or use a darker shade
+    backgroundColor: theme.red ? theme.red + 'CC' : '#F43F5E' + 'CC', 
     borderRadius: 16,
     paddingVertical: 14,
     marginTop: 16,

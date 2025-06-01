@@ -130,7 +130,7 @@ const getChoiceStyle = (choice: string) => {
     },
     {
       key: "birthYear", 
-      title: `${t('profileNew.profileBirthYearTitle')} ${formData.fullname}?`, // Updated title
+      title: `${t('profileNew.profileBirthYearTitle')} ${formData.fullname}?`, 
       component: (
         <>
           <Pressable style={styles.pickerTrigger} onPress={handlePresentModalPress}>

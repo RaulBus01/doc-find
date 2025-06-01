@@ -325,7 +325,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     marginRight: 12,
   },
   severeIcon: {
-    backgroundColor: "#E53935",  // Red color for severe allergies
+    backgroundColor: "#E53935",  
   },
   allergyDetails: {
     flex: 1,

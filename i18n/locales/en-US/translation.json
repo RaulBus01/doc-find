@@ -84,11 +84,11 @@
     "chatNoProfileText":"No profiles available",
     "chatMessageInputPlaceholder":"Type a message...",
     "welcomeMessages": [
-      "Hello! I'm DocFind, your virtual health assistant. Please tell me your symptoms and I'll help you identify potential conditions. If you need immediate assistance, I can also find emergency services nearby.",
-      "Greetings from DocFind. Please describe your symptoms and I'll provide a list of possible conditions. For urgent situations, I can direct you to emergency care facilities in your area.",
-      "Welcome to DocFind, your health resource. Share your symptoms and I'll suggest potential diagnoses. If you need immediate assistance, I can find emergency services near your location.",
-      "DocFind is here to support you. Provide details about your symptoms and I'll analyze them for possible conditions. If the situation is critical, I can identify nearby emergency treatment options.",
-      "Welcome to DocFind. I'm equipped to help you interpret your symptoms and explore potential conditions. In case of emergency, I can also assist by locating nearby medical facilities."
+      "Hello! I'm Medora, your virtual health assistant. Please tell me your symptoms and I'll help you identify potential conditions. If you need immediate assistance, I can also find emergency services nearby.",
+      "Greetings from Medora. Please describe your symptoms and I'll provide a list of possible conditions. For urgent situations, I can direct you to emergency care facilities in your area.",
+      "Welcome to Medora, your health resource. Share your symptoms and I'll suggest potential diagnoses. If you need immediate assistance, I can find emergency services near your location.",
+      "Medora is here to support you. Provide details about your symptoms and I'll analyze them for possible conditions. If the situation is critical, I can identify nearby emergency treatment options.",
+      "Welcome to Medora. I'm equipped to help you interpret your symptoms and explore potential conditions. In case of emergency, I can also assist by locating nearby medical facilities."
     ]
   },
   "chatHistory":{

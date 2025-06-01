@@ -24,6 +24,7 @@ import { useUserData } from "@/context/UserDataContext";
 import { RefreshControl } from "react-native-gesture-handler";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
+import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -67,7 +68,7 @@ const Home = () => {
   }, [token, lastUpdated])
   );
 
-  // Handle routing function from original code
+
   const handleProfileRouting = (path: string) => {
     router.push(`/(profiles)/${path}`);
   };
@@ -76,13 +77,12 @@ const Home = () => {
     router.push(`/(tabs)/(chat)/${path}`);
   };
 
-  // Symptom handling from original code
+
   const handleSymptom = (symptom: string) => {
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
   const {t} = useTranslation();
-
-  // ProfilesComponent - reimplemented with new UI style
+  const isOffline = useOfflineStatus();
   const ProfilesComponent = () => {
     return (
       <View style={styles.sectionContainer}>
@@ -178,13 +178,13 @@ const Home = () => {
       style={[styles.container, { paddingBottom: bottom }]}
       edges={["bottom"]}
     >
-      {/* Floating Button */}
+
       {/* Header */}
       <View style={[styles.header, { paddingTop: top + 10 }]}>
-        {/* First row - picture, date, notifications */}
+   
         <View style={styles.headerTopRow}>
           <View style={styles.headerLeftSection}>
-            <View style={styles.profileContainer}>
+            <View style={[styles.profileContainer, { backgroundColor: isOffline ? theme.red : theme.progressColor }]}>
               <Image
                 source={{ uri: picture as string }}
                 style={styles.profileImage}
@@ -211,6 +211,7 @@ const Home = () => {
            {t('homePage.good')} {getTimeOfDay()}, {name} 👋
           </Text>
         </View>
+        <OfflineIndicator />
       </View>
 
       <ScrollView
@@ -224,7 +225,9 @@ const Home = () => {
             tintColor={theme.progressColor}
           />
         }
+
       >
+        
         <ProfilesComponent />
         <SymptomsComponent />
 
@@ -351,16 +354,16 @@ const getStyles = (theme: ThemeColors) =>
     profileContainer: {
       height: 40,
       width: 40,
-      borderRadius: 20,
-      overflow: "hidden",
-      borderWidth: 2,
-      borderColor: theme.progressColor,
+      borderRadius: 50,
+      padding:3,
+      backgroundColor:theme.avatarBackground,
       marginRight: 12,
     },
 
     profileImage: {
-      height: "100%",
-      width: "100%",
+     width: '100%',
+    height: '100%',
+    borderRadius: 38,
     },
     dateContainer: {
       flex: 1,

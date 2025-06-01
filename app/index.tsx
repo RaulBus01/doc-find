@@ -10,6 +10,8 @@ import { useUserData } from '@/context/UserDataContext';
 import { useToken } from '@/context/TokenContext';
 import '@/i18n';
 import { useTranslation } from 'react-i18next';
+import { ThemeColors } from '@/constants/Colors';
+import { useTheme } from '@/context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -17,17 +19,18 @@ const data = [
   {
     id: '1',
     title: 'First item',
-    image: require('../assets/images/favicon.png')
+    image: require('../assets/images/onboarding1.png'),
+   
   },
   {
     id: '2',
     title: 'Second item',
-    image: require('../assets/images/react-logo.png'),
+    image: require('../assets/images/onboarding3.png')
   },
   {
     id: '3',
     title: 'Third item',
-    image: require('../assets/images/react-logo.png'),
+     image: require('../assets/images/onboarding2.png'),
   },
 ]
 const Page = () => {
@@ -36,6 +39,8 @@ const Page = () => {
   const { authorize, isLoading } = useAuth0();
     const { refreshData } = useUserData();
     const { refreshToken } = useToken();
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const onLogin = async () => {
     try {
       const authResult = await authorize({
@@ -81,16 +86,21 @@ return (
 );
 };
 
-const styles = StyleSheet.create({
+
+const getStyles = (theme: ThemeColors) =>
+  StyleSheet.create({
   container: {
     flex: 1,
   },
   footer: {
     height: 100,
-
+    zIndex:-10,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent'
+    backgroundColor: theme.background,
+    marginTop: 20,
   },
   loginButton: {
     flexDirection: 'row',
