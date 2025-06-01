@@ -154,9 +154,9 @@ export default function Account() {
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
               
-              <View style={styles.separator} />
+          
               
-              <Pressable 
+              {/* <Pressable 
                 style={styles.option}
                 onPress={() => console.log("Change Password")} 
                 android_ripple={{ color: theme.pressedBackground }}
@@ -169,7 +169,7 @@ export default function Account() {
                   <Text style={styles.optionSubtitle}>{t('account.passwordSubText')}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
-              </Pressable>
+              </Pressable> */}
               
               <View style={styles.separator} />
               
@@ -244,7 +244,7 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("About")} 
+                 onPress={() => router.push('/(about)/about')}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightBlueIconBackground}]}>
@@ -261,7 +261,7 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Terms of Use")} 
+                onPress={() => router.push('/(about)/terms')}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightVioletIconBackground}]}>
