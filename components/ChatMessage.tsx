@@ -66,65 +66,24 @@ const ChatMessage = ({
       </View>
       <View style={isAI ? styles.messageContainerAI : styles.messageContainer} >
       <Markdown
-  style={{
-    body: {
-      color: theme.text,
-      fontSize: 14,
-      lineHeight: 20,
-      flexShrink: 1,         
-      flexWrap: 'wrap',    
-      width: '100%',        
-    },
-
-    code_block: {
-      backgroundColor: theme.cardBackground,
-      padding: 8,
-      borderRadius: 5,
-      flexWrap: 'wrap',
-      width: '100%',
-    },
-    code_inline: {
-      backgroundColor: theme.cardBackground,
-      padding: 3,
-      borderRadius: 3,
-      flexWrap: 'wrap',
-    },
+  style={
+    {
+      body: styles.body,
+      code_block: styles.code_block,
+      code_inline: styles.code_inline,
+      link: styles.link,
+      heading1: styles.heading1,
+      heading2: styles.heading2,
+      heading3: styles.heading3,
+      heading4: styles.heading4,
+      paragraph: styles.paragraph,
+    }
+  } 
   
-    paragraph: {
-      flexWrap: 'wrap',
-      width: '100%',
-      flexShrink: 1,
-    },
- 
-    link: {
-      color: theme.text,
-      textDecorationLine: 'underline',
-      flexWrap: 'wrap',
-    },
-    heading1: {
-      color: theme.text,
-      flexWrap: 'wrap',
-      width: '100%',
-    },
-    heading2: {
-      color: theme.text,
-      flexWrap: 'wrap',
-      width: '100%',
-    },
-    heading3: {
-      color: theme.text,
-      flexWrap: 'wrap',
-      width: '100%',
-    },
-    heading4: {
-      color: theme.text,
-      flexWrap: 'wrap',
-      width: '100%',
-    },
-  }}
   markdownit={
-    MarkdownIt({typographer: true, breaks: true})
+    MarkdownIt({typographer: true, breaks: true}) 
   }
+  
 >
   {message}
 </Markdown>
@@ -209,6 +168,60 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     gap: 20,
     
   },
+  body: {
+      color: theme.text,
+      fontSize: 14,
+      lineHeight: 20,
+      flexShrink: 1,         
+      flexWrap: 'wrap',    
+      width: '100%',        
+    },
+
+    code_block: {
+      backgroundColor: theme.cardBackground,
+      padding: 8,
+      borderRadius: 5,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    code_inline: {
+      backgroundColor: theme.cardBackground,
+      padding: 3,
+      borderRadius: 3,
+      flexWrap: 'wrap',
+    },
+  
+    paragraph: {
+      flexWrap: 'wrap',
+      width: '100%',
+      flexShrink: 1,
+    },
+ 
+    link: {
+      color: theme.text,
+      textDecorationLine: 'underline',
+      flexWrap: 'wrap',
+    },
+    heading1: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading2: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading3: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
+    heading4: {
+      color: theme.text,
+      flexWrap: 'wrap',
+      width: '100%',
+    },
 });
 
 export default React.memo(ChatMessage, (prevProps, nextProps) => {
