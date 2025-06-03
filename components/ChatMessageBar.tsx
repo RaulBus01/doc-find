@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useState } from "react";
+import React, { useRef, useContext, useState, useCallback } from "react";
 import {
   TextInput,
   Keyboard,
@@ -14,6 +14,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
 import { is } from "drizzle-orm";
+import { use } from "i18next";
 
 type Props = {
   isStreaming?: boolean;
@@ -36,7 +37,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
 
   const styles = MessageBarStyles(theme, bottom);
 
-  const onInputFocus = () => {
+  const onInputFocus = useCallback(() => {
 
     setIsFocused(true);
 
@@ -50,7 +51,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
         });
       }, 100);
     }
-  };
+  }, [message, setIsTabBarVisible]);
     
 
   
@@ -82,12 +83,13 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
     inputRef.current?.focus();
   }
 
-  const openModal = () => {
-    onModalPress();
-    setIsFocused(false);
-    setIsTabBarVisible(true);
-    Keyboard.dismiss();
-  }
+  const onBlur = useCallback(() => {
+
+          setIsFocused(false);
+          setIsTabBarVisible(true);
+          setMessage(message.trim());
+              }
+, [message, setIsTabBarVisible]);
 
   return (
     <View style={[styles.container]}>
@@ -111,11 +113,7 @@ const MessageBar = ({isStreaming, onModalPress, onMessageSend,onAbortStream }: P
               selectionColor={theme.red}
               onChangeText={onChangeText}
               onFocus={onInputFocus}
-              onBlur={() => {
-          setIsFocused(false);
-          setIsTabBarVisible(true);
-          setMessage(message.trim());
-              }}
+              onBlur={onBlur}
               style={[styles.messageInput]}
               editable={true}
               pointerEvents={isFocused ? "auto" : "none"}
