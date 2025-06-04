@@ -7,7 +7,6 @@ import {
   Keyboard,
   TouchableOpacity,
   Switch,
-  RefreshControl,
 } from "react-native";
 import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
 import MessageBar from "../components/ChatMessageBar";
@@ -20,9 +19,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useToken } from "@/context/TokenContext";
 import {
   addChat,
-  addMessage,
   generateChatTitle,
-  getLastMessage,
   getMessages,
 } from "@/utils/DatabaseAPI";
 import { useUserData } from "@/context/UserDataContext";

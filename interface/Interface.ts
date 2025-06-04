@@ -22,10 +22,10 @@ export enum MessageType{
   
   export interface Chat {
     id: string;
-    userId: string;
+    user_id: string;
     title: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
   }
   export interface User {
     id: string,

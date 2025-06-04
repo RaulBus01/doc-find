@@ -1,7 +1,6 @@
 import ChatItem from "@/components/ChatItem";
 import { useToken } from "@/context/TokenContext";
-import { Chat } from "@/interface/Interface";
-import { deleteChat, getChats } from "@/utils/DatabaseAPI";
+import { deleteChat} from "@/utils/DatabaseAPI";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
   View,
@@ -23,11 +22,12 @@ import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
 import OptionsBottomSheet from "@/components/modals/Options";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { getAllPowerSyncChats } from "@/powersync/utils";
+import { useUserData } from "@/context/UserDataContext";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
-  const [chatHistory, setChatHistory] = useState<Chat[]>([]);
   const { token, isLoading, error } = useToken();
   type Ref = BottomSheetModal;
   const bottomSheetModalRef = useRef<Ref>(null);
@@ -37,20 +37,15 @@ const ChatHistoryScreen = () => {
   const styles = getStyles(theme);
   const {t} = useTranslation();
   const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
+  const {userId} = useUserData();
+
+  const {data:chatHistory} = getAllPowerSyncChats(userId!);
 
   useFocusEffect(useCallback(() => {
     if(!isTabBarVisible) {
       setIsTabBarVisible(true);
     }
-    if (!isLoading && !error && token) {
-      getChats(token,10).then((data) => {
-        if (data.length > 0) {
-          setChatHistory(data);
-        }
-      });
-    }
-  }, [isLoading, error, token]));
-
+  }, [isTabBarVisible, setIsTabBarVisible]));
  
   const handlePresentModalPress = useCallback((chatId: string) => {
     setSelectedChatId(chatId);
@@ -67,13 +62,13 @@ const ChatHistoryScreen = () => {
     try {
       if (!selectedChatId || !token) return;
       await deleteChat(token, selectedChatId);
-      setChatHistory((prev) => {
-        const updatedChats = prev.filter((chat) => chat.id !== selectedChatId);
-        if (updatedChats.length === 0) {
-          router.replace("/new");
-        }
-        return updatedChats;
-      });
+      // setChatHistory((prev) => {
+      //   const updatedChats = prev.filter((chat) => chat.id !== selectedChatId);
+      //   if (updatedChats.length === 0) {
+      //     router.replace("/new");
+      //   }
+      //   return updatedChats;
+      // });
       bottomSheetModalRef.current?.dismiss();
     } catch (error) {
       console.error("Failed to delete chat:", error);
@@ -114,7 +109,7 @@ const ChatHistoryScreen = () => {
         ref={bottomSheetModalRef}
       />
 
-      {chatHistory.length > 0 ? (
+      {chatHistory && chatHistory.length > 0 ? (
         <FlatList
           data={chatHistory}
           keyExtractor={(item) => item.id}
@@ -122,8 +117,8 @@ const ChatHistoryScreen = () => {
             <ChatItem
               id={item.id}
               title={item.title}
-              createdAt={item.createdAt}
-              updatedAt={item.updatedAt}
+              createdAt={item.created_at}
+              updatedAt={item.updated_at}
               handleModal={() => handlePresentModalPress(item.id)}
             />
           )}

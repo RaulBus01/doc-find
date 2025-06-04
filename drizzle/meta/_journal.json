@@ -22,6 +22,20 @@
       "when": 1746695271660,
       "tag": "0002_illegal_shinko_yamashiro",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1749049023474,
+      "tag": "0003_spotty_karen_page",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1749058557563,
+      "tag": "0004_ordinary_eddie_brock",
+      "breakpoints": true
     }
   ]
 }

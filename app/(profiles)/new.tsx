@@ -101,7 +101,7 @@ const getChoiceStyle = (choice: string) => {
     },
     {
       key: "gender",
-      title: `${formData.fullname} ${t('profileNew.profileGenderPlaceholder')}`,
+      title: `${t('profileNew.profileGenderPlaceholder')}`,
       component: (
         <View style={styles.choiceContainer}>
           {['Male', 'Female'].map((englishGender) => {
@@ -130,7 +130,7 @@ const getChoiceStyle = (choice: string) => {
     },
     {
       key: "birthYear", 
-      title: `${t('profileNew.profileBirthYearTitle')} ${formData.fullname}?`, 
+      title: `${t('profileNew.profileBirthYearTitle')}`, 
       component: (
         <>
           <Pressable style={styles.pickerTrigger} onPress={handlePresentModalPress}>

@@ -9,32 +9,6 @@ export const addChat = async (token: string | null, message:string) => {
   return chat;
 };
 
-export const getChats = async (token: string | null, limit?:number) => {
-  if (!token) {
-    throw new Error("No token available");
-  }
-  const chats = await ApiCall.get('/chat/getChats/', token,{
-    limit: limit ?? 5
-  })
-  
-  return chats;
-};
-
-export const getChat = async (token: string | null, chatId: string) => {
-  if (!token) {
-    throw new Error("No token available");
-  }
-  const chat = await ApiCall.get(`/chat/${chatId}`, token);
-  return chat;
-};
-
-export const getChatsCount = async (token: string | null) => {
-  if (!token) {
-    throw new Error("No token available");
-  }
-  const count = await ApiCall.get('/chat/counter', token);
-  return count;
-}
 
 export const getMessages = async (token: string | null, chatId: string) => {
     if (!token) {

@@ -1,6 +1,5 @@
-import { AIModel } from "@/interface/Interface";
 import { ApiCall } from "./ApiCall";
-import { Toast } from "toastify-react-native";
+
 
 export const streamModelResponse = async (
   token: string | null,

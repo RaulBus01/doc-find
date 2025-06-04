@@ -27,6 +27,7 @@ const ChatItem: React.FC<ChatItemProps> = ({
   const styles = getStyles(theme);
   const {t} = useTranslation();
 
+
   const handlePress = () => {
     router.push(`/${id}`);
   };

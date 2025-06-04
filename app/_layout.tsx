@@ -17,6 +17,8 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import ToastManager from "toastify-react-native";
 import 'react-native-get-random-values'
+import { PowerSyncContext } from "@powersync/react-native";
+import { powersync } from "@/powersync/system";
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -131,6 +133,9 @@ const RootLayout = () => {
     <Suspense fallback={<ActivityIndicator size="large" />}>
       <ThemeProvider>
         <Auth0Provider domain={domain} clientId={clientId}>
+          <PowerSyncContext.Provider
+            value={powersync}
+           > 
           <SQLiteProvider
             databaseName={DATABASE_NAME}
             options={{ enableChangeListener: true }}
@@ -146,6 +151,7 @@ const RootLayout = () => {
               </BottomSheetModalProvider>
             </GestureHandlerRootView>
           </SQLiteProvider>
+          </PowerSyncContext.Provider>
         </Auth0Provider>
       </ThemeProvider>
     </Suspense>

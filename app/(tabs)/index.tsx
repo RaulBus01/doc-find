@@ -5,7 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  TextInput,
+
   ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -13,61 +13,66 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons} from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
-import { useToken } from "@/context/TokenContext";
-import { getChats, getChatsCount } from "@/utils/DatabaseAPI";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 import { useUserData } from "@/context/UserDataContext";
-import { RefreshControl } from "react-native-gesture-handler";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
 import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
+import { setupPowerSync } from "@/powersync/system";
+
+import { getPowerSyncChats, getPowerSyncChatsCount } from "@/powersync/utils";
+
 
 const Home = () => {
+
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
-  const { token } = useToken();
+
   const { picture, name } = useUserData();
   const { top, bottom } = useSafeAreaInsets();
-
-  const RETRIVE_CHATS = 5;
-  const [chats, setChats] = useState<Chat[]>();
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [chatCount, setChatCount] = useState<number>(0);
-  const [displayCount, setDisplayCount] = useState<number>(0);
-  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
-  useFocusEffect( useCallback(() => {
-    if(!isTabBarVisible) {
-      setIsTabBarVisible(true);
-    }
-    const fetchChats = async () => {
+  const {userId} = useUserData();
+const RETRIVE_CHATS = 5;
+  React.useEffect(() => {
+    const initializePowerSync = async () => {
       try {
-        setIsLoading(true);
-        const data = await getChats(token, RETRIVE_CHATS);
-        setChats(data);
-        const chatCount = await getChatsCount(token);
-        setChatCount(chatCount);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch chats")
-        );
-      } finally {
-        setIsLoading(false);
+        await setupPowerSync().then(() => {
+          console.log('PowerSync setup completed');
+        });
+      } catch (error) {
+        console.error('Error initializing PowerSync:', error);
       }
     };
 
-    if (token) {
-      fetchChats();
-    }
-  }, [token, lastUpdated])
-  );
+    initializePowerSync();
+  }, []);
 
+  const {data:chats,isLoading} = getPowerSyncChats(userId!, RETRIVE_CHATS);
+  const chatCount = getPowerSyncChatsCount(userId!);
+
+  
+  const [error, setError] = useState<Error | null>(null);
+  const [displayCount, setDisplayCount] = useState<number>(0);
+  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
+  const {t} = useTranslation();
+  const isOffline = useOfflineStatus();
+
+
+
+
+
+ 
+  useFocusEffect(useCallback(() => {
+    if(!isTabBarVisible) {
+      setIsTabBarVisible(true);
+    }
+  }, [isTabBarVisible, setIsTabBarVisible]));
+
+  
 
   const handleProfileRouting = (path: string) => {
     router.push(`/(profiles)/${path}`);
@@ -81,8 +86,7 @@ const Home = () => {
   const handleSymptom = (symptom: string) => {
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
-  const {t} = useTranslation();
-  const isOffline = useOfflineStatus();
+
   const ProfilesComponent = () => {
     return (
       <View style={styles.sectionContainer}>
@@ -218,13 +222,7 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
         style={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={() => setLastUpdated(new Date())}
-            tintColor={theme.progressColor}
-          />
-        }
+       
 
       >
         
@@ -304,7 +302,7 @@ const Home = () => {
                       {chat.title}
                     </Text>
                     <Text style={styles.chatItemDate}>
-                      {new Date(chat.createdAt).toLocaleDateString()}
+                      {new Date(chat.created_at).toLocaleDateString()}
                     </Text>
                   </View>
                 </TouchableOpacity>
