@@ -22,13 +22,14 @@ import {
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileById, getProfileHealthIndicatorById } from "@/utils/LocalDatabase";
 import { ProfileInput } from "@/database/schema";
-import { useUserData } from "@/context/UserDataContext";
+
 import { useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "@/hooks/useAuth";
 
 const ProfileScreen = () => {
   const { id } = useLocalSearchParams();
-  const { userId } = useUserData();
+  const { user } = useAuth();
   const [profileId, setProfileId] = useState(id);
   const drizzleDB = useDatabase();
   const [profileData, setProfileData] = useState<ProfileInput>(
@@ -41,10 +42,10 @@ const ProfileScreen = () => {
  useFocusEffect(
   useCallback(() => {
     const fetchProfile = async () => {
-      if (!profileId) return;
+      if (!profileId || !user?.sub) return;
       
       // Fetch profile data
-      const profile = await getProfileById(drizzleDB, Number(profileId), userId as string);
+      const profile = await getProfileById(drizzleDB, Number(profileId), user.sub);
       if (!profile) {
         setProfileData({} as ProfileInput);
         return;
@@ -64,7 +65,7 @@ const ProfileScreen = () => {
     fetchProfile();
     
 
-  }, [profileId, userId, drizzleDB])
+  }, [profileId, user, drizzleDB])
 );
 
   const { theme } = useTheme();

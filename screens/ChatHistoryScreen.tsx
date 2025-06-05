@@ -1,5 +1,4 @@
 import ChatItem from "@/components/ChatItem";
-import { useToken } from "@/context/TokenContext";
 import { deleteChat} from "@/utils/DatabaseAPI";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import {
@@ -23,12 +22,13 @@ import { useTranslation } from "react-i18next";
 import OptionsBottomSheet from "@/components/modals/Options";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { getAllPowerSyncChats } from "@/powersync/utils";
-import { useUserData } from "@/context/UserDataContext";
+import { useAuth } from "@/hooks/useAuth";
+
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
-  const { token, isLoading, error } = useToken();
+
   type Ref = BottomSheetModal;
   const bottomSheetModalRef = useRef<Ref>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -37,9 +37,9 @@ const ChatHistoryScreen = () => {
   const styles = getStyles(theme);
   const {t} = useTranslation();
   const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
-  const {userId} = useUserData();
+  const {user,token} = useAuth(); 
 
-  const {data:chatHistory} = getAllPowerSyncChats(userId!);
+  const {data:chatHistory} = getAllPowerSyncChats(user?.sub || '');
 
   useFocusEffect(useCallback(() => {
     if(!isTabBarVisible) {

@@ -13,16 +13,16 @@ import MessageBar from "../components/ChatMessageBar";
 import { useContext, useEffect, useRef, useState, useCallback } from "react";
 import BottomSheetModal, { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import ChatMessage from "../components/ChatMessage";
-import { AIModel, Message, MessageType } from "@/interface/Interface";
+import {  Message, MessageType } from "@/interface/Interface";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useToken } from "@/context/TokenContext";
+
 import {
   addChat,
   generateChatTitle,
   getMessages,
 } from "@/utils/DatabaseAPI";
-import { useUserData } from "@/context/UserDataContext";
+
 import { streamModelResponse } from "@/utils/Model";
 import { getWelcomeMessage } from "@/constants/WelcomeMessages";
 import { useTheme } from "@/context/ThemeContext";
@@ -34,6 +34,8 @@ import { Toast } from "toastify-react-native";
 import { useTranslation } from "react-i18next";
 import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
 
+import { useAuth } from "@/hooks/useAuth";
+
 const ChatScreen = () => {
   let { id,symptom } = useLocalSearchParams<{ id: string,symptom:string }>();
   const { top, bottom } = useSafeAreaInsets();
@@ -43,8 +45,8 @@ const ChatScreen = () => {
   const [messages, setMessages] = useState<Message[]>(
     !id ? [randomWelcomeMessage] : []
   );
-  const { token, isLoading, error } = useToken();
-  const { userId, picture, name } = useUserData();
+  const { token,user} = useAuth();
+
   const flatListRef = useRef<FlatList<Message>>(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
@@ -85,7 +87,7 @@ const ChatScreen = () => {
 
   useEffect(() => {
     const loadMessages = async () => {
-      if (id && token && !isLoading && !error) {
+      if (id && token ) {
         try {
           const data = await getMessages(token, id);
 
@@ -102,7 +104,7 @@ const ChatScreen = () => {
       }
     };
     loadMessages();
-  }, [id, token, isLoading, error]);
+  }, [id, token]);
 
   const router = useRouter();
 
@@ -118,8 +120,8 @@ const ChatScreen = () => {
   };
   const handleMessageSend = async (message: string) => {
     try {
-      if (!userId || !token) {
-        console.error("Error", userId, token);
+      if (!user || !user.sub) {
+        console.error("Error", user?.sub, token);
         return;
       }
       if (isOffline) {
@@ -147,7 +149,7 @@ const ChatScreen = () => {
       };
 
       if (isNewChat) {
-        const chat = await addChat(token, messageContent);
+        const chat = await addChat(token as string, messageContent);
         if (chat?.id) {
           setChatId(chat.id);
           chatIdRef.current = chat.id;
@@ -203,7 +205,7 @@ const ChatScreen = () => {
       let fullResponse = "";
       try {
       await streamModelResponse(
-        token,
+        token as string,
         messageContent,
         (chunk) => {
           fullResponse += chunk.content;
@@ -236,7 +238,7 @@ const ChatScreen = () => {
 
       if (chatIdRef.current) {
         try {
-          const updatedMessages = await getMessages(token, chatIdRef.current);
+          const updatedMessages = await getMessages(token as string, chatIdRef.current);
           setMessages(updatedMessages);
         } catch (e) {
           console.error("Error fetching last messages:", e);
@@ -245,7 +247,7 @@ const ChatScreen = () => {
 
       // Only generate title for new chats
       if (isNewChat) {
-        const newTitle = await generateChatTitle(token, chatIdRef.current);
+        const newTitle = await generateChatTitle(token as string, chatIdRef.current);
         
        
       }
@@ -259,10 +261,10 @@ const ChatScreen = () => {
   const drizzleDB = useDatabase();
 
   const fetchProfiles = useCallback(async () => {
-    if (!userId) return;
+    if (!user?.sub) return;
 
     try {
-      const profileData = await getProfiles(drizzleDB, userId);
+      const profileData = await getProfiles(drizzleDB, user.sub);
       if (profileData) {
         setProfiles(profileData);
       } else {
@@ -271,7 +273,7 @@ const ChatScreen = () => {
     } catch (error) {
       console.error("Error fetching profiles:", error);
     }
-  }, [userId]);
+  }, [user]);
 
   const handleProfileSelect = (profileId: string) => {
     if (!useProfileContext) {
@@ -335,14 +337,14 @@ const ChatScreen = () => {
       <ChatMessage
         key={item.id}
         id={item.id}
-        name={name || "User"}
-        picture={picture || "icon"}
+        name={user?.nickname || "User"}
+        picture={user?.picture || ""}
         message={item.content || ""}
         isAI={item.isAI}
         createdAt={item.createdAt}
       />
     ),
-    [name, picture]
+    [user?.nickname, user?.picture, theme.textLight, theme.text]
   );
 
   return (

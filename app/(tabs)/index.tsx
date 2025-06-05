@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-
   ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -13,66 +12,81 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Ionicons} from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Chat } from "@/interface/Interface";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
-import { useUserData } from "@/context/UserDataContext";
+
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
-import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
-import { setupPowerSync } from "@/powersync/system";
+import {
+  OfflineIndicator,
+  useOfflineStatus,
+} from "@/components/OfflineIndicator";
+import { powersync, setupPowerSync } from "@/powersync/system";
 
 import { getPowerSyncChats, getPowerSyncChatsCount } from "@/powersync/utils";
-
+import { useAuth } from "@/hooks/useAuth";
 
 const Home = () => {
-
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
-
-  const { picture, name } = useUserData();
   const { top, bottom } = useSafeAreaInsets();
-  const {userId} = useUserData();
-const RETRIVE_CHATS = 5;
+  const { user } = useAuth();
+
+  const RETRIVE_CHATS = 5;
+  const [error, setError] = useState<Error | null>(null);
+  const [displayCount, setDisplayCount] = useState<number>(0);
+  const { isTabBarVisible, setIsTabBarVisible } = useContext(TabBarVisibilityContext);
+  const { t } = useTranslation();
+  const isOffline = useOfflineStatus();
+
+  const { data: powerSyncChats = [], isLoading: powerSyncLoading } = getPowerSyncChats(user?.sub || '', RETRIVE_CHATS);
+  const { count: chatCountFromSync, isLoading: powerSyncCountLoading } = getPowerSyncChatsCount(user?.sub || '');
+
   React.useEffect(() => {
     const initializePowerSync = async () => {
       try {
         await setupPowerSync().then(() => {
-          console.log('PowerSync setup completed');
+          console.log("PowerSync setup completed");
+          console.log(powersync.currentStatus);
         });
       } catch (error) {
-        console.error('Error initializing PowerSync:', error);
+        console.error("Error initializing PowerSync:", error);
       }
     };
 
     initializePowerSync();
   }, []);
 
-  const {data:chats,isLoading} = getPowerSyncChats(userId!, RETRIVE_CHATS);
-  const chatCount = getPowerSyncChatsCount(userId!);
+  useEffect(() => {
+    setDisplayCount(0);
 
-  
-  const [error, setError] = useState<Error | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(0);
-  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
-  const {t} = useTranslation();
-  const isOffline = useOfflineStatus();
+    if (!chatCountFromSync) return;
 
+    const interval = setInterval(() => {
+      setDisplayCount((current) => {
+        const next =
+          current + Math.max(1, Math.floor((chatCountFromSync - current) / 10));
+        if (next >= chatCountFromSync) {
+          clearInterval(interval);
+          return chatCountFromSync;
+        }
+        return next;
+      });
+    }, 30);
+    return () => clearInterval(interval);
+  }, [chatCountFromSync]);
 
-
-
-
- 
-  useFocusEffect(useCallback(() => {
-    if(!isTabBarVisible) {
-      setIsTabBarVisible(true);
-    }
-  }, [isTabBarVisible, setIsTabBarVisible]));
-
-  
+  useFocusEffect(
+    useCallback(() => {
+      if (!isTabBarVisible) {
+        setIsTabBarVisible(true);
+      }
+    }, [isTabBarVisible, setIsTabBarVisible])
+  );
 
   const handleProfileRouting = (path: string) => {
     router.push(`/(profiles)/${path}`);
@@ -82,7 +96,6 @@ const RETRIVE_CHATS = 5;
     router.push(`/(tabs)/(chat)/${path}`);
   };
 
-
   const handleSymptom = (symptom: string) => {
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
@@ -90,7 +103,9 @@ const RETRIVE_CHATS = 5;
   const ProfilesComponent = () => {
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{t('homePage.ProfileSectionTitle')}</Text>
+        <Text style={styles.sectionTitle}>
+          {t("homePage.ProfileSectionTitle")}
+        </Text>
         <View style={styles.profileCards}>
           <TouchableOpacity
             style={[
@@ -102,7 +117,9 @@ const RETRIVE_CHATS = 5;
             <View style={styles.profileCardIcon}>
               <Ionicons name="person-add" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>{t('homePage.ProfileCardText')}</Text>
+            <Text style={styles.profileCardText}>
+              {t("homePage.ProfileCardText")}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -112,7 +129,9 @@ const RETRIVE_CHATS = 5;
             <View style={styles.profileCardIcon}>
               <Ionicons name="people" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>{t('homePage.ProfileViewText')}</Text>
+            <Text style={styles.profileCardText}>
+              {t("homePage.ProfileViewText")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -121,14 +140,16 @@ const RETRIVE_CHATS = 5;
 
   const SymptomsComponent = () => {
     const symptoms = [
-      { name: t('homePage.cough'), icon: "😷", color: theme.progressColor },
-      { name: t('homePage.headache'), icon: "🤕", color: theme.red },
-      { name: t('homePage.fever'), icon: "🤒", color: theme.blue },
+      { name: t("homePage.cough"), icon: "😷", color: theme.progressColor },
+      { name: t("homePage.headache"), icon: "🤕", color: theme.red },
+      { name: t("homePage.fever"), icon: "🤒", color: theme.blue },
     ];
 
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{t('homePage.SymptomsSectionTitle')}</Text>
+        <Text style={styles.sectionTitle}>
+          {t("homePage.SymptomsSectionTitle")}
+        </Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -151,52 +172,36 @@ const RETRIVE_CHATS = 5;
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return t('homePage.morning');
-    if (hour < 18) return t('homePage.afternoon');
-    return t('homePage.evening');
+    if (hour < 12) return t("homePage.morning");
+    if (hour < 18) return t("homePage.afternoon");
+    return t("homePage.evening");
   };
-  useEffect(() => {
 
-    setDisplayCount(0);
-
-
-    if (!chatCount) return;
-
-
-    const interval = setInterval(() => {
-      setDisplayCount((current) => {
-      
-        const next =
-          current + Math.max(1, Math.floor((chatCount - current) / 10));
-        if (next >= chatCount) {
-          clearInterval(interval);
-          return chatCount;
-        }
-        return next;
-      });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [chatCount]);
   return (
     <SafeAreaView
       style={[styles.container, { paddingBottom: bottom }]}
       edges={["bottom"]}
     >
-
       {/* Header */}
       <View style={[styles.header, { paddingTop: top + 10 }]}>
-   
         <View style={styles.headerTopRow}>
           <View style={styles.headerLeftSection}>
-            <View style={[styles.profileContainer, { backgroundColor: isOffline ? theme.red : theme.progressColor }]}>
+            <View
+              style={[
+                styles.profileContainer,
+                {
+                  backgroundColor: isOffline ? theme.red : theme.progressColor,
+                },
+              ]}
+            >
               <Image
-                source={{ uri: picture as string }}
+                source={{ uri: user?.picture as string }}
                 style={styles.profileImage}
               />
             </View>
             <View style={styles.dateContainer}>
               <Text style={styles.dateText}>
-                {new Date().toLocaleDateString(t('date'), {
+                {new Date().toLocaleDateString(t("date"), {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -212,7 +217,11 @@ const RETRIVE_CHATS = 5;
         {/* Second row - greeting message */}
         <View style={styles.headerBottomRow}>
           <Text style={styles.greetingText}>
-           {t('homePage.good')} {getTimeOfDay()}, {name} 👋
+            {t("homePage.good")} {getTimeOfDay()},{" "}
+            {user?.givenName && user?.familyName
+              ? `${user.givenName} ${user.familyName}`
+              : user?.nickname}{" "}
+            👋
           </Text>
         </View>
         <OfflineIndicator />
@@ -222,29 +231,35 @@ const RETRIVE_CHATS = 5;
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
         style={styles.scrollContainer}
-       
-
       >
-        
         <ProfilesComponent />
         <SymptomsComponent />
 
         {/* AI Chatbot Section */}
         <View style={[styles.sectionContainer, styles.lastSection]}>
-          <Text style={styles.sectionTitle}>{t('homePage.chatSectionTitle')} </Text>
+          <Text style={styles.sectionTitle}>
+            {t("homePage.chatSectionTitle")}{" "}
+          </Text>
           <View style={styles.chatbotCard}>
-          
             <View style={styles.chatbotDetails}>
-                {displayCount > 0 ? (
-              <><Text style={styles.chatbotCount}>{displayCount}+</Text><Text style={styles.chatbotLabel}>{t('homePage.chatCountTotalChats')}</Text></>
-                )
-                : (
-                  <Text style={styles.chatbotCount}>{t('homePage.chatCountNoChats')}</Text>
-                )}
+              {displayCount > 0 ? (
+                <>
+                  <Text style={styles.chatbotCount}>{displayCount}+</Text>
+                  <Text style={styles.chatbotLabel}>
+                    {t("homePage.chatCountTotalChats")}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.chatbotCount}>
+                  {t("homePage.chatCountNoChats")}
+                </Text>
+              )}
               <View style={styles.chatbotStatusRow}>
                 <View style={styles.chatbotStatus}>
                   <View style={styles.statusDot} />
-                  <Text style={styles.statusLabel}>{t('homePage.chatStatusText')}</Text>
+                  <Text style={styles.statusLabel}>
+                    {t("homePage.chatStatusText")}
+                  </Text>
                 </View>
               </View>
               <View style={styles.chatbotButtons}>
@@ -253,14 +268,18 @@ const RETRIVE_CHATS = 5;
                   onPress={() => handleChatRouting("new")}
                 >
                   <Ionicons name="add-circle" size={18} color="white" />
-                  <Text style={styles.startChatText}>{t('homePage.chatStartText')}</Text>
+                  <Text style={styles.startChatText}>
+                    {t("homePage.chatStartText")}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.startChatButton}
                   onPress={() => handleChatRouting("history")}
                 >
                   <Ionicons name="chatbubbles" size={18} color="white" />
-                  <Text style={styles.startChatText}>{t('homePage.chatAllChatsText')}</Text>
+                  <Text style={styles.startChatText}>
+                    {t("homePage.chatAllChatsText")}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -273,17 +292,21 @@ const RETRIVE_CHATS = 5;
 
           {/* Recent Chats */}
           <View style={styles.recentChatsContainer}>
-            <Text style={styles.recentChatsTitle}>{t('homePage.chatRecentText')}</Text>
-            {isLoading ? (
+            <Text style={styles.recentChatsTitle}>
+              {t("homePage.chatRecentText")}
+            </Text>
+            {powerSyncLoading ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={theme.progressColor} />
               </View>
             ) : error ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{t('homePage.chatErrorText')}</Text>
+                <Text style={styles.errorText}>
+                  {t("homePage.chatErrorText")}
+                </Text>
               </View>
-            ) : chats && chats.length > 0 ? (
-              chats.map((chat) => (
+            ) : powerSyncChats && Array.isArray(powerSyncChats) && powerSyncChats.length > 0 ? (
+              powerSyncChats.map((chat) => (
                 <TouchableOpacity
                   key={chat.id}
                   style={styles.recentChatItem}
@@ -296,7 +319,7 @@ const RETRIVE_CHATS = 5;
                       color="white"
                     />
                   </View>
-
+  
                   <View style={styles.chatItemContent}>
                     <Text style={styles.chatItemTitle} numberOfLines={1}>
                       {chat.title}
@@ -308,7 +331,9 @@ const RETRIVE_CHATS = 5;
                 </TouchableOpacity>
               ))
             ) : (
-              <Text style={styles.noChatsText}>{t('homePage.chatEmptyText')}</Text>
+              <Text style={styles.noChatsText}>
+                {t("homePage.chatEmptyText")}
+              </Text>
             )}
           </View>
         </View>
@@ -353,15 +378,15 @@ const getStyles = (theme: ThemeColors) =>
       height: 40,
       width: 40,
       borderRadius: 50,
-      padding:3,
-      backgroundColor:theme.avatarBackground,
+      padding: 3,
+      backgroundColor: theme.avatarBackground,
       marginRight: 12,
     },
 
     profileImage: {
-     width: '100%',
-    height: '100%',
-    borderRadius: 38,
+      width: "100%",
+      height: "100%",
+      borderRadius: 38,
     },
     dateContainer: {
       flex: 1,

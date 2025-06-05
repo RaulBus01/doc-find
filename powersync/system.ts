@@ -8,7 +8,9 @@ export const powersync = new PowerSyncDatabase({
     // https://powersync-ja.github.io/powersync-js/web-sdk/globals#powersyncopenfactoryoptions
     database:{
       dbFilename: 'chats.db',
+      
     }
+    
 });
 
 

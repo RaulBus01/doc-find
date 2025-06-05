@@ -1,12 +1,10 @@
 import React, { Suspense, useEffect } from "react";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { Auth0Provider, useAuth0 } from "react-native-auth0";
+import { Auth0Provider} from "react-native-auth0";
 import Constants from "expo-constants";
-import { TokenProvider } from "@/context/TokenContext";
-import { UserDataProvider } from "@/context/UserDataContext";
 import { View, ActivityIndicator, Text, useColorScheme } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { StatusBar } from "expo-status-bar";
@@ -16,9 +14,10 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import ToastManager from "toastify-react-native";
-import 'react-native-get-random-values'
+import "react-native-get-random-values";
 import { PowerSyncContext } from "@powersync/react-native";
 import { powersync } from "@/powersync/system";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -29,15 +28,17 @@ const fonts = {
 
 const InitialLayout = () => {
   const [fontsLoaded, fontError] = useFonts(fonts);
-  const { user, isLoading: authLoading, error: authError } = useAuth0();
-  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const { theme, isDark } = useTheme();
   const LoadingScreen = () => (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
       <ActivityIndicator size="large" color={theme.background} />
     </View>
   );
-
+  useEffect(() => {
+    if (!isAuthenticated) {
+    }
+  }, [isAuthenticated]);
   useEffect(() => {
     if (fontError) {
       console.error("Font loading error:", fontError);
@@ -50,24 +51,14 @@ const InitialLayout = () => {
     }
   }, [fontsLoaded]);
 
-
-  useEffect(() => {
-    if (!authLoading && fontsLoaded) {
-      const route = user ? "/(tabs)" : "/";
-      router.replace(route);
-    }
-  }, [user, authLoading, fontsLoaded, router]);
-
-  if (!fontsLoaded || authLoading) {
+  if (!fontsLoaded) {
     return <LoadingScreen />;
   }
 
-  if (fontError || authError) {
+  if (fontError) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: "red" }}>
-          {fontError?.message || authError?.message}
-        </Text>
+        <Text style={{ color: "red" }}>{fontError?.message}</Text>
       </View>
     );
   }
@@ -77,28 +68,25 @@ const InitialLayout = () => {
       <ToastManager
         theme={isDark ? "dark" : "light"}
         showProgressBar={false}
-        style={{ width: "100%", height: "100px",elevation: 0 }}
+        style={{ width: "100%", height: "100px", elevation: 0 }}
         animationIn={"fadeIn"}
         animationOut="fadeOut"
         animationStyle={"upInUpOut"}
       />
-      <StatusBar
-        animated={true}
-        backgroundColor="transparent"
-        style="auto"
-      />
+      <StatusBar animated={true} backgroundColor="transparent" style="auto" />
       <Stack
+
         screenOptions={{
           headerShown: false,
         }}
       >
         <Stack.Screen
-          name="index"
+          name="(auth)"
           options={{
             headerShown: false,
           }}
         />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
+  
         <Stack.Screen
           name="(tabs)"
           options={{
@@ -133,25 +121,21 @@ const RootLayout = () => {
     <Suspense fallback={<ActivityIndicator size="large" />}>
       <ThemeProvider>
         <Auth0Provider domain={domain} clientId={clientId}>
-          <PowerSyncContext.Provider
-            value={powersync}
-           > 
-          <SQLiteProvider
-            databaseName={DATABASE_NAME}
-            options={{ enableChangeListener: true }}
-            useSuspense
-          >
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <BottomSheetModalProvider>
-                <TokenProvider>
-                  <UserDataProvider>
+          <AuthProvider>
+            <PowerSyncContext.Provider value={powersync}>
+              <SQLiteProvider
+                databaseName={DATABASE_NAME}
+                options={{ enableChangeListener: true }}
+                useSuspense
+              >
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <BottomSheetModalProvider>
                     <InitialLayout />
-                  </UserDataProvider>
-                </TokenProvider>
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </SQLiteProvider>
-          </PowerSyncContext.Provider>
+                  </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+              </SQLiteProvider>
+            </PowerSyncContext.Provider>
+          </AuthProvider>
         </Auth0Provider>
       </ThemeProvider>
     </Suspense>

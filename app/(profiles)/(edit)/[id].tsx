@@ -16,7 +16,6 @@ import {
   updateProfile,
   updateHealthIndicator
 } from "@/utils/LocalDatabase";
-import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -28,11 +27,12 @@ import {
   genderValueKeys
 } from "@/utils/HealthIndicatorInterface";
 import YearPickerBottomSheet from "@/components/modals/Years";
+import { useAuth } from "@/hooks/useAuth";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();
   const profileId = id as string;
-  const { userId } = useUserData();
+  const { user} = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
   const styles = getStyles(theme);
@@ -77,7 +77,7 @@ const EditProfilePage = () => {
         setLoading(true);
         
         // Fetch profile data
-        const profile = await getProfileById(drizzleDB, Number(profileId), userId as string);
+        const profile = await getProfileById(drizzleDB, Number(profileId), user?.sub as string);
         if (!profile) {
           Toast.error("Profile not found", "top");
           router.back();

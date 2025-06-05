@@ -12,16 +12,16 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
-import { useAuth0 } from "react-native-auth0";
+import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
-import { useToken } from "@/context/TokenContext";
+
 import { User } from "@/interface/Interface";
 import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
-import { secureGetValueFor } from "@/utils/SecureStorage";
+
 import { Switch } from "react-native-gesture-handler";
-import { useUserData } from "@/context/UserDataContext";
+
 import { ThemeColors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
 import { changeLanguage } from "@/i18n";
@@ -30,15 +30,17 @@ import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicato
 
 import LanguagePicker from "../../components/modals/Language";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { secureDeleteValue } from "@/utils/SecureStorage";
+
 
 const BOTTOM_TAB_HEIGHT = 80;
 
 export default function Account() {
-  const { clearSession } = useAuth0();
-  const { clearToken } = useToken();
-  const { clearUserData } = useUserData();
+ const {signOut} = useAuth();
 
-  const [user, setUser] = useState<User | null>(null);
+
+
+  const {user } =useAuth();
   const languagePickerRef = useRef<BottomSheetModal>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
@@ -72,33 +74,20 @@ export default function Account() {
     languagePickerRef.current?.present();
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await secureGetValueFor("user");
-        if (userData) {
-          const userJSON = JSON.parse(userData);
-          setUser(userJSON);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
+ 
 
   const onLogout = async () => {
     console.log("Logging out...");
     try {
-      await clearSession();
-      await clearToken();
-      await clearUserData();
-      router.replace("/login");
+      await signOut();
+    
+      await secureDeleteValue('accessToken');
+
     } catch (e) {
       console.error("Error during logout:", e);
     }
   };
+
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -117,9 +106,14 @@ export default function Account() {
               <Image source={{ uri: user?.picture }} style={styles.avatar} />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
-                {user?.givenName} {user?.familyName}
-              </Text>
+              {user?.givenName && user.familyName ? (
+                <Text style={styles.profileName}>
+                  {user.givenName} {user.familyName}
+                </Text>
+              ) : (
+                <Text style={styles.profileName}>{user?.nickname}</Text>
+              )}
+              
               <Text style={styles.profileEmail}>{user?.email}</Text>
             </View>
             
@@ -282,7 +276,7 @@ export default function Account() {
               styles.logoutButton,
               pressed ? styles.logoutButtonPressed : null,
             ]}
-            onPressIn={onLogout}
+            onPress={onLogout}
             android_ripple={{ color: theme.pressedBackground }}
           >
             <Ionicons name="log-out" size={18} color="#fff" />
