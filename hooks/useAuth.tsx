@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth0 } from "react-native-auth0";
 import { router, useSegments, useRootNavigationState } from "expo-router";
 import Constants from "expo-constants";
+import { secureDeleteValue, secureSave } from "@/utils/SecureStorage";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type AuthContextType = {
   signIn: () => Promise<string | void>;
@@ -49,11 +51,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
       const credentials = await getCredentials();
-      if (credentials) {
+      if (credentials?.accessToken) {
         setToken(credentials.accessToken);
+        await secureSave("token", credentials.accessToken);
       }
+    
       setIsAuthenticated(true);
-      return credentials?.accessToken;
+        
     } catch (e) {
       console.error("Login error:", e);
     }
@@ -62,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await clearSession();
+      await secureDeleteValue("token");
       setIsAuthenticated(false);
     } catch (e) {
       console.error("Logout error:", e);

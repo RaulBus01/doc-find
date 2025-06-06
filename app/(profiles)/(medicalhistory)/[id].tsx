@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { FlatList, Pressable } from "react-native-gesture-handler";
+import {  Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,6 +16,7 @@ import {
   getProfileMedicalHistoryList,
 } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import { FlashList } from "@shopify/flash-list";
 
 export default function MedicalHistoryScreen() {
   const { id } = useLocalSearchParams();
@@ -98,7 +99,7 @@ export default function MedicalHistoryScreen() {
       </View>
 
       {/* Medical History List */}
-      <FlatList
+      <FlashList
         data={medicalHistoryList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (

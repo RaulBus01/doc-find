@@ -1,6 +1,6 @@
 import { secureGetValueFor } from "@/utils/SecureStorage";
 import { AbstractPowerSyncDatabase, PowerSyncBackendConnector, UpdateType  } from "@powersync/react-native"
-import { Toast } from "toastify-react-native";
+
 
 export class Connector implements PowerSyncBackendConnector {
   /**
@@ -13,7 +13,7 @@ export class Connector implements PowerSyncBackendConnector {
  
   async fetchCredentials() {
       
-    const accessToken = await secureGetValueFor('accessToken');
+    const accessToken = await secureGetValueFor('token');
     if (!accessToken)
     {return null;}
     

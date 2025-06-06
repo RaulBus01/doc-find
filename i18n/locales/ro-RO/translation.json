@@ -6,7 +6,12 @@
   "dateToday":"Astăzi la",
   "dateYesterday":"Ieri la",
   "years":"ani",
-  "offlineMessage":"Nu există conexiune la internet",
+
+  
+  "offlineMessage":"Sunteți offline",
+  "profileDeleteSuccessMessage": "Profilul a fost șters cu succes",
+  "profileDeleteErrorMessage": "Eroare la ștergerea profilului",
+  "locationPermissionDenied": "Permisiune de localizare refuzată",
   "login": {
      "welcomeText": "Bine ați revenit",
      "subText": "Vă rugăm să vă conectați pentru a continua",
@@ -230,7 +235,26 @@
     "No": "Nu", 
     "I don't know": "Nu știu",
     "I used to": "A fost"
-  }
+  },
+  "placeDetails":{
+    "call": "Sunați",
+    "website": "Vizitați site-ul",
+    "viewMaps": "Vizualizați pe hartă",
+    "reviews": "Recenzii",
+    "operational": "Operațional",
+    "notOperational": "Nu este operațional",
+    "statusUnknown": "Stare necunoscută",
+    "directions": "Indicații",
+    "wheelchairAccessible": "Accesibil cu scaun cu rotile",
+    "notWheelchairAccessible": "Nu este accesibil cu scaun cu rotile",
+    "openNow": "Deschis acum",
+    "closedNow": "Închis acum",
+    "openingHours": "Program de lucru",
+    "addressNotAvailable": "Adresa nu este disponibilă",
+    "failedToFetchDetails": "Nu s-au putut încărca detaliile. Încercați din nou mai târziu.",
+    "closed": "Închis",
+    "noCategories": "Nu există categorii disponibile"
+}
   
 
 

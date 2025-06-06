@@ -15,12 +15,11 @@ export const powersync = new PowerSyncDatabase({
 
 
 export const setupPowerSync = async () => {
-  // Uses the backend connector that will be created in the next section
   const connector = new Connector();
   powersync.connect(connector);
 };
 
 export const getPowerSyncDatabase = () => {
-    // PowerSync exposes the underlying database through the database property
+
     return powersync.database;
 };

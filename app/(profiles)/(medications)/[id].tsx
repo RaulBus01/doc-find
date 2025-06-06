@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch, TouchableOpacity } from "react-native";
-import { FlatList, Pressable, ScrollView } from "react-native-gesture-handler";
+import {  Pressable, ScrollView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -14,6 +14,7 @@ import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { addProfileMedication, deleteMedication, getExistingMedicationsByName, getExistingMedicationsById, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import { FlashList } from "@shopify/flash-list";
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
@@ -167,7 +168,7 @@ export default function MedicationScreen() {
       
       {/* Medication List */}
   
-          <FlatList
+          <FlashList
             data={profileMedicationsList}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (

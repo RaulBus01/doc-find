@@ -5,6 +5,10 @@
   "dateToday":"Today at",
   "dateYesterday":"Yesterday at",
   "years":"years",
+   "offlineMessage":"You are offline",
+  "profileDeleteSuccessMessage": "Profile deleted successfully",
+  "profileDeleteErrorMessage": "Error deleting profile",
+  "locationPermissionDenied": "Location permission denied",
   "loading": {
     "loadingText": "Loading...",
     "loadingErrorText": "Error loading data"
@@ -224,5 +228,24 @@
     "No": "No", 
     "I don't know": "I don't know",
     "I used to": "I used to"
-  }
+  },
+  "placeDetails": {
+  "call": "Call",
+  "website": "Visit website",
+  "viewMaps": "View on map",
+  "reviews": "Reviews",
+  "operational": "Operational",
+  "notOperational": "Not operational",
+  "statusUnknown": "Status unknown",
+  "directions": "Directions",
+  "wheelchairAccessible": "Wheelchair accessible",
+  "notWheelchairAccessible": "Not wheelchair accessible",
+  "openNow": "Open now",
+  "closedNow": "Closed now",
+  "openingHours": "Opening hours",
+  "addressNotAvailable": "Address not available",
+  "failedToFetchDetails": "Failed to load details. Please try again later.",
+  "closed": "Closed",
+  "noCategories": "No categories available"
+}
 }

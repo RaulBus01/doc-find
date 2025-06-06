@@ -2,7 +2,7 @@ import React, { forwardRef, useCallback, useMemo } from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import {
   BottomSheetBackdrop,
-  BottomSheetFlatList,
+  BottomSheetFlashList,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import { FontAwesome } from "@expo/vector-icons";
@@ -64,10 +64,11 @@ const YearPickerBottomSheet = forwardRef<BottomSheetModal, YearPickerProps>(
         handleStyle={styles.handle}
         backgroundStyle={styles.container}
       >
-        <BottomSheetFlatList
+        <BottomSheetFlashList
           data={years}
           keyExtractor={(item) => item.toString()}
           renderItem={renderYearItem}
+          estimatedItemSize={67}
           contentContainerStyle={styles.contentContainer}
           ListHeaderComponent={() => (
             <View style={styles.header}>

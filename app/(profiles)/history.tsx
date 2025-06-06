@@ -40,6 +40,7 @@ import { useTranslation } from "react-i18next";
 import OptionsBottomSheet from "@/components/modals/Options";
 import bottomSheetModal from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetModal";
 import { useAuth } from "@/hooks/useAuth";
+import { Toast } from "toastify-react-native";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -97,10 +98,10 @@ const HistoryProfile = () => {
       await deleteProfile(drizzleDB, parseInt(selectedProfileId));
       fetchProfiles();
       bottomSheetModalRef.current?.dismiss();
-      Alert.alert("Success", "Profile deleted successfully");
+      Toast.success(t("profileHistory.profileDeleteSuccessMessage"));
     } catch (error) {
-      console.error("Error deleting profile:", error);
-      Alert.alert("Error", "Failed to delete profile");
+    
+      Toast.error(t("profileHistory.profileDeleteErrorMessage"));
     }
   }, [selectedProfileId]);
 

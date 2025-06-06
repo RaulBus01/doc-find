@@ -5,6 +5,10 @@
   "dateToday": "Heute um",
   "dateYesterday": "Gestern um",
   "years": "Jahre",
+  "offlineMessage": "Sie sind offline",
+  "profileDeleteSuccessMessage": "Profil erfolgreich gelöscht",
+  "profileDeleteErrorMessage": "Fehler beim Löschen des Profils",
+  "locationPermissionDenied": "Standortberechtigung verweigert",
   "loading": {
     "loadingText": "Lädt...",
     "loadingErrorText": "Fehler beim Laden der Daten"
@@ -224,5 +228,24 @@
     "No": "Nein",
     "I don't know": "Ich weiß nicht",
     "I used to": "Früher"
-  }
+  },
+  "placeDetails": {
+  "call": "Anrufen",
+  "website": "Website besuchen",
+  "viewMaps": "Auf Karte anzeigen",
+  "reviews": "Bewertungen",
+  "operational": "In Betrieb",
+  "notOperational": "Nicht in Betrieb",
+  "statusUnknown": "Status unbekannt",
+  "directions": "Wegbeschreibung",
+  "wheelchairAccessible": "Rollstuhlgerecht",
+  "notWheelchairAccessible": "Nicht rollstuhlgerecht",
+  "openNow": "Jetzt geöffnet",
+  "closedNow": "Jetzt geschlossen",
+  "openingHours": "Öffnungszeiten",
+  "addressNotAvailable": "Adresse nicht verfügbar",
+  "failedToFetchDetails": "Details konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+  "closed": "Geschlossen",
+  "noCategories": "Keine Kategorien verfügbar"
+}
 }

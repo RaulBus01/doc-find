@@ -5,6 +5,10 @@
   "dateToday": "Hoy a las",
   "dateYesterday": "Ayer a las",
   "years": "años",
+  "offlineMessage": "Estás desconectado",
+  "profileDeleteSuccessMessage": "Perfil eliminado con éxito",
+  "profileDeleteErrorMessage": "Error al eliminar perfil",
+  "locationPermissionDenied": "Permiso de ubicación denegado",
   "loading": {
     "loadingText": "Cargando...",
     "loadingErrorText": "Error al cargar datos"
@@ -224,5 +228,24 @@
     "No": "No",
     "I don't know": "No sé",
     "I used to": "Solía"
-  }
+  },
+  "placeDetails": {
+  "call": "Llamar",
+  "website": "Visitar sitio web",
+  "viewMaps": "Ver en mapa",
+  "reviews": "Reseñas",
+  "operational": "Operacional",
+  "notOperational": "No operacional",
+  "statusUnknown": "Estado desconocido",
+  "directions": "Indicaciones",
+  "wheelchairAccessible": "Accesible en silla de ruedas",
+  "notWheelchairAccessible": "No accesible en silla de ruedas",
+  "openNow": "Abierto ahora",
+  "closedNow": "Cerrado ahora",
+  "openingHours": "Horario de apertura",
+  "addressNotAvailable": "Dirección no disponible",
+  "failedToFetchDetails": "Error al cargar detalles. Inténtalo de nuevo más tarde.",
+  "closed": "Cerrado",
+  "noCategories": "No hay categorías disponibles"
+}
 }

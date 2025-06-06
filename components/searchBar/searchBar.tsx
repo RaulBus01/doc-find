@@ -5,7 +5,7 @@ import {
   StyleSheet,
   Animated,
   Keyboard,
-  FlatList,
+
   Text,
 } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
@@ -15,6 +15,7 @@ import { ThemeColors } from '@/constants/Colors';
 import * as ExpoGooglePlaces from "expo-google-places";
 import { secureGetValueFor } from '@/utils/SecureStorage';
 import * as Location from "expo-location";
+import { FlashList } from '@shopify/flash-list';
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
@@ -155,7 +156,7 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
 
       {showPredictions && (
         <View style={styles.predictionsContainer}>
-          <FlatList
+          <FlashList
             data={predictions}
             renderItem={renderPredictionItem}
             keyExtractor={(item, index) => `${item.placeId || index}`}

@@ -3,9 +3,8 @@ import { StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-nativ
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
-  BottomSheetView,
-  BottomSheetScrollView,
-  BottomSheetFlatList,
+  BottomSheetFlashList,
+  BottomSheetView
 } from "@gorhom/bottom-sheet";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
@@ -100,11 +99,11 @@ const LanguagePicker = forwardRef<BottomSheetModal, LanguagePickerProps>(
         backgroundStyle={styles.container}
       >
      
-
-          <BottomSheetFlatList
+        <BottomSheetView style={styles.scrollView}>
+          <BottomSheetFlashList
             data={LANGUAGES}
             keyExtractor={(item) => item.code}
-            style={styles.scrollView}
+            estimatedItemSize={95}
             renderItem={renderLanguageItem}
             ListHeaderComponent={() => (
               <View style={styles.header}>
@@ -114,6 +113,7 @@ const LanguagePicker = forwardRef<BottomSheetModal, LanguagePickerProps>(
               </View>
             )}
           />
+        </BottomSheetView>
  
       </BottomSheetModal>
     );

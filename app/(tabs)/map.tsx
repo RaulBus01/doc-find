@@ -33,6 +33,8 @@ import {
 import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
 import PlaceDetailsBottomSheet from "@/components/modals/PlaceDetails";
 import { Toast } from "toastify-react-native";
+import { useTranslation } from "react-i18next";
+
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -47,6 +49,7 @@ export default function Map() {
   const [activeFilter, setActiveFilter] = useState<string>("doctor");
   const [isLoading, setIsLoading] = useState(false);
   const [lastRegion, setLastRegion] = useState<Region | null>(null);
+  const {t} = useTranslation()
 
   const userLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -121,7 +124,7 @@ export default function Map() {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission to access location was denied");
+      Toast.warn(t('locationPermissionDenied'));
       return;
     }
 

@@ -16,8 +16,6 @@ export enum MessageType{
     chatId: string;
     isAI: boolean;
     content: string;
-    createdAt: string;
-    updatedAt: string;
   }
   
   export interface Chat {
@@ -121,3 +119,4 @@ export interface GooglePlaceDetails {
   };
   website?: string;
 }
+

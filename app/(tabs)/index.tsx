@@ -14,7 +14,6 @@ import {
 } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Chat } from "@/interface/Interface";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
 
@@ -28,6 +27,8 @@ import { powersync, setupPowerSync } from "@/powersync/system";
 
 import { getPowerSyncChats, getPowerSyncChatsCount } from "@/powersync/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { FlashList } from "@shopify/flash-list";
+import { Toast } from "toastify-react-native";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -38,7 +39,6 @@ const Home = () => {
 
   const RETRIVE_CHATS = 5;
   const [error, setError] = useState<Error | null>(null);
-  const [displayCount, setDisplayCount] = useState<number>(0);
   const { isTabBarVisible, setIsTabBarVisible } = useContext(TabBarVisibilityContext);
   const { t } = useTranslation();
   const isOffline = useOfflineStatus();
@@ -46,39 +46,21 @@ const Home = () => {
   const { data: powerSyncChats = [], isLoading: powerSyncLoading } = getPowerSyncChats(user?.sub || '', RETRIVE_CHATS);
   const { count: chatCountFromSync, isLoading: powerSyncCountLoading } = getPowerSyncChatsCount(user?.sub || '');
 
-  React.useEffect(() => {
+  useEffect(() => {
     const initializePowerSync = async () => {
       try {
         await setupPowerSync().then(() => {
-          console.log("PowerSync setup completed");
-          console.log(powersync.currentStatus);
         });
       } catch (error) {
-        console.error("Error initializing PowerSync:", error);
+        Toast.error("Error");
       }
     };
 
     initializePowerSync();
   }, []);
 
-  useEffect(() => {
-    setDisplayCount(0);
 
-    if (!chatCountFromSync) return;
 
-    const interval = setInterval(() => {
-      setDisplayCount((current) => {
-        const next =
-          current + Math.max(1, Math.floor((chatCountFromSync - current) / 10));
-        if (next >= chatCountFromSync) {
-          clearInterval(interval);
-          return chatCountFromSync;
-        }
-        return next;
-      });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [chatCountFromSync]);
 
   useFocusEffect(
     useCallback(() => {
@@ -214,7 +196,7 @@ const Home = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Second row - greeting message */}
+
         <View style={styles.headerBottomRow}>
           <Text style={styles.greetingText}>
             {t("homePage.good")} {getTimeOfDay()},{" "}
@@ -242,9 +224,9 @@ const Home = () => {
           </Text>
           <View style={styles.chatbotCard}>
             <View style={styles.chatbotDetails}>
-              {displayCount > 0 ? (
+              {!powerSyncCountLoading ? (
                 <>
-                  <Text style={styles.chatbotCount}>{displayCount}+</Text>
+                  <Text style={styles.chatbotCount}>{chatCountFromSync}+</Text>
                   <Text style={styles.chatbotLabel}>
                     {t("homePage.chatCountTotalChats")}
                   </Text>
@@ -297,42 +279,46 @@ const Home = () => {
             </Text>
             {powerSyncLoading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.progressColor} />
+              <ActivityIndicator size="large" color={theme.progressColor} />
               </View>
             ) : error ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>
-                  {t("homePage.chatErrorText")}
-                </Text>
+              <Text style={styles.errorText}>
+                {t("homePage.chatErrorText")}
+              </Text>
               </View>
-            ) : powerSyncChats && Array.isArray(powerSyncChats) && powerSyncChats.length > 0 ? (
-              powerSyncChats.map((chat) => (
+            ) : powerSyncChats && !powerSyncCountLoading ? (
+              <FlashList
+              data={powerSyncChats}
+              keyExtractor={(chat) => chat.id}
+              estimatedItemSize={65}
+              renderItem={({ item: chat }) => (
                 <TouchableOpacity
-                  key={chat.id}
-                  style={styles.recentChatItem}
-                  onPress={() => handleChatRouting(chat.id)}
+                style={styles.recentChatItem}
+                onPress={() => handleChatRouting(chat.id)}
                 >
-                  <View style={styles.chatIconContainer}>
-                    <Ionicons
-                      name="chatbubble-ellipses"
-                      size={20}
-                      color="white"
-                    />
-                  </View>
-  
-                  <View style={styles.chatItemContent}>
-                    <Text style={styles.chatItemTitle} numberOfLines={1}>
-                      {chat.title}
-                    </Text>
-                    <Text style={styles.chatItemDate}>
-                      {new Date(chat.created_at).toLocaleDateString()}
-                    </Text>
-                  </View>
+                <View style={styles.chatIconContainer}>
+                  <Ionicons
+                  name="chatbubble-ellipses"
+                  size={20}
+                  color="white"
+                  />
+                </View>
+        
+                <View style={styles.chatItemContent}>
+                  <Text style={styles.chatItemTitle} numberOfLines={1}>
+                  {chat.title}
+                  </Text>
+                  <Text style={styles.chatItemDate}>
+                  {new Date(chat.created_at).toLocaleDateString()}
+                  </Text>
+                </View>
                 </TouchableOpacity>
-              ))
+              )}
+              />
             ) : (
               <Text style={styles.noChatsText}>
-                {t("homePage.chatEmptyText")}
+              {t("homePage.chatEmptyText")}
               </Text>
             )}
           </View>
@@ -714,7 +700,7 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       backgroundColor: theme.pressedBackground,
       borderRadius: 18,
-      paddingHorizontal: 15,
+      paddingHorizontal: 10,
       paddingVertical: 12,
       marginBottom: 10,
     },

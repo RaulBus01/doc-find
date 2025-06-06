@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TextInput, Keyboard, Switch, TouchableOpacity } from "react-native";
-import { FlatList, Pressable } from "react-native-gesture-handler";
+import { Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -14,6 +14,7 @@ import  { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { getProfileAllergies,getAllergiesSuggestions,deleteAllergy, getExistingAllergiesByName, getExistingAllergiesById, insertAllergy } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import { FlashList } from "@shopify/flash-list";
 
 export default function AllergiesScreen() {
   const { id } = useLocalSearchParams();
@@ -173,7 +174,7 @@ export default function AllergiesScreen() {
         </View>
       
       {/* Allergies List */}
-      <FlatList
+      <FlashList
         data={profileAllergiesList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (

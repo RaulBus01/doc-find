@@ -19,7 +19,7 @@ interface ChatMessageProps {
   message: string;
   isAI: boolean;
   picture: string;
-  createdAt: string;
+
 }
 
 const ChatMessage = ({
@@ -28,7 +28,7 @@ const ChatMessage = ({
   message,
   isAI,
   picture,
-  createdAt,
+
 }: ChatMessageProps) => {
 
   const {theme} = useTheme();

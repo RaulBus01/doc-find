@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from "react-native";
 import { GooglePlaceDetails } from "@/interface/Interface";
-import { FontAwesome, FontAwesome5, FontAwesome6, MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { ThemeColors } from "@/constants/Colors";
 import { fetchPlaceDetails } from "@/utils/MapsDetails";
-import BottomSheetModalButton from "../BottomSheetModalButton";
+import { Toast } from "toastify-react-native";
+import { useTranslation } from "react-i18next";
+
 
 const PlaceDetails = ({
   theme,
@@ -17,13 +19,14 @@ const PlaceDetails = ({
   const [completeDetails, setCompleteDetails] = useState<GooglePlaceDetails | null>(null);
   const [showReviews, setShowReviews] = useState(false);
   const [showHours, setShowHours] = useState(false);
+  const {t} = useTranslation();
   
   const getPlaceDetails = async (placeId: string) => {
     const result = await fetchPlaceDetails(placeId);
     if (result) {
       setCompleteDetails(result);
     } else {
-      console.error("Failed to fetch place details");
+      Toast.error(t("placeDetails.failedToFetchDetails"));
     }
   };
   
@@ -33,7 +36,7 @@ const PlaceDetails = ({
     }
   }, [data?.place_id]);
   
-  // Show either the fetched complete details or the initial data
+
   const displayData = completeDetails || data;
   
   const renderStars = (rating = 0) => {
@@ -77,15 +80,15 @@ const PlaceDetails = ({
   };
   
   const getStatusColor = () => {
-    // Check current_opening_hours first (more accurate)
+
     if (displayData?.current_opening_hours) {
       return displayData.current_opening_hours.open_now ? theme.progressColor : theme.red;
     }
-    // Fall back to opening_hours
+
     if (displayData?.opening_hours) {
       return displayData.opening_hours.open_now ? theme.progressColor : theme.red;
     }
-    // Fall back to business_status
+
     if(displayData?.business_status){
       return displayData.business_status === "OPERATIONAL" ? theme.progressColor : theme.red; 
     }
@@ -94,16 +97,15 @@ const PlaceDetails = ({
 
   const getStatusText = () => {
     if( displayData?.current_opening_hours) {
-      return displayData.current_opening_hours.open_now ? "Open Now" : "Closed Now";
+      return displayData.current_opening_hours.open_now ? t("placeDetails.openNow") : t("placeDetails.closedNow");
     }
     if (displayData?.opening_hours) {
-      return displayData.opening_hours.open_now ? "Open Now" : "Closed Now";
+      return displayData.opening_hours.open_now ? t("placeDetails.openNow") : t("placeDetails.closedNow");
     }
     if (displayData?.business_status) {
-      return displayData.business_status === "OPERATIONAL" ? "Operational" : "Not Operational";
+      return displayData.business_status === "OPERATIONAL" ? t("placeDetails.operational") : t("placeDetails.closed");
     }
-    return "Status Unknown";
-   
+    return t("placeDetails.statusUnknown");
   }
 
   const openMaps = () => {
@@ -120,7 +122,7 @@ const PlaceDetails = ({
     if (phone) Linking.openURL(`tel:${phone}`);
   };
   
-  // Get opening hours from current_opening_hours (preferred) or regular opening_hours
+  
   const getOpeningHours = () => {
     return displayData?.current_opening_hours?.weekday_text || 
            displayData?.opening_hours?.weekday_text || 
@@ -156,7 +158,7 @@ const PlaceDetails = ({
         <View style={styles.infoRow}>
           <FontAwesome6 name="location-dot" size={22} color={theme.progressColor} />
           <Text style={styles.infoText}>
-            {displayData?.formatted_address || displayData?.vicinity || "Address not available"}
+            {displayData?.formatted_address || displayData?.vicinity || t("placeDetails.addressNotAvailable")}
           </Text>
         </View>
 
@@ -181,7 +183,7 @@ const PlaceDetails = ({
                 const types = displayData?.types
                 ?.filter(t => t !== "point_of_interest" && t !== "establishment")
                 .map(t => t.charAt(0).toUpperCase() + t.slice(1))
-                .join(", ") || "Category not available";
+                .join(", ") || t("placeDetails.noCategories");
               return types.charAt(0).toUpperCase() + types.slice(1);
             })()}
           </Text>
@@ -192,7 +194,9 @@ const PlaceDetails = ({
           <View style={styles.infoRow}>
             <FontAwesome6 name="wheelchair" size={22} color={theme.progressColor} />
             <Text style={styles.infoText}>
-              {displayData.wheelchair_accessible_entrance ? "Wheelchair accessible" : "Not wheelchair accessible"}
+              {displayData.wheelchair_accessible_entrance ? 
+                t("placeDetails.wheelchairAccessible") : 
+                t("placeDetails.notWheelchairAccessible")}
             </Text>
           </View>
         )}
@@ -205,7 +209,7 @@ const PlaceDetails = ({
           >
             <FontAwesome6 name="globe" size={22} color={theme.progressColor} />
             <Text style={[styles.infoText, styles.linkText]}>
-              {displayData?.website ? "Visit official website" : "View on Google Maps"}
+              {displayData?.website ? t('placeDetails.website') : t('placeDetails.viewMaps')}
             </Text>
           </TouchableOpacity>
         )}
@@ -220,7 +224,7 @@ const PlaceDetails = ({
           >
             <View style={styles.sectionHeaderContent}>
               <FontAwesome5 name="clock" size={20} color={theme.progressColor} />
-              <Text style={styles.sectionTitle}>Opening Hours</Text>
+              <Text style={styles.sectionTitle}>{t('placeDetails.openingHours')}</Text>
             </View>
             <FontAwesome6 
               name={showHours ? "chevron-up" : "chevron-down"} 
@@ -235,7 +239,7 @@ const PlaceDetails = ({
                 <View key={index} style={styles.hoursRow}>
                   <Text style={[
                     styles.dayText, 
-                    dayHours.includes(new Date().toLocaleDateString('en-US', {weekday: 'long'})) 
+                    dayHours.includes(new Date().toLocaleDateString(t('date'),{weekday: 'long'})) 
                       ? {color: theme.progressColor, fontWeight: '700'} 
                       : {}
                   ]}>
@@ -256,7 +260,7 @@ const PlaceDetails = ({
           onPress={openMaps}
         >
           <FontAwesome5 name="directions" size={22} color={theme.text} />
-          <Text style={styles.actionButtonText}>Directions</Text>
+          <Text style={styles.actionButtonText}>{t('placeDetails.directions')}</Text>
         </TouchableOpacity>
         
         {displayData?.formatted_phone_number && (
@@ -265,7 +269,7 @@ const PlaceDetails = ({
             onPress={() => makePhoneCall(displayData?.formatted_phone_number || "")}
           >
             <FontAwesome name="phone" size={22} color={theme.text} />
-            <Text style={styles.actionButtonText}>Call</Text>
+            <Text style={styles.actionButtonText}>{t('placeDetails.call')}</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -279,7 +283,7 @@ const PlaceDetails = ({
           >
             <View style={styles.sectionHeaderContent}>
               <FontAwesome name="comment" size={20} color={theme.progressColor} />
-              <Text style={styles.sectionTitle}>Reviews ({displayData.reviews.length})</Text>
+              <Text style={styles.sectionTitle}>{t('placeDetails.reviews')} ({displayData.reviews.length})</Text>
             </View>
             <FontAwesome6 
               name={showReviews ? "chevron-up" : "chevron-down"} 

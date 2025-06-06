@@ -5,7 +5,6 @@ import {
   View,
   Text,
   SafeAreaView,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
 
@@ -23,6 +22,7 @@ import OptionsBottomSheet from "@/components/modals/Options";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { getAllPowerSyncChats } from "@/powersync/utils";
 import { useAuth } from "@/hooks/useAuth";
+import { FlashList } from "@shopify/flash-list";
 
 
 const ChatHistoryScreen = () => {
@@ -38,6 +38,7 @@ const ChatHistoryScreen = () => {
   const {t} = useTranslation();
   const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
   const {user,token} = useAuth(); 
+  console.log("user", user, token);
 
   const {data:chatHistory} = getAllPowerSyncChats(user?.sub || '');
 
@@ -110,9 +111,10 @@ const ChatHistoryScreen = () => {
       />
 
       {chatHistory && chatHistory.length > 0 ? (
-        <FlatList
+        <FlashList
           data={chatHistory}
           keyExtractor={(item) => item.id}
+          estimatedItemSize={86}
           renderItem={({ item }) => (
             <ChatItem
               id={item.id}
@@ -193,7 +195,6 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     bottom: 10,
   },
   listContentChat: {
-    flexGrow: 1,
     paddingBottom: 50,
   },
   listContent: {
