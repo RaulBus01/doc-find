@@ -15,12 +15,13 @@ import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import ToastManager, { Toast } from "toastify-react-native";
 import "react-native-get-random-values";
+import { PowerSyncDatabase } from '@powersync/react-native';
 import { PowerSyncContext } from "@powersync/react-native";
 import { powersync } from "@/powersync/system";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import { ToastConfig, ToastConfigParams, ToastType } from "toastify-react-native/utils/interfaces";
-import toastConfig, { createToastConfig } from "@/utils/Toast";
+import  { createToastConfig } from "@/utils/Toast";
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -118,6 +119,7 @@ const RootLayout = () => {
   if (!domain || !clientId) {
     throw new Error("Auth0 configuration is missing");
   }
+   const queryClient = React.useMemo(() => new QueryClient(), [])
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
@@ -125,6 +127,7 @@ const RootLayout = () => {
         <Auth0Provider domain={domain} clientId={clientId}>
           <AuthProvider>
             <PowerSyncContext.Provider value={powersync}>
+               <QueryClientProvider client={queryClient}>
               <SQLiteProvider
                 databaseName={DATABASE_NAME}
                 options={{ enableChangeListener: true }}
@@ -136,6 +139,7 @@ const RootLayout = () => {
                   </BottomSheetModalProvider>
                 </GestureHandlerRootView>
               </SQLiteProvider>
+              </QueryClientProvider>
             </PowerSyncContext.Provider>
           </AuthProvider>
         </Auth0Provider>

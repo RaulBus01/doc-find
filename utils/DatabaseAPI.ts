@@ -1,11 +1,11 @@
 import { Message } from "@/interface/Interface";
 import { ApiCall } from "./ApiCall";
 
-export const addChat = async (token: string | null, message:string) => {
+export const addChat = async (token: string | null) => {
   if (!token) {
     throw new Error("No token available");
   }
-  const chat = await ApiCall.post('/chat', token, { message });
+  const chat = await ApiCall.post('/chat', token, {});
   return chat;
 };
 

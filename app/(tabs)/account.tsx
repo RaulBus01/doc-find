@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
 
 import { User } from "@/interface/Interface";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -149,21 +149,7 @@ export default function Account() {
               </Pressable>
               
           
-              
-              {/* <Pressable 
-                style={styles.option}
-                onPress={() => console.log("Change Password")} 
-                android_ripple={{ color: theme.pressedBackground }}
-              >
-                <View style={[styles.optionIcon, {backgroundColor: theme.VioletIconBackground}]}>
-                  <Ionicons name="lock-closed" size={20} color={theme.text} />
-                </View>
-                <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>{t('account.passwordText')}</Text>
-                  <Text style={styles.optionSubtitle}>{t('account.passwordSubText')}</Text>
-                </View>
-                <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
-              </Pressable> */}
+  
               
               <View style={styles.separator} />
               
@@ -173,7 +159,7 @@ export default function Account() {
                 android_ripple={{color: theme.pressedBackground}}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.GreenIconBackground}]}>
-                  <FontAwesome5 name="user-friends" size={18} color={theme.text} />
+                  <FontAwesome6 name="users" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={styles.optionTitle}>{t('account.profileText')}</Text>

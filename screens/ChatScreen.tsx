@@ -8,7 +8,7 @@ import {
   Switch,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { Entypo, FontAwesome, Ionicons } from "@expo/vector-icons";
+import { Entypo, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import MessageBar from "../components/ChatMessageBar";
 import {
   useContext,
@@ -82,9 +82,8 @@ const ChatScreen = () => {
   const isOffline = useOfflineStatus();
   const drizzleDB = useDatabase();
 
-  const { data: powerSyncMessages, isLoading: isPowerSyncLoading } = chatId
-    ? getPowerSyncMessages(chatId)
-    : { data: [], isLoading: false };
+const { data: powerSyncMessages, isLoading: isPowerSyncLoading } = 
+    getPowerSyncMessages(chatId || '', { enabled: !!chatId && isOffline });
   const symptomHandledRef = useRef(false);
 
   const handleAbortStream = useCallback(() => {
@@ -193,7 +192,7 @@ const ChatScreen = () => {
         };
 
         if (isNewChat) {
-          const chat = await addChat(token as string, messageContent);
+          const chat = await addChat(token as string);
           if (chat?.id) {
   
             chatIdRef.current = chat.id;
@@ -408,7 +407,7 @@ const ChatScreen = () => {
           style={styles.menuiconButton}
           onPress={handleMenuPress}
         >
-          <Entypo
+          <MaterialCommunityIcons
             name="menu"
             size={24}
             color={theme.textLight ? theme.textLight : theme.text}
