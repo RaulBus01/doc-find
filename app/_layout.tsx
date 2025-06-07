@@ -13,13 +13,16 @@ import { SQLiteProvider, openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import ToastManager, { Toast } from "toastify-react-native";
+import ToastManager from "toastify-react-native";
 import "react-native-get-random-values";
-import { PowerSyncDatabase } from '@powersync/react-native';
+
 import { PowerSyncContext } from "@powersync/react-native";
 import { powersync } from "@/powersync/system";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Font from 'expo-font';
+import { Entypo, FontAwesome, FontAwesome5, FontAwesome6, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 import  { createToastConfig } from "@/utils/Toast";
 SplashScreen.preventAutoHideAsync();
@@ -29,9 +32,22 @@ const fonts = {
   "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
   "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
 };
-
+// In your app initialization
+async function loadResourcesAsync() {
+  await Font.loadAsync({
+    ...Ionicons.font,
+    ...MaterialCommunityIcons.font,
+    ...Entypo.font,
+    ...FontAwesome.font,
+    ...FontAwesome5.font,
+    ...FontAwesome6.font,
+    ...Fontisto.font,
+    
+  });
+}
 const InitialLayout = () => {
   const [fontsLoaded, fontError] = useFonts(fonts);
+  const [iconsLoaded, setIconsLoaded] = React.useState(false);
   const { isAuthenticated } = useAuth();
   const { theme, isDark } = useTheme();
   const LoadingScreen = () => (
@@ -45,17 +61,26 @@ const InitialLayout = () => {
   }, [isAuthenticated]);
   useEffect(() => {
     if (fontError) {
-      console.error("Font loading error:", fontError);
+     
     }
   }, [fontError]);
 
   useEffect(() => {
-    if (fontsLoaded) {
+    loadResourcesAsync()
+      .then(() => setIconsLoaded(true))
+      .catch((error) => {
+     
+        setIconsLoaded(true);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (fontsLoaded && iconsLoaded) {
       SplashScreen.hideAsync().catch(console.error);
     }
-  }, [fontsLoaded]);
+  }, [fontsLoaded, iconsLoaded]);
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !iconsLoaded) {
     return <LoadingScreen />;
   }
 
@@ -75,7 +100,7 @@ const InitialLayout = () => {
         config={toastConfig}
         position="top"
         iconSize={24}
-        modal={false}
+        useModal={false}
       />
       <StatusBar animated={true} backgroundColor="transparent" style="auto" />
       <Stack

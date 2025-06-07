@@ -6,6 +6,7 @@ import { ThemeColors } from "@/constants/Colors";
 import { fetchPlaceDetails } from "@/utils/MapsDetails";
 import { Toast } from "toastify-react-native";
 import { useTranslation } from "react-i18next";
+import { useOfflineStatus } from "../OfflineIndicator";
 
 
 const PlaceDetails = ({
@@ -20,13 +21,26 @@ const PlaceDetails = ({
   const [showReviews, setShowReviews] = useState(false);
   const [showHours, setShowHours] = useState(false);
   const {t} = useTranslation();
-  
+  const isOffline = useOfflineStatus();
   const getPlaceDetails = async (placeId: string) => {
+    if (isOffline) {
+      return;
+    }
+    try{
     const result = await fetchPlaceDetails(placeId);
     if (result) {
       setCompleteDetails(result);
     } else {
 
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t("placeDetails.failedToFetchDetails"),
+      });
+    }
+    }
+    catch (error) {
+    
       Toast.show({
         type: "error",
         text1: t('toast.error'),

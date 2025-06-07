@@ -8,7 +8,12 @@ import {
   Switch,
 } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import { Entypo, FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import MessageBar from "../components/ChatMessageBar";
 import {
   useContext,
@@ -42,7 +47,6 @@ import {
 
 import { useAuth } from "@/hooks/useAuth";
 import { getPowerSyncMessages } from "@/powersync/utils";
-
 
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
@@ -82,8 +86,8 @@ const ChatScreen = () => {
   const isOffline = useOfflineStatus();
   const drizzleDB = useDatabase();
 
-const { data: powerSyncMessages, isLoading: isPowerSyncLoading } = 
-    getPowerSyncMessages(chatId || '', { enabled: !!chatId && isOffline });
+  const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
+    getPowerSyncMessages(chatId || "", { enabled: !!chatId && isOffline });
   const symptomHandledRef = useRef(false);
 
   const handleAbortStream = useCallback(() => {
@@ -93,8 +97,7 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
         type: "info",
         text1: t("toast.info"),
         text2: t("chat.streamAbortedInfo"),
-     
-      })
+      });
       setIsStreaming(false);
       abortControllerRef.current = null;
     }
@@ -130,7 +133,7 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
           console.error("Error fetching messages from API:", error);
           Toast.show({
             type: "error",
-            text1: t('toast.error'),
+            text1: t("toast.error"),
             text2: t("chat.chatFetchError"),
           });
         }
@@ -139,17 +142,19 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
 
     fetchMessagesFromAPI();
   }, [isOffline, chatId, token]);
-  
+
   const displayMessages = isOffline ? powerSyncMessages : messages;
 
   useEffect(() => {
+    if (isOffline) {
+      return;
+    }
+
     if (symptom && !symptomHandledRef.current) {
       symptomHandledRef.current = true;
       handleMessageSend("I have a symptom: " + symptom);
     }
-  }, [symptom]);
-
- 
+  }, [symptom,isOffline]);
 
   const handleMessageSend = useCallback(
     async (message: string) => {
@@ -163,12 +168,10 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
           return;
         }
         if (isOffline) {
-  
           Toast.show({
             type: "warn",
             text1: t("chat.chatOfflineErrorText1"),
             text2: t("chat.chatOfflineErrorText2"),
-
           });
 
           return;
@@ -194,7 +197,6 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
         if (isNewChat) {
           const chat = await addChat(token as string);
           if (chat?.id) {
-  
             chatIdRef.current = chat.id;
             newMessage.chatId = chat.id;
           }
@@ -284,7 +286,11 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
             );
             setMessages(updatedMessages);
           } catch (e) {
-            console.error("Error fetching final messages:", e);
+        
+            Toast.show({
+              type: "error",
+              text1: t("chat.chatFetchError"),
+            });
           }
         }
 
@@ -472,8 +478,7 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
           removeClippedSubviews={true}
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
-          ListFooterComponent={<View style={{ height: 120 }} />} 
-  
+          ListFooterComponent={<View style={{ height: 120 }} />}
           onContentSizeChange={() => {
             if (
               flatListRef.current &&
@@ -501,7 +506,7 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
           onAbortStream={handleAbortStream}
         />
       </View>
-  
+
       <BottomSheetModal
         ref={profilesBottomSheetRef}
         index={-1}
@@ -572,8 +577,6 @@ const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
           </View>
         )}
       </BottomSheetModal>
-      
-        
     </SafeAreaView>
   );
 };

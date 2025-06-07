@@ -46,7 +46,7 @@ export const formatDate = (t:any,dateString: string): string => {
       day: 'numeric'
     });
   } catch (error) {
-    console.error('Error formatting date:', error);
+   
     return 'Invalid date';
   }
 };

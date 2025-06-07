@@ -99,9 +99,7 @@ const ChatMessage = ({
             >
               <Ionicons name="copy" size={20} color={theme.text} />
             </Pressable>
-            <Pressable >
-              <Ionicons name="refresh" size={20} color={theme.text}/>
-            </Pressable>
+          
           </View>
           )
         ) : null}
