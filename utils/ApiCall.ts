@@ -31,7 +31,7 @@ export class ApiCall {
       }
       return response.json();
     } catch (error) {
-      // console.error("Get" + error);
+
     }
   }
 

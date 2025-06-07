@@ -8,7 +8,7 @@ export const getPowerSyncChats = (userId: string, RETRIVE_CHATS: number = 5): {
     data: Chat[] | undefined;
     isLoading: boolean;
 } => {
-    console.log("Retrieving chats for user:", userId, "Limit:", RETRIVE_CHATS);
+
     const { data: chatsData, isLoading } = useQuery('SELECT * FROM chats WHERE chats.user_id = ? ORDER BY chats.updated_at DESC LIMIT ?', [userId, RETRIVE_CHATS], {
         throttleMs: 1000,
     }
@@ -26,7 +26,7 @@ export const getAllPowerSyncChats = (userId: string): {
     data: Chat[] | undefined;
     isLoading: boolean;
 } => {
-    // console.log("Retrieving all chats for user:", userId);
+
     const { data: chatsData, isLoading } = useQuery('SELECT * FROM chats ORDER BY chats.updated_at DESC');
 
     if (isLoading) {
@@ -85,7 +85,7 @@ function extractMessagesFromPowerSync(
 ): Message[] {
   try {
     const extractedMessages: Message[] = [];
-
+    const seenIds = new Set<string>();
     for (const powerSyncMsg of powerSyncMessages) {
       try {
      
@@ -114,6 +114,10 @@ function extractMessagesFromPowerSync(
             const isAI = message.id && Array.isArray(message.id) && 
                         (message.id.includes("AIMessage") || message.id.includes("AIMessageChunk"));
 
+            if (seenIds.has(message.kwargs.id || powerSyncMsg.id)) continue;
+            seenIds.add(message.kwargs.id || powerSyncMsg.id);
+            console.log("Extracted message:", {
+              id: message.kwargs.id || powerSyncMsg.id});
             extractedMessages.push({
               id: message.kwargs.id || powerSyncMsg.id,
               chatId: sessionId || powerSyncMsg.thread_id || "",
@@ -122,11 +126,13 @@ function extractMessagesFromPowerSync(
             });
           }
         }
-      } catch (parseError) {
-        console.warn(`Failed to parse metadata for message ${powerSyncMsg.id}:`, parseError);
-        continue;
+      }
+      catch (error) {
+        console.error("Error processing PowerSync message:", error);
       }
     }
+
+
 
  
 

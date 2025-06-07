@@ -17,16 +17,7 @@ export const getMessages = async (token: string | null, chatId: string) => {
     const messages = await ApiCall.get(`/chat/${chatId}/messages`, token);
     return messages as Promise<Message[]>;
 };
-export const getLastMessage = async (token: string | null, chatId: string,limit:number) => {
-    if (!token) {
-        throw new Error("No token available");
-    }
-    const messages = await ApiCall.get(`/chat/${chatId}/lastMessages/${limit}`, token);
-    if (messages.length === 0) {
-        return null;
-    }
-    return messages as Promise<Message[]>;
-};
+
    
 
 

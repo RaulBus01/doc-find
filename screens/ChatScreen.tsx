@@ -46,7 +46,7 @@ import { getPowerSyncMessages } from "@/powersync/utils";
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
   const { top, bottom } = useSafeAreaInsets();
-  const [chatId, _setChatId] = useState(id);
+  const [chatId, setChatId] = useState(id);
   const chatIdRef = useRef(chatId);
 
   const { t } = useTranslation();
@@ -81,7 +81,9 @@ const ChatScreen = () => {
   const isOffline = useOfflineStatus();
   const drizzleDB = useDatabase();
 
-  // Add a flag to prevent duplicate symptom handling
+  const { data: powerSyncMessages, isLoading: isPowerSyncLoading } = chatId
+    ? getPowerSyncMessages(chatId)
+    : { data: [], isLoading: false };
   const symptomHandledRef = useRef(false);
 
   const handleAbortStream = useCallback(() => {
@@ -92,11 +94,6 @@ const ChatScreen = () => {
       abortControllerRef.current = null;
     }
   }, []);
-
-  function setChatId(id: string) {
-    chatIdRef.current = id;
-    _setChatId(id);
-  }
 
   const router = useRouter();
 
@@ -118,34 +115,22 @@ const ChatScreen = () => {
     console.log("Modal pressed");
   }, []);
 
-  const { data: powerSyncMessages, isLoading: isPowerSyncLoading } = chatId
-    ? getPowerSyncMessages(chatId)
-    : { data: [], isLoading: false };
-
   useEffect(() => {
-    if (chatId && powerSyncMessages && powerSyncMessages.length > 0) {
-      setMessages((prevMessages) => {
-        const mergedMessages = [...prevMessages];
+    const fetchMessagesFromAPI = async () => {
+      if (!isOffline && chatId && token) {
+        try {
+          const apiMessages = await getMessages(token, chatId);
+          setMessages(apiMessages);
+        } catch (error) {
+          console.error("Error fetching messages from API:", error);
+        }
+      }
+    };
 
-        powerSyncMessages.forEach((powerSyncMsg) => {
-          const existingIndex = mergedMessages.findIndex(
-            (msg) => msg.id === powerSyncMsg.id
-          );
-          if (existingIndex === -1) {
-            mergedMessages.push(powerSyncMsg);
-          } else {
-            if (
-              mergedMessages[existingIndex].content !== powerSyncMsg.content
-            ) {
-              mergedMessages[existingIndex] = powerSyncMsg;
-            }
-          }
-        });
+    fetchMessagesFromAPI();
+  }, [isOffline, chatId, token]);
 
-        return mergedMessages;
-      });
-    }
-  }, [chatId, powerSyncMessages?.length]);
+  const displayMessages = isOffline ? powerSyncMessages : messages;
 
   useEffect(() => {
     if (symptom && !symptomHandledRef.current) {
@@ -173,11 +158,12 @@ const ChatScreen = () => {
           return;
         }
 
-        let isNewChat = !chatIdRef.current;
+        const currentChatId = chatIdRef.current;
+        const isNewChat = !currentChatId;
         let newMessageId = MessageType.Human;
         let newMessage: Message = {
           id: newMessageId,
-          chatId: chatIdRef.current || "",
+          chatId: currentChatId || "",
           isAI: false,
           content: messageContent,
         };
@@ -185,7 +171,6 @@ const ChatScreen = () => {
         if (isNewChat) {
           const chat = await addChat(token as string, messageContent);
           if (chat?.id) {
-            setChatId(chat.id);
             chatIdRef.current = chat.id;
           }
           setMessages([newMessage]);
@@ -270,7 +255,7 @@ const ChatScreen = () => {
             );
             setMessages(updatedMessages);
           } catch (e) {
-            console.error("Error fetching last messages:", e);
+            console.error("Error fetching final messages:", e);
           }
         }
 
@@ -386,17 +371,6 @@ const ChatScreen = () => {
     [user?.nickname, user?.picture]
   );
 
-  const mergedMessages = useMemo(() => {
-    if (!powerSyncMessages?.length) return messages;
-
-    const messageMap = new Map(messages.map((msg) => [msg.id, msg]));
-    powerSyncMessages.forEach((psMsg) => {
-      messageMap.set(psMsg.id, psMsg);
-    });
-
-    return Array.from(messageMap.values());
-  }, [messages, powerSyncMessages]);
-
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
       <View style={[styles.header, { paddingTop: top + 10 }]}>
@@ -463,7 +437,7 @@ const ChatScreen = () => {
         {isOffline && <OfflineIndicator />}
         <FlashList
           ref={flatListRef}
-          data={mergedMessages}
+          data={displayMessages}
           renderItem={renderChatMessage}
           keyExtractor={(item) => item.id.toString()}
           estimatedItemSize={169}
@@ -471,7 +445,11 @@ const ChatScreen = () => {
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
           onContentSizeChange={() => {
-            if (flatListRef.current && mergedMessages.length > 0) {
+            if (
+              flatListRef.current &&
+              displayMessages &&
+              displayMessages.length > 0
+            ) {
               setTimeout(() => {
                 flatListRef.current?.scrollToEnd({ animated: true });
               }, 100);

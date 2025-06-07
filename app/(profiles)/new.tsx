@@ -272,7 +272,7 @@ const getChoiceStyle = (choice: string) => {
     try{
    
       const {diabetic, hypertensive, smoker, birthYear, ...profileData} = formData;
-      const age = birthYear > 0 ? currentYear - birthYear : 0; // Calculate age
+      const age = birthYear > 0 ? currentYear - birthYear : 0; 
 
       const profileToInsert = { ...profileData, age, auth0Id:user?.sub as string} as ProfileInput;
       const healthData = {

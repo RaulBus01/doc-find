@@ -140,11 +140,11 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     marginBottom: 20,
   },
   progressBar: {
-    height: 6, // Slightly taller
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // More subtle background
+    height: 6, 
+    backgroundColor: 'rgba(0, 0, 0, 0.1)', 
     borderRadius: 3,
     marginBottom: 8,
-    overflow: 'hidden', // Ensure fill doesn't overflow
+    overflow: 'hidden', 
   },
   progressFill: {
     height: '100%',
@@ -174,7 +174,6 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
   backButton:{
     flexDirection: 'row',
     gap: 10,
-    // backgroundColor: theme.tint,
     padding: 5,
     borderRadius: 8,
     minWidth: 120,

@@ -105,4 +105,3 @@ const getStyles = (theme: ThemeColors) =>
   }
 });
 export default Page;
-//com.laurbalaur.docfind.auth0://dev-20pzuivt0lfo5hhy.us.auth0.com/android/com.laurbalaur.docfind/callback

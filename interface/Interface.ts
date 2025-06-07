@@ -5,14 +5,14 @@ export enum Role {
     Bot = 1,
 }
 export enum MessageType{
-    Human = -100,
-    AI = -200,
-    System = -300,
+    Human = "-100",
+    AI = "-200",
+    System = "-300",
 }
   
   
   export interface Message {
-    id: number;
+    id: string;
     chatId: string;
     isAI: boolean;
     content: string;

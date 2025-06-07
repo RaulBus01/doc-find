@@ -80,12 +80,11 @@ export const profileMedicationsRelations = relations(profileMedications, ({ one 
   }),
 }));
 
-// Also add the reverse relations on medications
+
 export const medicationsRelations = relations(medications, ({ many }) => ({
   profileMedications: many(profileMedications),
 }));
 
-// Export types for TypeScript type safety
 export type Profile = typeof profiles.$inferSelect;
 export type ProfileInput = typeof profiles.$inferInsert;
 

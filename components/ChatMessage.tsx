@@ -14,7 +14,7 @@ import { ThemeColors } from "@/constants/Colors";
 import { MessageType } from "@/interface/Interface";
 
 interface ChatMessageProps {
-  id: number;
+  id: string;
   name: string;
   message: string;
   isAI: boolean;

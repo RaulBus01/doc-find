@@ -424,7 +424,7 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.text,
       marginBottom: 15,
     },
-    // Profiles Component Styles
+  
     profileCards: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -453,7 +453,7 @@ const getStyles = (theme: ThemeColors) =>
       fontWeight: "600",
       textAlign: "center",
     },
-    // Symptoms Component Styles
+
     symptomsScroll: {
       flexDirection: "row",
     },
@@ -474,7 +474,7 @@ const getStyles = (theme: ThemeColors) =>
       fontSize: 14,
       fontWeight: "500",
     },
-    // Chats Component Styles
+ 
     chatsScroll: {
       flexDirection: "row",
     },
@@ -502,7 +502,7 @@ const getStyles = (theme: ThemeColors) =>
       color: "#F44336",
       fontSize: 14,
     },
-    // Health Insights Styles
+ 
     insightsScroll: {
       flexDirection: "row",
     },
@@ -601,7 +601,7 @@ const getStyles = (theme: ThemeColors) =>
       color: "white",
       marginRight: 3,
     },
-    // AI Chatbot Styles
+  
     chatbotCard: {
       backgroundColor: theme.progressColor,
       borderRadius: 15,

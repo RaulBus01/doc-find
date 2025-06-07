@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth0 } from "react-native-auth0";
 import { router, useSegments, useRootNavigationState } from "expo-router";
 import Constants from "expo-constants";
-import { secureDeleteValue, secureSave } from "@/utils/SecureStorage";
+import { secureDeleteValue, secureGetValueFor, secureSave } from "@/utils/SecureStorage";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type AuthContextType = {
@@ -44,6 +44,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsAuthenticated(!!user);
   }, [user]);
 
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const savedToken = await secureGetValueFor("token");
+        if (savedToken) {
+          setToken(savedToken);
+        }
+      } catch (e) {
+        console.error("Error retrieving token:", e);
+      }
+    };
+
+    checkToken();
+  }, []);
+
   const signIn = async () => {
     try {
       await authorize({
@@ -51,7 +66,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
       });
       const credentials = await getCredentials();
+      console.log("User credentials:", credentials);
       if (credentials?.accessToken) {
+        console.log("Access Token:", credentials.accessToken);
         setToken(credentials.accessToken);
         await secureSave("token", credentials.accessToken);
       }

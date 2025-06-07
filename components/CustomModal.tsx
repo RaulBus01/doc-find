@@ -16,9 +16,10 @@ interface CustomModalProps {
 }
 
 const CustomModal: React.FC<CustomModalProps> = ({ modalVisible, setModalVisible, modalMessage,modalTitle,onConfirmed }) => {
-   const { theme } = useTheme();
-    const styles = getStyles(theme);
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const { t } = useTranslation();
+
   if (!modalVisible) return null;
   return (
     <SafeAreaProvider>
