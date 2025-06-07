@@ -3,7 +3,7 @@ import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
-import { Auth0Provider} from "react-native-auth0";
+import { Auth0Provider } from "react-native-auth0";
 import Constants from "expo-constants";
 import { View, ActivityIndicator, Text, useColorScheme } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -13,11 +13,14 @@ import { SQLiteProvider, openDatabaseSync } from "expo-sqlite";
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
-import ToastManager from "toastify-react-native";
+import ToastManager, { Toast } from "toastify-react-native";
 import "react-native-get-random-values";
 import { PowerSyncContext } from "@powersync/react-native";
 import { powersync } from "@/powersync/system";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+
+import { ToastConfig, ToastConfigParams, ToastType } from "toastify-react-native/utils/interfaces";
+import toastConfig, { createToastConfig } from "@/utils/Toast";
 SplashScreen.preventAutoHideAsync();
 
 const fonts = {
@@ -63,19 +66,18 @@ const InitialLayout = () => {
     );
   }
 
+  const toastConfig = createToastConfig(theme);
   return (
     <>
+    
       <ToastManager
-        theme={isDark ? "dark" : "light"}
-        showProgressBar={false}
-        style={{ width: "100%", height: "100px", elevation: 0 }}
-        animationIn={"fadeIn"}
-        animationOut="fadeOut"
-        animationStyle={"upInUpOut"}
+        config={toastConfig}
+        position="top"
+        iconSize={24}
+        modal={false}
       />
       <StatusBar animated={true} backgroundColor="transparent" style="auto" />
       <Stack
-
         screenOptions={{
           headerShown: false,
         }}
@@ -86,7 +88,7 @@ const InitialLayout = () => {
             headerShown: false,
           }}
         />
-  
+
         <Stack.Screen
           name="(tabs)"
           options={{

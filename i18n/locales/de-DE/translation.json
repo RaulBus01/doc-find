@@ -50,7 +50,8 @@
     "chatAllChatsText": "Alle Unterhaltungen",
     "chatRecentText": "Aktuelle Unterhaltungen",
     "chatErrorText": "Fehler beim Laden der Unterhaltungen",
-    "chatEmptyText": "Keine Unterhaltungen verfügbar"
+    "chatEmptyText": "Keine Unterhaltungen verfügbar",
+    "powerSyncErrorText": "Fehler bei der Synchronisation mit PowerSync"
   },
   "tabbar": {
     "home": "Startseite",
@@ -94,7 +95,14 @@
       "Willkommen bei Medora, deiner Gesundheitsressource. Teile deine Symptome mit mir, und ich schlage mögliche Diagnosen vor. Bei dringenden Fällen kann ich Notdienste in deiner Nähe finden.",
       "Medora ist hier, um dich zu unterstützen. Gib Details zu deinen Symptomen an, und ich analysiere mögliche Erkrankungen. Bei kritischen Situationen kann ich nahegelegene Notfallbehandlungsoptionen identifizieren.",
       "Willkommen bei Medora. Ich bin dafür da, dir bei der Interpretation deiner Symptome und möglichen Erkrankungen zu helfen. Im Notfall kann ich auch medizinische Einrichtungen in der Nähe finden."
-    ]
+    ],
+    "chatOfflineErrorText1": "Netzwerkfehler.",
+    "chatOfflineErrorText2": "Bitte überprüfe deine Internetverbindung",
+    "streamAbortedInfo": "Datenübertragung wurde vom Benutzer unterbrochen.",
+    "chatAuthErrorText1": "Authentifizierungsfehler.",
+    "chatAuthErrorText2": "Bitte melde dich erneut an.",
+    "chatStreamErrorText1": "Datenübertragungsfehler.",
+    "chatStreamErrorText2": "Bitte lade die Seite neu."
   },
   "chatHistory": {
     "chatHistoryTitle": "Chat-Verlauf",
@@ -103,7 +111,11 @@
     "chatDeleteText": "Unterhaltung löschen",
     "chatDeleteConfirmText": "Bist du sicher, dass du diese Unterhaltung löschen möchtest?",
     "chatDeleteConfirmButtonText": "Löschen",
-    "chatDeleteCancelButtonText": "Abbrechen"
+    "chatDeleteCancelButtonText": "Abbrechen",
+    "chatDeleteSuccessText": "Unterhaltung erfolgreich gelöscht",
+    "chatDeleteErrorText": "Fehler beim Löschen der Unterhaltung",
+    "chatDeleteOfflineErrorText1": "Fehler beim Löschen der Unterhaltung",
+    "chatDeleteOfflineErrorText2": "Bitte überprüfe deine Internetverbindung"
   },
   "profile": {
     "profileLoadingText": "Profil wird geladen...",
@@ -116,12 +128,39 @@
     "profileCreated": "Erstellt",
     "profileLastUpdated": "Zuletzt aktualisiert"
   },
+  "toast": {
+    "success": "Erfolg",
+    "error": "Fehler",
+    "warning": "Warnung",
+    "info": "Information",
+    "nameRequired": "Name ist erforderlich",
+    "genderRequired": "Geschlecht ist erforderlich",
+    "birthYearRequired": "Geburtsjahr ist erforderlich",
+    "profileSaved": "Profil erfolgreich gespeichert",
+    "profileUpdated": "Profil erfolgreich aktualisiert",
+    "saveError": "Fehler beim Speichern des Profils",
+    "updateError": "Fehler beim Aktualisieren des Profils",
+    "networkError": "Netzwerkfehler. Überprüfe deine Internetverbindung",
+    "validationError": "Bitte fülle alle erforderlichen Felder aus"
+  },
+  "profileEdit": {
+    "profileNotFoundText": "Profil nicht gefunden",
+    "healthDataNotFoundText": "Keine Gesundheitsdaten verfügbar",
+    "errorLoadingProfile": "Fehler beim Laden des Profils",
+    "nameRequired": "Name ist erforderlich",
+    "birthYearRequired": "Geburtsjahr ist erforderlich",
+    "genderRequired": "Geschlecht ist erforderlich",
+    "updatedSuccessfully": "Profil erfolgreich aktualisiert",
+    "errorUpdatingProfile": "Fehler beim Aktualisieren des Profils"
+  },
   "profileHistory": {
     "profileHeaderTitle": "Deine Profile",
     "profileSubHeaderTitle": "Verwalte deine medizinischen Profile",
     "profileNoProfileText": "Keine Profile verfügbar",
     "profileAddText": "Neues medizinisches Profil hinzufügen",
-    "profileCreateButtonText": "Profil erstellen"
+    "profileCreateButtonText": "Profil erstellen",
+    "profileDeleteSuccessMessage": "Profil erfolgreich gelöscht",
+    "profileDeleteErrorMessage": "Fehler beim Löschen des Profils"
   },
   "profileNew": {
     "profileHeaderTitle": "Neues Profil erstellen",

@@ -24,6 +24,7 @@ const BottomSheetModalButton: React.FC<BottomSheetModalButtonProps> = ({ title, 
 }
 const getStyles = (theme: ThemeColors) => StyleSheet.create({
     container:{
+       
         flexDirection:"row",
         justifyContent:"flex-start",
         alignItems:"center",

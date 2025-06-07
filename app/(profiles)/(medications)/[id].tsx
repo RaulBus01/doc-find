@@ -35,7 +35,11 @@ export default function MedicationScreen() {
   const fetchProfileMedications = async () => {
     try {
       if (!id) {
-        Toast.error(t('medications.error'), "top");
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
         return;
       }
       
@@ -44,7 +48,11 @@ export default function MedicationScreen() {
       setProfileMedicationsList(result || []);
     } catch (error) {
       setProfileMedicationsList([]);
-         Toast.error(t('medications.error'), "top");
+          Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
     }
   };
   
@@ -68,7 +76,11 @@ export default function MedicationScreen() {
     setShowSuggestions(results.length > 0);
     }
     catch (error) {
-      Toast.error(t('medications.error'), "top");
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
       setSuggestedMedications([]);
       setShowSuggestions(false);
     }
@@ -96,7 +108,11 @@ export default function MedicationScreen() {
   
   const handleAddMedication = async () => {
     if (!medicationName.trim()) {
-      Toast.warn(t('medications.warning'), "top");
+      Toast.show({
+        type: "warn",
+        text1: t('toast.warning'),
+        text2: t('medications.warning'),
+      })
       return;
     }
     
@@ -111,7 +127,11 @@ export default function MedicationScreen() {
         // Create new medication if it doesn't exist
         const insertResult =  await insertMedication(drizzleDB, medicationName.trim());
         if (!insertResult) {
-          Toast.error(t('medications.errorAdd'), "top");
+          Toast.show({
+            type: "error",
+            text1: t('toast.error'),
+            text2: t('medications.errorAdd'),
+          });
           return;
         }
           
@@ -123,18 +143,33 @@ export default function MedicationScreen() {
       const existingProfileMed = await getExistingMedicationsById(drizzleDB, parseInt(id as string, 10), medicationId);
         
       if (existingProfileMed) {
-        Toast.warn(t('medications.warningExists'), 'top');
+
+        Toast.show({
+          type: "warn",
+          text1: t('toast.warning'),
+          text2: t('medications.warningExists'),
+        });
         return;
       }
       // Add medication to profile
       await addProfileMedication(drizzleDB, parseInt(id as string, 10), medicationId, dosage);
-      Toast.success(t('medications.successAdd'), "top");
+ 
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medications.successAdd'),
+      });
       setMedicationName("");
       setDosage(false);
       fetchProfileMedications();
       
     } catch (error) {
-      Toast.error(t('medications.errorAdd'), "top");
+   
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medications.errorAdd'),
+      });
     }
   };
   const handleDeleteMedication = (medicationId: number) => async () => {
@@ -142,14 +177,30 @@ export default function MedicationScreen() {
      
       const result = await deleteMedication(drizzleDB, parseInt(id as string, 10), medicationId);
       if (!result) {
-        Toast.error(t('medications.deleteError'), "top");
+     
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.deleteError'),
+        });
+
         return;
       }
-      Toast.success(t('medications.successDelete'), "top");
+
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medications.successDelete'),
+      });
       fetchProfileMedications();
     }
     catch (error) {
-      Toast.error(t('medications.deleteError'), "top");
+
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medications.deleteError'),
+      });
     }
   }
 

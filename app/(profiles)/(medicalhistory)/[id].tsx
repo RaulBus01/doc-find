@@ -36,7 +36,12 @@ export default function MedicalHistoryScreen() {
   const fetchMedicalHistory = async () => {
     try {
       if (!id) {
-        Toast.error(t('medicalHistory.error'),"top");
+
+        Toast.show({
+          type: "error",
+           text1: t('toast.error'),
+          text2: t('medicalHistory.error'),
+        });
         return;
       }
 
@@ -45,14 +50,23 @@ export default function MedicalHistoryScreen() {
         parseInt(id as string)
       );
       if (!result) {
-         Toast.error(t('medicalHistory.error'), "top");
+         Toast.show({
+          type: "error",
+           text1: t('toast.error'),
+          text2: t('medicalHistory.error'),
+         })
         return;
       }
 
       setMedicalHistoryList(result || []);
     } catch (error) {
       setMedicalHistoryList([]);
-       Toast.error(t('medicalHistory.error'), "top");
+
+       Toast.show({
+        type: "error",
+         text1: t('toast.error'),
+        text2: t('medicalHistory.error'),
+       });
     }
   };
 
@@ -70,14 +84,29 @@ export default function MedicalHistoryScreen() {
     try {
       const result = await deleteMedicalHistory(drizzleDB, entryId);
       if (!result) {
-          Toast.error(t('medicalHistory.deleteError'), "top");
+
+          Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medicalHistory.deleteError'),
+        });
         return;
       }
 
-      Toast.success(t('medicalHistory.successDelete'), "top");
+     
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medicalHistory.successDelete'),
+      });
       fetchMedicalHistory();
     } catch (error) {
-      Toast.error(t('medicalHistory.deleteError'), "top");
+
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medicalHistory.deleteError'),
+      });
     }
   };
 

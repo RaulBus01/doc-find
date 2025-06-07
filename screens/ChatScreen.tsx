@@ -43,6 +43,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { getPowerSyncMessages } from "@/powersync/utils";
 
+
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
   const { top, bottom } = useSafeAreaInsets();
@@ -89,7 +90,12 @@ const ChatScreen = () => {
   const handleAbortStream = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
-      Toast.info("Stream aborted by user.");
+      Toast.show({
+        type: "info",
+        text1: t("toast.info"),
+        text2: t("chat.streamAbortedInfo"),
+     
+      })
       setIsStreaming(false);
       abortControllerRef.current = null;
     }
@@ -123,13 +129,18 @@ const ChatScreen = () => {
           setMessages(apiMessages);
         } catch (error) {
           console.error("Error fetching messages from API:", error);
+          Toast.show({
+            type: "error",
+            text1: t('toast.error'),
+            text2: t("chat.chatFetchError"),
+          });
         }
       }
     };
 
     fetchMessagesFromAPI();
   }, [isOffline, chatId, token]);
-
+  
   const displayMessages = isOffline ? powerSyncMessages : messages;
 
   useEffect(() => {
@@ -139,15 +150,28 @@ const ChatScreen = () => {
     }
   }, [symptom]);
 
+ 
+
   const handleMessageSend = useCallback(
     async (message: string) => {
       try {
         if (!user || !user.sub) {
-          console.error("Error", user?.sub, token);
+          Toast.show({
+            type: "error",
+            text1: t("chat.chatAuthErrorText1"),
+            text2: t("chat.chatAuthErrorText2"),
+          });
           return;
         }
         if (isOffline) {
-          Toast.error(t("chat.chatOfflineError"));
+  
+          Toast.show({
+            type: "warn",
+            text1: t("chat.chatOfflineErrorText1"),
+            text2: t("chat.chatOfflineErrorText2"),
+
+          });
+
           return;
         }
 
@@ -171,7 +195,9 @@ const ChatScreen = () => {
         if (isNewChat) {
           const chat = await addChat(token as string, messageContent);
           if (chat?.id) {
+  
             chatIdRef.current = chat.id;
+            newMessage.chatId = chat.id;
           }
           setMessages([newMessage]);
         } else {
@@ -241,7 +267,11 @@ const ChatScreen = () => {
         } catch (error) {
           const errorMessage =
             error instanceof Error ? error : new Error(String(error));
-          console.error("Stream error:", errorMessage);
+          Toast.show({
+            type: "error",
+            text1: t("chat.chatStreamErrorText1"),
+            text2: t("chat.chatStreamErrorText2"),
+          });
         } finally {
           setIsStreaming(false);
           abortControllerRef.current = null;
@@ -440,10 +470,11 @@ const ChatScreen = () => {
           data={displayMessages}
           renderItem={renderChatMessage}
           keyExtractor={(item) => item.id.toString()}
-          estimatedItemSize={169}
           removeClippedSubviews={true}
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
+          ListFooterComponent={<View style={{ height: 120 }} />} 
+  
           onContentSizeChange={() => {
             if (
               flatListRef.current &&
@@ -471,7 +502,7 @@ const ChatScreen = () => {
           onAbortStream={handleAbortStream}
         />
       </View>
-
+  
       <BottomSheetModal
         ref={profilesBottomSheetRef}
         index={-1}
@@ -542,6 +573,8 @@ const ChatScreen = () => {
           </View>
         )}
       </BottomSheetModal>
+      
+        
     </SafeAreaView>
   );
 };
@@ -631,7 +664,6 @@ const getStyles = (theme: ThemeColors) =>
     },
     chatContainer: {
       backgroundColor: theme.background,
-      paddingBottom: 150,
     },
     bottomSheetHeader: {
       paddingHorizontal: 16,

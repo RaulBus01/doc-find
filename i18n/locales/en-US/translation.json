@@ -50,7 +50,8 @@
     "chatAllChatsText":"All conversations",
     "chatRecentText":"Recent conversations",
     "chatErrorText":"Error loading conversations",
-    "chatEmptyText":"No conversations available"
+    "chatEmptyText":"No conversations available",
+    "powerSyncErrorText":"Error syncing with PowerSync"
   },
   "tabbar": {
     "home": "Home",
@@ -94,7 +95,14 @@
       "Welcome to Medora, your health resource. Share your symptoms and I'll suggest potential diagnoses. If you need immediate assistance, I can find emergency services near your location.",
       "Medora is here to support you. Provide details about your symptoms and I'll analyze them for possible conditions. If the situation is critical, I can identify nearby emergency treatment options.",
       "Welcome to Medora. I'm equipped to help you interpret your symptoms and explore potential conditions. In case of emergency, I can also assist by locating nearby medical facilities."
-    ]
+    ],
+    "chatOfflineErrorText1": "Network error.",
+    "chatOfflineErrorText2": "Please check your internet connection",
+    "streamAbortedInfo":"Data stream was interrupted by user.",
+    "chatAuthErrorText1":"Authentication error.",
+    "chatAuthErrorText2":"Please sign in again.",
+    "chatStreamErrorText1":"Data stream error.",
+    "chatStreamErrorText2":"Please reload the page."
   },
   "chatHistory":{
     "chatHistoryTitle":"Chat History",
@@ -103,7 +111,11 @@
     "chatDeleteText":"Delete conversation",
     "chatDeleteConfirmText":"Are you sure you want to delete this conversation?",
     "chatDeleteConfirmButtonText":"Delete",
-    "chatDeleteCancelButtonText":"Cancel"
+    "chatDeleteCancelButtonText":"Cancel",
+    "chatDeleteSuccessText":"Conversation deleted successfully",
+    "chatDeleteErrorText":"Error deleting conversation",
+    "chatDeleteOfflineErrorText1":"Error deleting conversation",
+    "chatDeleteOfflineErrorText2":"Please check your internet connection"
   },
   "profile":{
     "profileLoadingText":"Loading profile...",
@@ -116,12 +128,39 @@
     "profileCreated":"Created",
     "profileLastUpdated":"Last Updated"
   },
+  "toast":{
+    "success": "Success",
+    "error": "Error", 
+    "warning": "Warning",
+    "info": "Information",
+    "nameRequired": "Name is required",
+    "genderRequired": "Gender is required", 
+    "birthYearRequired": "Birth year is required",
+    "profileSaved": "Profile saved successfully",
+    "profileUpdated": "Profile updated successfully",
+    "saveError": "Error saving profile",
+    "updateError": "Error updating profile",
+    "networkError": "Network error. Check your internet connection",
+    "validationError": "Please fill in all required fields"
+  },
+  "profileEdit":{
+    "profileNotFoundText":"Profile not found",
+    "healthDataNotFoundText":"No health data available",
+    "errorLoadingProfile":"Error loading profile",
+    "nameRequired":"Name is required",
+    "birthYearRequired":"Birth year is required",
+    "genderRequired":"Gender is required",
+    "updatedSuccessfully":"Profile updated successfully",
+    "errorUpdatingProfile":"Error updating profile"
+  },
   "profileHistory":{
     "profileHeaderTitle":"Your Profiles",
     "profileSubHeaderTitle":"Manage your medical profiles",
     "profileNoProfileText":"No profiles available",
     "profileAddText":"Add a new medical profile",
-    "profileCreateButtonText":"Create Profile"
+    "profileCreateButtonText":"Create Profile",
+    "profileDeleteSuccessMessage": "Profile deleted successfully",
+    "profileDeleteErrorMessage": "Error deleting profile"
   },
   "profileNew":{
     "profileHeaderTitle":"Create New Profile",

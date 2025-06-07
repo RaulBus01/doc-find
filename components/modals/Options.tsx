@@ -47,6 +47,7 @@ const OptionsBottomSheet = forwardRef<BottomSheetModal, OptionsBottomSheetProps>
         backgroundStyle={styles.container}
       >
         <BottomSheetView style={styles.content}>
+          <View style={styles.separator} />
           {onDelete && (
             <BottomSheetModalButton
               title="Delete"
@@ -57,17 +58,7 @@ const OptionsBottomSheet = forwardRef<BottomSheetModal, OptionsBottomSheetProps>
               }}
             />
           )}
-          {onDelete && showEdit && onEdit && <View style={styles.separator} />}
-          {showEdit && onEdit && (
-            <BottomSheetModalButton
-              title="Edit"
-              icon="create-outline"
-              onPress={() => {
-                onEdit();
-                (ref as React.RefObject<BottomSheetModal>)?.current?.dismiss();
-              }}
-            />
-          )}
+       
         </BottomSheetView>
       </BottomSheetModal>
     );

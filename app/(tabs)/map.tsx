@@ -124,7 +124,12 @@ export default function Map() {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Toast.warn(t('locationPermissionDenied'));
+      Toast.show({
+        type: "info",
+        text1: t('toast.info'),
+        text2: t('locationPermissionDenied'),
+      })
+     
       return;
     }
 

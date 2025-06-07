@@ -23,11 +23,12 @@ import { getAllPowerSyncChats } from "@/powersync/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { FlashList } from "@shopify/flash-list";
 import { Toast } from "toastify-react-native";
+import { useOfflineStatus } from "@/components/OfflineIndicator";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
   const router = useRouter();
-
+ const isOffline = useOfflineStatus();
   type Ref = BottomSheetModal;
   const bottomSheetModalRef = useRef<Ref>(null);
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -62,12 +63,26 @@ const ChatHistoryScreen = () => {
   const confirmDeleteChat = async () => {
     try {
       if (!selectedChatId || !token) return;
+      if (isOffline) {
+        Toast.show({
+          type: "error",
+          text1: t("chatHistory.chatDeleteOfflineErrorText1"),
+          text2: t("chatHistory.chatDeleteOfflineErrorText2"),
+        });
+        return;
+      }
       await deleteChat(token, selectedChatId);
 
-      Toast.info("success");
+      Toast.show({
+        type: "success",
+        text1: t("chatHistory.chatDeleteSuccessText"),
+      })
       bottomSheetModalRef.current?.dismiss();
     } catch (error) {
-      console.error("Failed to delete chat:", error);
+      Toast.show({
+        type: "success",
+        text1: t("chatHistory.chatDeleteErrorText"),
+      })
     } finally {
       setSelectedChatId(null);
       setDeleteModalVisible(false);
@@ -100,10 +115,11 @@ const ChatHistoryScreen = () => {
       </View>
 
       <OptionsBottomSheet
-        index={1}
+        index={0}
         onDelete={handleDeleteChat}
         onEdit={handleEditChat}
         ref={bottomSheetModalRef}
+        showEdit={false}
       />
 
       {chatHistory && chatHistory.length > 0 ? (

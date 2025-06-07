@@ -49,7 +49,8 @@
     "chatAllChatsText": "Toutes les conversations",
     "chatRecentText": "Conversations récentes",
     "chatErrorText": "Erreur lors du chargement des conversations",
-    "chatEmptyText": "Aucune conversation disponible"
+    "chatEmptyText": "Aucune conversation disponible",
+    "powerSyncErrorText": "Erreur de synchronisation avec PowerSync"
   },
   "tabbar": {
     "home": "Accueil",
@@ -93,7 +94,14 @@
       "Bienvenue sur Medora, votre ressource santé. Partagez vos symptômes et je proposerai des diagnostics possibles. Si vous avez besoin d'aide immédiate, je peux localiser des services médicaux proches.",
       "Medora est là pour vous aider. Donnez des détails sur vos symptômes et je les analyserai pour des affections possibles. En cas critique, je peux identifier des options de traitement d'urgence à proximité.",
       "Bienvenue sur Medora. Je peux vous aider à interpréter vos symptômes et explorer des conditions potentielles. En cas d'urgence, je peux aussi vous aider à trouver des établissements médicaux à proximité."
-    ]
+    ],
+    "chatOfflineErrorText1": "Erreur réseau.",
+    "chatOfflineErrorText2": "Veuillez vérifier votre connexion internet",
+    "streamAbortedInfo": "Le flux de données a été interrompu par l'utilisateur.",
+    "chatAuthErrorText1": "Erreur d'authentification.",
+    "chatAuthErrorText2": "Veuillez vous reconnecter.",
+    "chatStreamErrorText1": "Erreur de flux de données.",
+    "chatStreamErrorText2": "Veuillez recharger la page."
   },
   "chatHistory": {
     "chatHistoryTitle": "Historique des conversations",
@@ -102,7 +110,11 @@
     "chatDeleteText": "Supprimer la conversation",
     "chatDeleteConfirmText": "Êtes-vous sûr de vouloir supprimer cette conversation ?",
     "chatDeleteConfirmButtonText": "Supprimer",
-    "chatDeleteCancelButtonText": "Annuler"
+    "chatDeleteCancelButtonText": "Annuler",
+    "chatDeleteSuccessText": "Conversation supprimée avec succès",
+    "chatDeleteErrorText": "Erreur lors de la suppression de la conversation",
+    "chatDeleteOfflineErrorText1": "Erreur lors de la suppression de la conversation",
+    "chatDeleteOfflineErrorText2": "Veuillez vérifier votre connexion internet"
   },
   "profile": {
     "profileLoadingText": "Chargement du profil...",
@@ -115,12 +127,39 @@
     "profileCreated": "Créé",
     "profileLastUpdated": "Dernière mise à jour"
   },
+  "toast": {
+    "success": "Succès",
+    "error": "Erreur",
+    "warning": "Avertissement",
+    "info": "Information",
+    "nameRequired": "Le nom est obligatoire",
+    "genderRequired": "Le sexe est obligatoire",
+    "birthYearRequired": "L'année de naissance est obligatoire",
+    "profileSaved": "Profil enregistré avec succès",
+    "profileUpdated": "Profil mis à jour avec succès",
+    "saveError": "Erreur lors de l'enregistrement du profil",
+    "updateError": "Erreur lors de la mise à jour du profil",
+    "networkError": "Erreur réseau. Vérifiez votre connexion internet",
+    "validationError": "Veuillez remplir tous les champs obligatoires"
+  },
+  "profileEdit": {
+    "profileNotFoundText": "Profil non trouvé",
+    "healthDataNotFoundText": "Aucune donnée de santé disponible",
+    "errorLoadingProfile": "Erreur lors du chargement du profil",
+    "nameRequired": "Le nom est obligatoire",
+    "birthYearRequired": "L'année de naissance est obligatoire",
+    "genderRequired": "Le sexe est obligatoire",
+    "updatedSuccessfully": "Profil mis à jour avec succès",
+    "errorUpdatingProfile": "Erreur lors de la mise à jour du profil"
+  },
   "profileHistory": {
     "profileHeaderTitle": "Vos profils",
     "profileSubHeaderTitle": "Gérez vos profils médicaux",
     "profileNoProfileText": "Aucun profil disponible",
     "profileAddText": "Ajouter un nouveau profil médical",
-    "profileCreateButtonText": "Créer un profil"
+    "profileCreateButtonText": "Créer un profil",
+    "profileDeleteSuccessMessage": "Profil supprimé avec succès",
+    "profileDeleteErrorMessage": "Erreur lors de la suppression du profil"
   },
   "profileNew": {
     "profileHeaderTitle": "Créer un nouveau profil",

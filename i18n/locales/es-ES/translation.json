@@ -50,7 +50,8 @@
     "chatAllChatsText": "Todas las conversaciones",
     "chatRecentText": "Conversaciones recientes",
     "chatErrorText": "Error al cargar conversaciones",
-    "chatEmptyText": "No hay conversaciones disponibles"
+    "chatEmptyText": "No hay conversaciones disponibles",
+    "powerSyncErrorText": "Error de sincronización con PowerSync"
   },
   "tabbar": {
     "home": "Inicio",
@@ -94,7 +95,14 @@
       "Bienvenido a Medora, tu recurso de salud. Comparte tus síntomas y sugeriré posibles diagnósticos. Si necesitas ayuda inmediata, puedo encontrar servicios de emergencia cerca de ti.",
       "Medora está aquí para apoyarte. Proporciona detalles sobre tus síntomas y analizaré posibles condiciones. Si la situación es crítica, puedo identificar opciones de tratamiento de emergencia cercanas.",
       "Bienvenido a Medora. Estoy preparada para ayudarte a interpretar tus síntomas y explorar posibles condiciones. En caso de emergencia, también puedo ayudarte a localizar centros médicos cercanos."
-    ]
+    ],
+    "chatOfflineErrorText1": "Error de red.",
+    "chatOfflineErrorText2": "Por favor verifica tu conexión a internet",
+    "streamAbortedInfo": "El flujo de datos fue interrumpido por el usuario.",
+    "chatAuthErrorText1": "Error de autenticación.",
+    "chatAuthErrorText2": "Por favor inicia sesión de nuevo.",
+    "chatStreamErrorText1": "Error en el flujo de datos.",
+    "chatStreamErrorText2": "Por favor recarga la página."
   },
   "chatHistory": {
     "chatHistoryTitle": "Historial de chats",
@@ -103,7 +111,11 @@
     "chatDeleteText": "Eliminar conversación",
     "chatDeleteConfirmText": "¿Estás seguro de que quieres eliminar esta conversación?",
     "chatDeleteConfirmButtonText": "Eliminar",
-    "chatDeleteCancelButtonText": "Cancelar"
+    "chatDeleteCancelButtonText": "Cancelar",
+    "chatDeleteSuccessText": "Conversación eliminada con éxito",
+    "chatDeleteErrorText": "Error al eliminar conversación",
+    "chatDeleteOfflineErrorText1": "Error al eliminar conversación",
+    "chatDeleteOfflineErrorText2": "Por favor verifica tu conexión a internet"
   },
   "profile": {
     "profileLoadingText": "Cargando perfil...",
@@ -116,12 +128,39 @@
     "profileCreated": "Creado",
     "profileLastUpdated": "Última actualización"
   },
+  "toast": {
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información",
+    "nameRequired": "El nombre es obligatorio",
+    "genderRequired": "El género es obligatorio",
+    "birthYearRequired": "El año de nacimiento es obligatorio",
+    "profileSaved": "Perfil guardado con éxito",
+    "profileUpdated": "Perfil actualizado con éxito",
+    "saveError": "Error al guardar perfil",
+    "updateError": "Error al actualizar perfil",
+    "networkError": "Error de red. Verifica tu conexión a internet",
+    "validationError": "Por favor completa todos los campos obligatorios"
+  },
+  "profileEdit": {
+    "profileNotFoundText": "Perfil no encontrado",
+    "healthDataNotFoundText": "No hay datos de salud disponibles",
+    "errorLoadingProfile": "Error al cargar perfil",
+    "nameRequired": "El nombre es obligatorio",
+    "birthYearRequired": "El año de nacimiento es obligatorio",
+    "genderRequired": "El género es obligatorio",
+    "updatedSuccessfully": "Perfil actualizado con éxito",
+    "errorUpdatingProfile": "Error al actualizar perfil"
+  },
   "profileHistory": {
     "profileHeaderTitle": "Tus perfiles",
     "profileSubHeaderTitle": "Gestiona tus perfiles médicos",
     "profileNoProfileText": "No hay perfiles disponibles",
     "profileAddText": "Agregar un nuevo perfil médico",
-    "profileCreateButtonText": "Crear perfil"
+    "profileCreateButtonText": "Crear perfil",
+    "profileDeleteSuccessMessage": "Perfil eliminado con éxito",
+    "profileDeleteErrorMessage": "Error al eliminar perfil"
   },
   "profileNew": {
     "profileHeaderTitle": "Crear nuevo perfil",

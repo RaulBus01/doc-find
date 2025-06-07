@@ -98,10 +98,17 @@ const HistoryProfile = () => {
       await deleteProfile(drizzleDB, parseInt(selectedProfileId));
       fetchProfiles();
       bottomSheetModalRef.current?.dismiss();
-      Toast.success(t("profileHistory.profileDeleteSuccessMessage"));
+      Toast.show({
+        type: "success",
+        text1: t("toast.success"),
+        text2: t("profileHistory.profileDeleteSuccessMessage"),
+      });
     } catch (error) {
-    
-      Toast.error(t("profileHistory.profileDeleteErrorMessage"));
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t("profileHistory.profileDeleteErrorMessage"),
+      });
     }
   }, [selectedProfileId]);
 

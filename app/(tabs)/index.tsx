@@ -52,7 +52,12 @@ const Home = () => {
         await setupPowerSync().then(() => {
         });
       } catch (error) {
-        Toast.error("Error");
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t("homePage.powerSyncErrorText"),
+
+        });
       }
     };
 

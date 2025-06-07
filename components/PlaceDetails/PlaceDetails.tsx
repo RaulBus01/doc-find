@@ -26,7 +26,12 @@ const PlaceDetails = ({
     if (result) {
       setCompleteDetails(result);
     } else {
-      Toast.error(t("placeDetails.failedToFetchDetails"));
+
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t("placeDetails.failedToFetchDetails"),
+      });
     }
   };
   
