@@ -1,6 +1,6 @@
 import { fetch } from "expo/fetch";
-// const API_URL = "https://docfind-backend.deno.dev";
-const API_URL = "http://192.168.1.120:8080";
+const API_URL = "https://docfind-backend.deno.dev";
+// const API_URL = "http://192.168.1.120:8080";
 interface QueryParams {
   [key: string]: string | number | boolean;
 }

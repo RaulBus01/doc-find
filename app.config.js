@@ -4,17 +4,17 @@ export default {
    
     "expo": {
       "owner": "laurbalaur",
-      "name": "doc-find",
-      "slug": "doc-find",
+      "name": "Medora",
+      "slug": "Medora",
       "version": "1.0.0",
       "orientation": "portrait",
-      "icon": "./assets/images/icon.png",
+      "icon": "./assets/images/adaptiveLogo.png",
       "scheme": "myapp",
       "userInterfaceStyle": "automatic",
       "newArchEnabled": true,
       "ios": {
         "supportsTablet": true,
-        "bundleIdentifier": "com.laurbalaur.docfind"
+        "bundleIdentifier": "com.laurbalaur.medora"
       },
       "doctor": {
       "reactNativeDirectoryCheck": {
@@ -24,10 +24,10 @@ export default {
 
       "android": {
         "adaptiveIcon": {
-          "foregroundImage": "./assets/images/logo.png",
+          "foregroundImage": "./assets/images/adaptiveLogo.png",
           "backgroundColor": "#ffffff"
         },
-        "package": "com.laurbalaur.docfind",
+        "package": "com.laurbalaur.medora",
         "config":{
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY
