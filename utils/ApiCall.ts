@@ -7,7 +7,7 @@ interface QueryParams {
 export class ApiCall {
   private static buildUrl(baseUrl: string, query?: QueryParams): string {
     if (!query) return baseUrl;
-    
+
     const searchParams = new URLSearchParams();
     Object.entries(query).forEach(([key, value]) => {
       searchParams.append(key, String(value));
@@ -17,7 +17,7 @@ export class ApiCall {
   }
   static async get(url: string, token: string,query?:QueryParams) {
     try {
-
+      console.log("token", token);
       const fullUrl = this.buildUrl(API_URL + url, query);
       const response = await fetch(fullUrl, {
         method: "GET",
@@ -37,6 +37,7 @@ export class ApiCall {
 
   static async post(url: string, token: string, data: any) {
     try {
+      console.log("token", token);
       const response = await fetch(API_URL + url, {
         method: "POST",
         headers: {

@@ -1,7 +1,9 @@
 import 'dotenv/config';
 
 export default {
+   
     "expo": {
+      "owner": "laurbalaur",
       "name": "doc-find",
       "slug": "doc-find",
       "version": "1.0.0",
@@ -14,9 +16,15 @@ export default {
         "supportsTablet": true,
         "bundleIdentifier": "com.laurbalaur.docfind"
       },
+      "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+      } ,
+
       "android": {
         "adaptiveIcon": {
-          "foregroundImage": "./assets/images/adaptive-icon.png",
+          "foregroundImage": "./assets/images/logo.png",
           "backgroundColor": "#ffffff"
         },
         "package": "com.laurbalaur.docfind",
@@ -39,7 +47,7 @@ export default {
         [
           "expo-splash-screen",
           {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/logo.png",
             "imageWidth": 200,
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
@@ -81,4 +89,3 @@ export default {
       }
     }
   }
-  

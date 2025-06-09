@@ -84,6 +84,13 @@ const Home = () => {
   };
 
   const handleSymptom = (symptom: string) => {
+    if(isOffline) {
+      Toast.show({
+        type: "error",
+        text1: t('toast.networkError')
+      });
+      return;
+    }
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
 
