@@ -21,9 +21,9 @@ import OptionsBottomSheet from "@/components/modals/Options";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { getAllPowerSyncChats } from "@/powersync/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { FlashList } from "@shopify/flash-list";
 import { Toast } from "toastify-react-native";
 import { useOfflineStatus } from "@/components/OfflineIndicator";
+import { LegendList } from "@legendapp/list";
 
 const ChatHistoryScreen = () => {
   const { top, bottom } = useSafeAreaInsets();
@@ -41,6 +41,7 @@ const ChatHistoryScreen = () => {
   );
   const { user, token } = useAuth();
   const { data: chatHistory } = getAllPowerSyncChats(user?.sub || "");
+
 
   useFocusEffect(
     useCallback(() => {
@@ -123,11 +124,11 @@ const ChatHistoryScreen = () => {
       />
 
       {chatHistory && chatHistory.length > 0 ? (
-        <FlashList
+        <LegendList
           data={chatHistory}
           keyExtractor={(item) => item.id}
           estimatedItemSize={86}
-          renderItem={({ item }) => (
+          renderItem={({ item } : {item:any}) => (
             <ChatItem
               id={item.id}
               title={item.title}

@@ -32,7 +32,7 @@ import {
   insertAllergy,
 } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
-import { FlashList } from "@shopify/flash-list";
+import { LegendList } from "@legendapp/list";
 
 export default function AllergiesScreen() {
   const { id } = useLocalSearchParams();
@@ -246,10 +246,10 @@ export default function AllergiesScreen() {
       </View>
 
       {/* Allergies List */}
-      <FlashList
+      <LegendList
         data={profileAllergiesList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: any }) => (
           <View style={styles.allergyCard}>
             <View
               style={[

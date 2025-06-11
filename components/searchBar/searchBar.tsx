@@ -15,7 +15,8 @@ import { ThemeColors } from '@/constants/Colors';
 import * as ExpoGooglePlaces from "expo-google-places";
 import { secureGetValueFor } from '@/utils/SecureStorage';
 import * as Location from "expo-location";
-import { FlashList } from '@shopify/flash-list';
+import { LegendList } from '@legendapp/list';
+
 
 interface SearchBarProps {
   onSearch: (text: string) => void;
@@ -156,7 +157,7 @@ const CustomSearchBar: React.FC<SearchBarProps> = ({
 
       {showPredictions && (
         <View style={styles.predictionsContainer}>
-          <FlashList
+          <LegendList
             data={predictions}
             renderItem={renderPredictionItem}
             keyExtractor={(item, index) => `${item.placeId || index}`}

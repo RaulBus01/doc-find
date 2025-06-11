@@ -66,7 +66,7 @@ const YearPickerBottomSheet = forwardRef<BottomSheetModal, YearPickerProps>(
       >
         <BottomSheetFlashList
           data={years}
-          keyExtractor={(item) => item.toString()}
+          keyExtractor={(item:any) => item.toString()}
           renderItem={renderYearItem}
           estimatedItemSize={67}
           contentContainerStyle={styles.contentContainer}

@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authorize({
         scope: "openid profile email",
         audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
+        
       });
       const credentials = await getCredentials();
       console.log("User credentials:", credentials);

@@ -14,7 +14,8 @@ import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { addProfileMedication, deleteMedication, getExistingMedicationsByName, getExistingMedicationsById, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
-import { FlashList } from "@shopify/flash-list";
+import { LegendList } from "@legendapp/list";
+
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
@@ -219,10 +220,10 @@ export default function MedicationScreen() {
       
       {/* Medication List */}
   
-          <FlashList
+          <LegendList
             data={profileMedicationsList}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item } : {item:any}) => (
               <View style={styles.medicationCard}>
                 <View style={styles.medicationIconContainer}>
                   <FontAwesome5 name="prescription-bottle" size={20} color="#fff" />

@@ -16,7 +16,8 @@ import {
   getProfileMedicalHistoryList,
 } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
-import { FlashList } from "@shopify/flash-list";
+import { LegendList } from "@legendapp/list";
+
 
 export default function MedicalHistoryScreen() {
   const { id } = useLocalSearchParams();
@@ -128,10 +129,10 @@ export default function MedicalHistoryScreen() {
       </View>
 
       {/* Medical History List */}
-      <FlashList
+      <LegendList
         data={medicalHistoryList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item }:{item:any}) => (
           <TouchableOpacity 
           onPress={() => router.push(`/(profiles)/(medicalhistory)/edit/${item.id}?profileId=${id}`)} 
           activeOpacity={0.7}

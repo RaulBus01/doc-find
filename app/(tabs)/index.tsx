@@ -27,8 +27,8 @@ import { powersync, setupPowerSync } from "@/powersync/system";
 
 import { getPowerSyncChats, getPowerSyncChatsCount } from "@/powersync/utils";
 import { useAuth } from "@/hooks/useAuth";
-import { FlashList } from "@shopify/flash-list";
 import { Toast } from "toastify-react-native";
+import { LegendList } from "@legendapp/list";
 
 const Home = () => {
   const { theme } = useTheme();
@@ -300,11 +300,11 @@ const Home = () => {
               </Text>
               </View>
             ) : powerSyncChats && !powerSyncCountLoading ? (
-              <FlashList
+              <LegendList
               data={powerSyncChats}
               keyExtractor={(chat) => chat.id}
               estimatedItemSize={65}
-              renderItem={({ item: chat }) => (
+              renderItem={({ item: chat }: { item: any }) => (
                 <TouchableOpacity
                 style={styles.recentChatItem}
                 onPress={() => handleChatRouting(chat.id)}

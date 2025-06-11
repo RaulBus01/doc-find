@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Switch,
 } from "react-native";
-import { FlashList } from "@shopify/flash-list";
+
 import {
   Entypo,
   FontAwesome,
@@ -47,6 +47,7 @@ import {
 
 import { useAuth } from "@/hooks/useAuth";
 import { getPowerSyncMessages } from "@/powersync/utils";
+import { LegendList, LegendListRef } from "@legendapp/list";
 
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
@@ -67,7 +68,7 @@ const ChatScreen = () => {
   }, [t, id]);
   const { token, user } = useAuth();
 
-  const flatListRef = useRef<FlashList<Message>>(null);
+  const flatListRef = useRef<LegendListRef>(null);
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const { isTabBarVisible, setIsTabBarVisible } = useContext(
@@ -83,12 +84,13 @@ const ChatScreen = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const isOffline = useOfflineStatus();
+  const isOffline = true;
   const drizzleDB = useDatabase();
 
   const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
     getPowerSyncMessages(chatId || "", { enabled: !!chatId && isOffline });
   const symptomHandledRef = useRef(false);
+
 
   const handleAbortStream = useCallback(() => {
     if (abortControllerRef.current) {
@@ -128,6 +130,7 @@ const ChatScreen = () => {
       if (!isOffline && chatId && token) {
         try {
           const apiMessages = await getMessages(token, chatId);
+          console.log("Fetched messages from API:", apiMessages);
           setMessages(apiMessages);
         } catch (error) {
           console.error("Error fetching messages from API:", error);
@@ -143,7 +146,13 @@ const ChatScreen = () => {
     fetchMessagesFromAPI();
   }, [isOffline, chatId, token]);
 
-  const displayMessages = isOffline ? powerSyncMessages : messages;
+    const displayMessages = useMemo(() => {
+    if (isOffline && chatId) {
+     
+      return powerSyncMessages  ? powerSyncMessages : messages;
+    }
+    return messages;
+  }, [isOffline, chatId, powerSyncMessages, messages]);
 
   useEffect(() => {
     if (isOffline) {
@@ -367,6 +376,7 @@ const ChatScreen = () => {
   }, [fetchProfiles, isProfileModalOpen, isTabBarVisible, setIsTabBarVisible]);
 
   const renderProfileItem = ({ item }: { item: any }) => {
+    console.log("Rendering profile item:", item);
     return (
       <TouchableOpacity
         style={styles.profileItem}
@@ -470,12 +480,11 @@ const ChatScreen = () => {
 
       <View style={styles.content}>
         {isOffline && <OfflineIndicator />}
-        <FlashList
+        <LegendList
           ref={flatListRef}
           data={displayMessages}
           renderItem={renderChatMessage}
           keyExtractor={(item) => item.id.toString()}
-          removeClippedSubviews={true}
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
           ListFooterComponent={<View style={{ height: 120 }} />}
@@ -508,7 +517,7 @@ const ChatScreen = () => {
       </View>
 
       <BottomSheetModal
-        ref={profilesBottomSheetRef}
+    ref={profilesBottomSheetRef}
         index={-1}
         snapPoints={["60%"]}
         backgroundStyle={{ backgroundColor: theme.backgroundDark }}
@@ -544,7 +553,7 @@ const ChatScreen = () => {
         {useProfileContext ? (
           <BottomSheetFlashList
             data={profiles}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item:any) => item.id.toString()}
             renderItem={renderProfileItem}
             contentContainerStyle={styles.profilesList}
             ListEmptyComponent={

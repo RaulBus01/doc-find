@@ -73,6 +73,7 @@ export const getPowerSyncMessages = (chatId: string,options:{enabled:boolean}): 
       parameters: [chatId],
       enabled: options.enabled,
     })
+   
      if (!options.enabled) {
         return { data: [], isLoading: false };
     }
@@ -84,7 +85,7 @@ export const getPowerSyncMessages = (chatId: string,options:{enabled:boolean}): 
     if (isLoading) {
         return { data: [], isLoading: true };
     }
-    if (!messagesData || messagesData.length === 0) {
+    if (!extractedMessages || extractedMessages.length === 0) {
         return { data: [], isLoading: false };
     }
     return { data: extractedMessages as Message[], isLoading: false };
@@ -110,7 +111,10 @@ function extractMessagesFromPowerSync(
         const messageSources = [
           writes.__start__?.messages,
           writes.router?.messages,
-          writes.general_agent?.messages
+          writes.diagnosis_agent?.messages,
+          writes.general_agent?.messages,
+          writes.research_agent?.messages,
+          writes.location_agent?.messages,
         ];
 
         for (const messages of messageSources) {
@@ -127,8 +131,8 @@ function extractMessagesFromPowerSync(
 
             if (seenIds.has(message.kwargs.id || powerSyncMsg.id)) continue;
             seenIds.add(message.kwargs.id || powerSyncMsg.id);
-            console.log("Extracted message:", {
-              id: message.kwargs.id || powerSyncMsg.id});
+            // console.log("Extracted message:", {
+            //   id: message.kwargs.id || powerSyncMsg.id});
             extractedMessages.push({
               id: message.kwargs.id || powerSyncMsg.id,
               chatId: sessionId || powerSyncMsg.thread_id || "",

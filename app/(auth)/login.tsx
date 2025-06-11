@@ -73,7 +73,7 @@ export default function AuthorizationScreen() {
       
       <TouchableOpacity 
         style={styles.newUserButton} 
-        onPress={() => router.replace("/")}
+        onPress={() => router.replace("/(auth)/onboarding")}
       >
         <Text style={styles.newUserText}>{t('login.newUserText')}</Text>
         <FontAwesome6 name="arrow-right" size={14} color="#0056b3" />

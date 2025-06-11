@@ -34,29 +34,16 @@ const data = [
 const Page = () => {
     const { t } = useTranslation();
   const router = useRouter();
-  const { authorize, isLoading } = useAuth0();
-
 
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const onLogin = async () => {
-    try {
-      const authResult = await authorize({
-        scope: "openid profile email",
-        audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
-      });
-      
-      if (!authResult) return;
-      console.log("Auth Result:", authResult.accessToken);
-      // Save access token securely
-      await secureSave('accessToken', authResult.accessToken);
 
-        router.replace("/(tabs)");
-      
-    } catch (e) {
-      console.error("Login error:", e);
-    }
+        router.push('/(auth)/login');
+
   };
+
+
 
 
 return (

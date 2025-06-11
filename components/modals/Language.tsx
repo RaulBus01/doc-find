@@ -1,6 +1,6 @@
 import React, { forwardRef, useCallback, useMemo } from "react";
 import { StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-native";
-import {
+import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetFlashList,
@@ -102,7 +102,7 @@ const LanguagePicker = forwardRef<BottomSheetModal, LanguagePickerProps>(
         <BottomSheetView style={styles.scrollView}>
           <BottomSheetFlashList
             data={LANGUAGES}
-            keyExtractor={(item) => item.code}
+            keyExtractor={(item:any) => item.code}
             estimatedItemSize={95}
             renderItem={renderLanguageItem}
             ListHeaderComponent={() => (
