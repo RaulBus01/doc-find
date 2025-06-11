@@ -46,6 +46,7 @@
     "chatCountNoChats":"No conversations",
     "chatCountTotalChats":"Total conversations",
     "chatStatusText":"24/7 available",
+    "chatStatusOfflineText":"AI Assistant is currently offline",
     "chatStartText":"Start a conversation",
     "chatAllChatsText":"All conversations",
     "chatRecentText":"Recent conversations",

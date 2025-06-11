@@ -249,12 +249,28 @@ const Home = () => {
                 </Text>
               )}
               <View style={styles.chatbotStatusRow}>
+                {isOffline ?
+                (
+                <View style={styles.chatbotStatus}>
+                  <View style={styles.statusDotRed} />
+
+                  <Text style={styles.statusLabel}>
+                    {t("homePage.chatStatusOfflineText")}
+                  </Text>
+                  
+                </View>
+                )
+                :
+                (
                 <View style={styles.chatbotStatus}>
                   <View style={styles.statusDot} />
                   <Text style={styles.statusLabel}>
                     {t("homePage.chatStatusText")}
                   </Text>
-                </View>
+                
+              </View>
+                )
+                }
               </View>
               <View style={styles.chatbotButtons}>
                 <TouchableOpacity
@@ -652,6 +668,13 @@ const getStyles = (theme: ThemeColors) =>
       height: 8,
       borderRadius: 4,
       backgroundColor: theme.lightGreen,
+      marginRight: 5,
+    },
+    statusDotRed:{
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: theme.red,
       marginRight: 5,
     },
     statusLabel: {

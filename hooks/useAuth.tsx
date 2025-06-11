@@ -3,6 +3,7 @@ import { useAuth0 } from "react-native-auth0";
 import { router, useSegments, useRootNavigationState } from "expo-router";
 import Constants from "expo-constants";
 import { secureDeleteValue, secureGetValueFor, secureSave } from "@/utils/SecureStorage";
+import { Toast } from "toastify-react-native";
 
 type AuthContextType = {
   signIn: () => Promise<string | void>;
@@ -22,8 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [token, setToken] = useState<string | undefined>(undefined);
   const [refreshToken, setRefreshToken] = useState<string | undefined>(undefined);
-
-
 
   const segments = useSegments();
   const navigationState = useRootNavigationState();
@@ -49,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const savedToken = await secureGetValueFor("token");
+        const savedToken = await secureGetValueFor("accessToken");
         if (savedToken) {
           setToken(savedToken);
         }
@@ -84,12 +83,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
       });
       const credentials = await getCredentials();
-      console.log("Credentials received:", credentials);
+      if (!credentials) {
+        Toast.show({
+          type: "error",
+          text1: "Authentication failed",
+          text2: "No credentials received from Auth0.",
+        })
+        return;
+        
+      }
      
       if (credentials?.accessToken) {
      
         setToken(credentials.accessToken);
-        await secureSave("token", credentials.accessToken);
+        await secureSave("accessToken", credentials.accessToken);
       }
 
       if(credentials?.refreshToken) {
@@ -131,7 +138,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
  
       setToken(data.access_token);
-      await secureSave("token", data.access_token);
+      await secureSave("accessToken", data.access_token);
       
       if (data.refresh_token) {
         setRefreshToken(data.refresh_token);
@@ -148,7 +155,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signOut = async () => {
     try {
       await clearSession();
-      await secureDeleteValue("token");
+      await secureDeleteValue("accessToken");
+      await secureDeleteValue("refreshToken");
       setIsAuthenticated(false);
     } catch (e) {
       console.error("Logout error:", e);
@@ -166,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         error,
         token,
+        
       }}
     >
       {children}

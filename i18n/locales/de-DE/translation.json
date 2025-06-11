@@ -46,6 +46,7 @@
     "chatCountNoChats": "Keine Unterhaltungen",
     "chatCountTotalChats": "Gesamtanzahl Unterhaltungen",
     "chatStatusText": "Rund um die Uhr verfügbar",
+    "chatStatusOfflineText": "Der KI-Assistent ist derzeit offline",
     "chatStartText": "Starte eine Unterhaltung",
     "chatAllChatsText": "Alle Unterhaltungen",
     "chatRecentText": "Aktuelle Unterhaltungen",

@@ -45,6 +45,7 @@
     "chatCountNoChats": "Nenhuma conversa",
     "chatCountTotalChats": "Total de conversas",
     "chatStatusText": "Disponível 24/7",
+    "chatStatusOfflineText":"O Assistente de IA está offline no momento",
     "chatStartText": "Iniciar uma conversa",
     "chatAllChatsText": "Todas as conversas",
     "chatRecentText": "Conversas recentes",

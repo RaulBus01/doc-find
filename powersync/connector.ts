@@ -13,7 +13,7 @@ export class Connector implements PowerSyncBackendConnector {
  
   async fetchCredentials() {
       
-    const accessToken = await secureGetValueFor('token');
+    const accessToken = await secureGetValueFor("accessToken");
     if (!accessToken)
     {return null;}
     
