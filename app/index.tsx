@@ -8,7 +8,7 @@ export default function Index() {
     return null
   }
   
-  console.log("Index component rendered, isAuthenticated:", isAuthenticated)
+
  
   return isAuthenticated ? (
     <Redirect href="/(tabs)" />

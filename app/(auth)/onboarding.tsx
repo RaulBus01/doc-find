@@ -1,15 +1,15 @@
 import CustomCarousel from '@/components/ImageCarousel';
 import { FontAwesome6 } from '@expo/vector-icons';
-import Constants from 'expo-constants';
+
 import { useRouter } from 'expo-router';
-import { View, StyleSheet, Dimensions, Text, Pressable, TouchableOpacity} from 'react-native';
-import {  useAuth0 } from 'react-native-auth0';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity} from 'react-native';
+
 
 import '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { ThemeColors } from '@/constants/Colors';
 import { useTheme } from '@/context/ThemeContext';
-import { secureSave } from '@/utils/SecureStorage';
+
 
 const { width } = Dimensions.get('window');
 

@@ -39,7 +39,7 @@ const ChatHistoryScreen = () => {
   const { isTabBarVisible, setIsTabBarVisible } = useContext(
     TabBarVisibilityContext
   );
-  const { user, token } = useAuth();
+  const { user, token,refreshTokens } = useAuth();
   const { data: chatHistory } = getAllPowerSyncChats(user?.sub || "");
 
 
@@ -72,7 +72,7 @@ const ChatHistoryScreen = () => {
         });
         return;
       }
-      await deleteChat(token, selectedChatId);
+      await deleteChat(token, selectedChatId,refreshTokens);
 
       Toast.show({
         type: "success",

@@ -9,7 +9,6 @@ import {
 } from "react-native";
 
 import {
-  Entypo,
   FontAwesome,
   Ionicons,
   MaterialCommunityIcons,
@@ -66,7 +65,7 @@ const ChatScreen = () => {
       setMessages([newWelcomeMessage]);
     }
   }, [t, id]);
-  const { token, user } = useAuth();
+  const { token, user,refreshTokens } = useAuth();
 
   const flatListRef = useRef<LegendListRef>(null);
   const { theme } = useTheme();
@@ -84,7 +83,7 @@ const ChatScreen = () => {
   const abortControllerRef = useRef<AbortController | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
-  const isOffline = true;
+  const isOffline = useOfflineStatus();
   const drizzleDB = useDatabase();
 
   const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
@@ -129,11 +128,11 @@ const ChatScreen = () => {
     const fetchMessagesFromAPI = async () => {
       if (!isOffline && chatId && token) {
         try {
-          const apiMessages = await getMessages(token, chatId);
-          console.log("Fetched messages from API:", apiMessages);
+          const apiMessages = await getMessages(token, chatId,refreshTokens);
+        
           setMessages(apiMessages);
         } catch (error) {
-          console.error("Error fetching messages from API:", error);
+          
           Toast.show({
             type: "error",
             text1: t("toast.error"),
@@ -204,7 +203,7 @@ const ChatScreen = () => {
         };
 
         if (isNewChat) {
-          const chat = await addChat(token as string);
+          const chat = await addChat(token as string,refreshTokens);
           if (chat?.id) {
             chatIdRef.current = chat.id;
             newMessage.chatId = chat.id;
@@ -291,7 +290,8 @@ const ChatScreen = () => {
           try {
             const updatedMessages = await getMessages(
               token as string,
-              chatIdRef.current
+              chatIdRef.current,
+              refreshTokens
             );
             setMessages(updatedMessages);
           } catch (e) {
@@ -306,7 +306,8 @@ const ChatScreen = () => {
         if (isNewChat) {
           const newTitle = await generateChatTitle(
             token as string,
-            chatIdRef.current
+            chatIdRef.current,
+            refreshTokens
           );
         }
 

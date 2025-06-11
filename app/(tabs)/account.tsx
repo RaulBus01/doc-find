@@ -80,7 +80,7 @@ export default function Account() {
     console.log("Logging out...");
     try {
       await signOut();
-    
+      await secureDeleteValue('refreshToken');
       await secureDeleteValue('accessToken');
 
     } catch (e) {

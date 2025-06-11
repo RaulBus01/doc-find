@@ -5,7 +5,7 @@ interface TokenContextType {
   token: string | null;
   isLoading: boolean;
   error: Error | null;
-  refreshToken: () => Promise<void>;
+  refreshAccessToken: () => Promise<void>;
   clearToken: () => Promise<void>;
 }
 
@@ -13,7 +13,7 @@ const TokenContext = createContext<TokenContextType>({
   token: null,
   isLoading: true,
   error: null,
-  refreshToken: async () => {},
+  refreshAccessToken: async () => {},
   clearToken: async () => {},
 });
 
@@ -22,7 +22,7 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const refreshToken = async () => {
+  const refreshAccessToken = async () => {
     setIsLoading(true);
     try {
       const accessToken = await secureGetValueFor("accessToken");
@@ -35,6 +35,20 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   };
+  const refreshToken = async () => {
+    setIsLoading(true);
+    try {
+      const refreshToken = await secureGetValueFor("refreshToken");
+      setToken(refreshToken);
+      setError(null);
+    } catch (e: any) {
+      setError(e);
+      setToken(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
   const clearToken = async () => {
     try{
@@ -49,11 +63,12 @@ export const TokenProvider = ({ children }: { children: ReactNode }) => {
 
 
   useEffect(() => {
-    refreshToken();
+    refreshAccessToken();
+    refreshToken()
   }, []);
 
   return (
-    <TokenContext.Provider value={{ token, isLoading, error, refreshToken,clearToken }}>
+    <TokenContext.Provider value={{ token, isLoading, error, refreshAccessToken,clearToken }}>
       {children}
     </TokenContext.Provider>
   );

@@ -5,7 +5,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useFonts } from "expo-font";
 import { Auth0Provider } from "react-native-auth0";
 import Constants from "expo-constants";
-import { View, ActivityIndicator, Text, useColorScheme } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { StatusBar } from "expo-status-bar";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";

@@ -15,30 +15,43 @@ export class ApiCall {
     
     return `${baseUrl}?${searchParams.toString()}`;
   }
-  static async get(url: string, token: string,query?:QueryParams) {
+  static async get(url: string, token: string,query?:QueryParams, refreskTokenFn?: () => Promise<string | void>) {
     try {
-      console.log("token", token);
+     
       const fullUrl = this.buildUrl(API_URL + url, query);
-      const response = await fetch(fullUrl, {
+      let response = await fetch(fullUrl, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if(response.status === 401 && refreskTokenFn){
+        const newToken = await refreskTokenFn();
+        if(newToken){
+          response = await fetch(fullUrl, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+              "Content-Type": "application/json",
+            },
+          });
+        }
+        if (!response.ok) {
+          throw new Error(response.statusText);
+        }
       }
+    
       return response.json();
     } catch (error) {
 
     }
   }
 
-  static async post(url: string, token: string, data: any) {
+  static async post(url: string, token: string, data: any, refreskTokenFn?: () => Promise<string | void>) {
     try {
-      console.log("token", token);
-      const response = await fetch(API_URL + url, {
+
+      let response = await fetch(API_URL + url, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,43 +59,50 @@ export class ApiCall {
         },
         body: data ? JSON.stringify(data) : JSON.stringify({}),
       });
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if(response.status === 401 && refreskTokenFn){
+        const newToken = await refreskTokenFn();
+        if(newToken){
+          response = await fetch(API_URL + url, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+              "Content-Type": "application/json",
+            },
+            body: data ? JSON.stringify(data) : JSON.stringify({}),
+          });
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+        }
       }
+     
       return response.json();
     } catch (error) {
       console.error(error);
     }
   }
 
-  static async put(url: string, token: string, data: any) {
+  static async delete(url: string, token: string, refreskTokenFn?: () => Promise<string | void>) {
     try {
-      const response = await fetch(API_URL + url, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-      if (!response.ok) {
-        throw new Error(response.statusText);
-      }
-      return response.json();
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  static async delete(url: string, token: string) {
-    try {
-      const response = await fetch(API_URL + url, {
+      let response = await fetch(API_URL + url, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      if (!response.ok) {
-        throw new Error(response.statusText);
+      if(response.status === 401 && refreskTokenFn){
+        const newToken = await refreskTokenFn();
+        if(newToken){
+          response = await fetch(API_URL + url, {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${newToken}`,
+            },
+          });
+          if (!response.ok) {
+            throw new Error(response.statusText);
+          }
+        }
       }
       return response.json();
     } catch (error) {
