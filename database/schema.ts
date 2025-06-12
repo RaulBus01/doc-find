@@ -7,7 +7,7 @@ import { sql } from 'drizzle-orm';
 export const profiles = sqliteTable('profiles', {
     id: integer("id").primaryKey({ autoIncrement: true }),
     auth0Id: text("auth0Id").notNull(),
-    fullname: text("fullname").unique().notNull(),
+    fullname: text("fullname").notNull(),
     gender: text("gender").notNull(),
     age: integer("age").notNull(),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
@@ -43,7 +43,7 @@ export const profileAllergies = sqliteTable('profile_allergies', {
     id: integer("id").primaryKey({ autoIncrement: true }),
     profileId: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
     allergyId: integer("allergy_id").notNull().references(() => allergies.id, { onDelete: 'cascade' }),
-    severity: text("severity"),
+    severity: integer("severity", { mode: "boolean" }).notNull().default(false),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
 });
 

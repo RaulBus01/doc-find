@@ -218,6 +218,7 @@
     "tapToSelect": "Tap to select an allergy",
     "allergyName": "Allergy name",
     "severityText":"Severe reaction",
+    "mildText":"Mild reaction",
     "addButtonText": "Add Allergy"
   },
   "medications":{

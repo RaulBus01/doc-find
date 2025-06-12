@@ -11,7 +11,7 @@ import {
 import { Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import {
-  SafeAreaView,
+
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -64,6 +64,7 @@ export default function AllergiesScreen() {
         drizzleDB,
         parseInt(id as string, 10)
       );
+      console.log("Profile Allergies:", result);
       setProfileAllergiesList(result || []);
     } catch (error) {
       setProfileAllergiesList([]);
@@ -170,7 +171,7 @@ export default function AllergiesScreen() {
         .values({
           profileId: parseInt(id as string, 10),
           allergyId: allergyId,
-          severity: isSevere ? "severe" : "mild",
+          severity: isSevere, 
         })
         .execute();
 
@@ -254,7 +255,7 @@ export default function AllergiesScreen() {
             <View
               style={[
                 styles.allergyIconContainer,
-                item.severe ? styles.severeIcon : {},
+                item.severity ? styles.severeIcon : {},
               ]}
             >
               <MaterialCommunityIcons name="allergy" size={20} color="#fff" />
@@ -264,7 +265,11 @@ export default function AllergiesScreen() {
                 {item.name}
               </Text>
               <Text selectable={true} style={styles.allergySeverity}>
-                {item.severe ? "Severe reaction" : "Mild reaction"}
+                {item.severity ? 
+                  t("allergies.severityText") :
+                  t("allergies.mildText")}
+                {item.severity}
+             
               </Text>
             </View>
             <Pressable

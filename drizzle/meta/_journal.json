@@ -36,6 +36,20 @@
       "when": 1749058557563,
       "tag": "0004_ordinary_eddie_brock",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1749715573902,
+      "tag": "0005_fuzzy_sebastian_shaw",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1749716346767,
+      "tag": "0006_exotic_groot",
+      "breakpoints": true
     }
   ]
 }

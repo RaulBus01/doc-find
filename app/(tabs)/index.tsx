@@ -338,7 +338,7 @@ const Home = () => {
                   {chat.title}
                   </Text>
                   <Text style={styles.chatItemDate}>
-                  {new Date(chat.created_at).toLocaleDateString()}
+                  {new Date(chat.updated_at).toLocaleDateString()}
                   </Text>
                 </View>
                 </TouchableOpacity>
