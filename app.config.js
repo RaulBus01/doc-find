@@ -5,7 +5,7 @@ export default {
     "expo": {
       "owner": "laurbalaur",
       "name": "Medora",
-      "slug": "Medora",
+      "slug": "doc-find",
       "version": "1.0.0",
       "orientation": "portrait",
       "icon": "./assets/images/adaptiveLogo.png",

@@ -113,7 +113,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '100%',
-    height: 50,
+    height: '6%',
     backgroundColor: theme.tabbarBackground,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

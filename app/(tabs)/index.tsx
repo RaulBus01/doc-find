@@ -137,6 +137,9 @@ const Home = () => {
       { name: t("homePage.cough"), icon: "😷", color: theme.progressColor },
       { name: t("homePage.headache"), icon: "🤕", color: theme.red },
       { name: t("homePage.fever"), icon: "🤒", color: theme.blue },
+      { name: t("homePage.nausea"), icon: "🤢", color: theme.YellowIconBackground },
+      { name: t("homePage.fatigue"), icon: "😴", color: theme.lightGreen },
+      { name: t("homePage.sorethroat"), icon: "🗣️", color: theme.VioletIconBackground },
     ];
 
     return (
@@ -147,7 +150,6 @@ const Home = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.symptomsScroll}
         >
           {symptoms.map((symptom, index) => (
             <TouchableOpacity
@@ -375,6 +377,7 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       marginBottom: 15,
     },
+    
     headerLeftSection: {
       flexDirection: "row",
       alignItems: "center",
@@ -481,17 +484,14 @@ const getStyles = (theme: ThemeColors) =>
       fontWeight: "600",
       textAlign: "center",
     },
-
-    symptomsScroll: {
-      flexDirection: "row",
-    },
     symptomCard: {
-      width: 95,
-      height: 100,
+      width: 170,
+      minHeight: 120,
       borderRadius: 15,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 15,
+      minWidth: 100,
     },
     symptomIcon: {
       fontSize: 32,

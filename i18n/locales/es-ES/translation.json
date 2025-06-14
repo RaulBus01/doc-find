@@ -13,7 +13,7 @@
     "loadingText": "Cargando...",
     "loadingErrorText": "Error al cargar datos"
   },
-  
+
   "login": {
     "welcomeText": "Bienvenido de nuevo",
     "subText": "Por favor, inicia sesión para continuar",
@@ -38,6 +38,9 @@
     "cough": "Tos",
     "fever": "Fiebre",
     "headache": "Dolor de cabeza",
+    "nausea": "Náuseas",
+    "fatigue": "Fatiga",
+    "sorethroat": "Dolor de garganta",
     "morning": "Mañana",
     "afternoon": "Tarde",
     "evening": "Noche",
@@ -46,7 +49,7 @@
     "chatCountNoChats": "Sin conversaciones",
     "chatCountTotalChats": "Total de conversaciones",
     "chatStatusText": "Disponible 24/7",
-    "chatStatusOfflineText":"L'assistente AI è attualmente offline",
+    "chatStatusOfflineText": "L'assistente AI è attualmente offline",
     "chatStartText": "Iniciar una conversación",
     "chatAllChatsText": "Todas las conversaciones",
     "chatRecentText": "Conversaciones recientes",
@@ -270,22 +273,22 @@
     "I used to": "Solía"
   },
   "placeDetails": {
-  "call": "Llamar",
-  "website": "Visitar sitio web",
-  "viewMaps": "Ver en mapa",
-  "reviews": "Reseñas",
-  "operational": "Operacional",
-  "notOperational": "No operacional",
-  "statusUnknown": "Estado desconocido",
-  "directions": "Indicaciones",
-  "wheelchairAccessible": "Accesible en silla de ruedas",
-  "notWheelchairAccessible": "No accesible en silla de ruedas",
-  "openNow": "Abierto ahora",
-  "closedNow": "Cerrado ahora",
-  "openingHours": "Horario de apertura",
-  "addressNotAvailable": "Dirección no disponible",
-  "failedToFetchDetails": "Error al cargar detalles. Inténtalo de nuevo más tarde.",
-  "closed": "Cerrado",
-  "noCategories": "No hay categorías disponibles"
-}
+    "call": "Llamar",
+    "website": "Visitar sitio web",
+    "viewMaps": "Ver en mapa",
+    "reviews": "Reseñas",
+    "operational": "Operacional",
+    "notOperational": "No operacional",
+    "statusUnknown": "Estado desconocido",
+    "directions": "Indicaciones",
+    "wheelchairAccessible": "Accesible en silla de ruedas",
+    "notWheelchairAccessible": "No accesible en silla de ruedas",
+    "openNow": "Abierto ahora",
+    "closedNow": "Cerrado ahora",
+    "openingHours": "Horario de apertura",
+    "addressNotAvailable": "Dirección no disponible",
+    "failedToFetchDetails": "Error al cargar detalles. Inténtalo de nuevo más tarde.",
+    "closed": "Cerrado",
+    "noCategories": "No hay categorías disponibles"
+  }
 }
