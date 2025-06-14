@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Linking, Image } from "react-native";
 import { GooglePlaceDetails } from "@/interface/Interface";
-import { FontAwesome, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { ThemeColors } from "@/constants/Colors";
 import { fetchPlaceDetails } from "@/utils/MapsDetails";
 import { Toast } from "toastify-react-native";
 import { useTranslation } from "react-i18next";
 import { useOfflineStatus } from "../OfflineIndicator";
+import * as Clipboard from "expo-clipboard";
 
 
 const PlaceDetails = ({
@@ -147,12 +148,30 @@ const PlaceDetails = ({
            displayData?.opening_hours?.weekday_text || 
            [];
   };
+   const handleCopyName = async () => {
+    if (displayData?.name) {
+      await Clipboard.setStringAsync(displayData.name);
+      
+    }
+  }
+  const handleCopyAddress = async () => {
+    const address = displayData?.formatted_address || displayData?.vicinity || "";
+    if (address) {
+      await Clipboard.setStringAsync(address);
+    }
+  }
+
   
   return (
     <View style={[styles.container]}>
       {/* Header Section */}
       <View style={styles.placeHeader}>
+        <TouchableOpacity style={{ flexDirection: "row", alignItems: "center", gap: 10}} onPress={handleCopyName}>
         <Text style={styles.placeName}>{displayData?.name}</Text>
+        <Ionicons name="clipboard-outline" size={24} color={theme.text}  />
+        </TouchableOpacity>
+        
+        {/* Rating Section */}
         <View style={styles.ratingContainer}>
           {renderStars(displayData?.rating || 0)}
           <Text style={styles.ratingText}>
@@ -174,12 +193,12 @@ const PlaceDetails = ({
       {/* Main Info Section */}
       <View style={styles.infoSection}>
         {/* Address */}
-        <View style={styles.infoRow}>
+        <TouchableOpacity style={styles.infoRow} onPress={handleCopyAddress}>
           <FontAwesome6 name="location-dot" size={22} color={theme.progressColor} />
           <Text style={styles.infoText}>
             {displayData?.formatted_address || displayData?.vicinity || t("placeDetails.addressNotAvailable")}
           </Text>
-        </View>
+        </TouchableOpacity>
 
         {/* Phone Number */}
         {(displayData?.formatted_phone_number || displayData?.international_phone_number) && (

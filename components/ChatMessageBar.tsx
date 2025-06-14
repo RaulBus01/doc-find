@@ -9,12 +9,9 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {MessageBarStyles} from "@/components/ChatMessageBarStyle";
-import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
-import { is } from "drizzle-orm";
-import { use } from "i18next";
 
 type Props = {
   isStreaming?: boolean;

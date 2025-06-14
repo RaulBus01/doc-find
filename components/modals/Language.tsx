@@ -1,5 +1,5 @@
-import React, { forwardRef, useCallback, useMemo } from "react";
-import { StyleSheet, View, Text, Pressable, TouchableOpacity } from "react-native";
+import React, { forwardRef, useCallback, useMemo, useState, useEffect } from "react";
+import { StyleSheet, View, Text, Pressable, TouchableOpacity, BackHandler } from "react-native";
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -39,6 +39,35 @@ const LanguagePicker = forwardRef<BottomSheetModal, LanguagePickerProps>(
     const { t } = useTranslation();
     const styles = getStyles(theme);
     const snapPoints = useMemo(() => ["40%", "60%", "80%"], []);
+    
+ 
+    const [isModalVisible, setModalVisible] = useState(false);
+
+
+    const handleBackPress = useCallback(() => {
+      if (isModalVisible) {
+        (ref as React.RefObject<BottomSheetModal>)?.current?.dismiss();
+        return true;
+      }
+      return false;
+    }, [isModalVisible, ref]);
+
+ 
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        handleBackPress
+      );
+      return () => backHandler.remove();
+    }, [handleBackPress]);
+
+
+    const handleOnAnimate = useCallback(
+      (fromIndex: number, toIndex: number) => {
+        setModalVisible(toIndex >= 0);
+      },
+      []
+    );
 
     const renderBackdrop = useCallback(
       (props: any) => (
@@ -97,6 +126,8 @@ const LanguagePicker = forwardRef<BottomSheetModal, LanguagePickerProps>(
         handleIndicatorStyle={styles.handleIndicator}
         handleStyle={styles.handle}
         backgroundStyle={styles.container}
+        onDismiss={() => setModalVisible(false)}
+        onAnimate={handleOnAnimate}
       >
      
         <BottomSheetView style={styles.scrollView}>

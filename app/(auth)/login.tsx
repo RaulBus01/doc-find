@@ -140,7 +140,7 @@ const getStyles = (theme: ThemeColors) =>
     marginRight: 10,
   },
   loginButtonText: {
-    color: theme.text,
+    color: theme.textLight ? theme.textLight : theme.text,
     fontSize: 16,
     fontWeight: '600',
   },

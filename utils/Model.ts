@@ -5,7 +5,7 @@ export const streamModelResponse = async (
   token: string | null,
   message: string,
   onChunk: (chunk: any) => void,
-  chatId: number,
+  chatId: string,
   context?: any,
   abortSignal?: AbortSignal,
 ) => {

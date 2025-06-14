@@ -12,7 +12,7 @@ export const chats = sqliteTable('chats',
    index('user_id_idx').on(table.user_id),
   ]
 );
-
+  
 export const checkpoints = sqliteTable('checkpoints',
   {
     thread_id: text('thread_id').notNull(),

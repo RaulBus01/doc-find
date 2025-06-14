@@ -269,7 +269,7 @@ const ChatScreen = () => {
                 )
               );
             },
-            parseInt(chatIdRef.current!),
+            chatIdRef.current!,
             contextData,
             abortControllerRef.current.signal
           );
