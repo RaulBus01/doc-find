@@ -23,7 +23,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [token, setToken] = useState<string | undefined>(undefined);
   const [refreshToken, setRefreshToken] = useState<string | undefined>(undefined);
-
   const segments = useSegments();
   const navigationState = useRootNavigationState();
 

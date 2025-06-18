@@ -12,6 +12,9 @@ export default {
       "scheme": "myapp",
       "userInterfaceStyle": "automatic",
       "newArchEnabled": true,
+      "assetBundlePatterns": [
+        "**/*"
+      ],
       "ios": {
         "supportsTablet": true,
         "bundleIdentifier": "com.laurbalaur.medora"

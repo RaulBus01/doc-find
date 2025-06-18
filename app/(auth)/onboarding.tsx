@@ -17,19 +17,30 @@ const data = [
   {
     id: '1',
     title: 'First item',
-    image: require('../../assets/images/onboarding1.png'),
+    image: require('../../assets/images/welcome1.png'),
    
   },
   {
     id: '2',
     title: 'Second item',
-    image: require('../../assets/images/onboarding3.png')
+    image: require('../../assets/images/welcome2.png')
   },
   {
     id: '3',
     title: 'Third item',
-     image: require('../../assets/images/onboarding2.png'),
+     image: require('../../assets/images/welcome4.png'),
   },
+  {
+    id: '4',
+    title: 'Fourth item',
+    image: require('../../assets/images/welcome5.png'),
+  },
+  {
+    id: '5',
+    title: 'Fifth item',
+    image: require('../../assets/images/welcome3.png'),
+  },
+  
 ]
 const Page = () => {
     const { t } = useTranslation();

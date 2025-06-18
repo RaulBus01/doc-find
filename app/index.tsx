@@ -3,6 +3,8 @@ import { useAuth } from "@/hooks/useAuth"
 
 export default function Index() {
   const { isAuthenticated, isLoading } = useAuth()
+
+  
   
   if (isLoading) {
     return null
@@ -13,6 +15,6 @@ export default function Index() {
   return isAuthenticated ? (
     <Redirect href="/(tabs)" />
   ) : (
-    <Redirect href="/(auth)/login" />
+    <Redirect href="/(auth)/onboarding" />
   )
 }
