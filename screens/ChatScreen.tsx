@@ -91,6 +91,7 @@ const ChatScreen = () => {
   const symptomHandledRef = useRef(false);
 
 
+
   const handleAbortStream = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -417,6 +418,33 @@ const ChatScreen = () => {
     [user?.nickname, user?.picture]
   );
 
+
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+useEffect(() => {
+  if (displayMessages && displayMessages.length > 0 && flatListRef.current) {
+    
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated: false });
+      setIsAtBottom(true);
+    }, 100);
+  }
+}, [displayMessages]);
+
+  
+  const handleScroll = (event: { nativeEvent: { contentOffset: any; contentSize: any; layoutMeasurement: any; }; }) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const isScrolledToBottom = 
+      contentOffset.y >= contentSize.height - layoutMeasurement.height -100;
+    setIsAtBottom(isScrolledToBottom);
+  };
+
+  const scrollToBottom = () => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
       <View style={[styles.header, { paddingTop: top + 10 }]}>
@@ -489,18 +517,20 @@ const ChatScreen = () => {
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
           ListFooterComponent={<View style={{ height: 120 }} />}
-          onContentSizeChange={() => {
-            if (
-              flatListRef.current &&
-              displayMessages &&
-              displayMessages.length > 0
-            ) {
-              setTimeout(() => {
-                flatListRef.current?.scrollToEnd({ animated: true });
-              }, 100);
-            }
-          }}
+         
+          onScroll={handleScroll}
+        
         />
+        {/* Add this floating button component after your FlatList */}
+        {!isAtBottom && (
+          <TouchableOpacity
+            style={styles.floatingButton}
+            onPress={scrollToBottom}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-down" size={24} color="#fff" />
+          </TouchableOpacity>
+        )}
       </View>
 
       <View
@@ -757,6 +787,19 @@ const getStyles = (theme: ThemeColors) =>
       opacity: 0.7,
       fontSize: 16,
       lineHeight: 24,
+    },
+    floatingButton: {
+      position: 'absolute',
+      bottom: 160,
+      right: 20,
+      width: 50,
+      height: 50,
+      borderRadius: 25,
+      backgroundColor: theme.progressColor,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 5,
+
     },
   });
 

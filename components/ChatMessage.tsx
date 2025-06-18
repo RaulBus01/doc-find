@@ -90,7 +90,7 @@ const ChatMessage = ({
 
       </View>
       <View style={styles.footer}>
-        {isAI ? (
+        {
           id !== MessageType.System && (
           <View style={styles.footerButtons}>
             <Pressable
@@ -102,7 +102,7 @@ const ChatMessage = ({
           
           </View>
           )
-        ) : null}
+        }
       </View>
     </View>
   );
