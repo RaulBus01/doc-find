@@ -51,7 +51,7 @@ import { LegendList, LegendListRef } from "@legendapp/list";
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
   const { top, bottom } = useSafeAreaInsets();
-  const [chatId, setChatId] = useState(id);
+  const [chatId, setChatId] = useState(id || "");
   const chatIdRef = useRef(chatId);
 
   const { t } = useTranslation();
@@ -147,12 +147,19 @@ const ChatScreen = () => {
   }, [isOffline, chatId, token]);
 
     const displayMessages = useMemo(() => {
-    if (isOffline && chatId) {
-     
-      return powerSyncMessages  ? powerSyncMessages : messages;
+  if (isOffline && chatId) {
+ 
+    if (isPowerSyncLoading) {
+      return messages;
     }
-    return messages;
-  }, [isOffline, chatId, powerSyncMessages, messages]);
+    
+
+    return powerSyncMessages && powerSyncMessages.length > 0 
+      ? powerSyncMessages 
+      : messages;
+  }
+  return messages;
+}, [isOffline, chatId, powerSyncMessages, messages, isPowerSyncLoading]);
 
   useEffect(() => {
     if (isOffline) {
@@ -270,7 +277,7 @@ const ChatScreen = () => {
                 )
               );
             },
-            chatIdRef.current!,
+           parseInt(chatIdRef.current!),
             contextData,
             abortControllerRef.current.signal
           );
@@ -427,15 +434,16 @@ useEffect(() => {
     setTimeout(() => {
       flatListRef.current?.scrollToEnd({ animated: false });
       setIsAtBottom(true);
-    }, 100);
+    }, 300);
   }
-}, [displayMessages]);
+}, [displayMessages, flatListRef]);
 
   
   const handleScroll = (event: { nativeEvent: { contentOffset: any; contentSize: any; layoutMeasurement: any; }; }) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
     const isScrolledToBottom = 
       contentOffset.y >= contentSize.height - layoutMeasurement.height -100;
+    
     setIsAtBottom(isScrolledToBottom);
   };
 
@@ -516,12 +524,13 @@ useEffect(() => {
           keyExtractor={(item) => item.id.toString()}
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
-          ListFooterComponent={<View style={{ height: 120 }} />}
+          ListFooterComponent={<View style={{ height: 150 }} />}
+
          
           onScroll={handleScroll}
         
         />
-        {/* Add this floating button component after your FlatList */}
+  
         {!isAtBottom && (
           <TouchableOpacity
             style={styles.floatingButton}

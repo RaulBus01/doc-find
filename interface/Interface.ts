@@ -19,7 +19,7 @@ export enum MessageType{
   }
   
   export interface Chat {
-    id: string;
+    id: number;
     user_id: string;
     title: string;
     created_at: string;

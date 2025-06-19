@@ -320,7 +320,7 @@ const Home = () => {
             ) : powerSyncChats && !powerSyncCountLoading ? (
               <LegendList
               data={powerSyncChats}
-              keyExtractor={(chat) => chat.id}
+              keyExtractor={(chat) => chat.id.toString()}
               estimatedItemSize={65}
               renderItem={({ item: chat }: { item: any }) => (
                 <TouchableOpacity
