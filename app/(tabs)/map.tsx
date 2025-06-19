@@ -282,6 +282,7 @@ export default function Map() {
             onPress={() => handlePresentModalPress(place)}
             tracksViewChanges={false}
             icon={markerIcons[activeFilter]}
+            style={{width: 300, height: 300}}
           ></Marker>
         ))}
       </MapView>
