@@ -304,30 +304,13 @@ const ChatScreen = () => {
           abortControllerRef.current = null;
         }
 
-        //     if (chatIdRef.current) {
-        //       try {
-        //         const updatedMessages = await getMessages(
-        //           token as string,
-        //           chatIdRef.current,
-        //           refreshTokens
-        //         );
-        //         setMessages(updatedMessages);
-        //       } catch (e) {
-
-        //         Toast.show({
-        //           type: "error",
-        //           text1: t("chat.chatFetchError"),
-        //         });
-        //       }
-        //     }
-
-        //     if (isNewChat) {
-        //       const newTitle = await generateChatTitle(
-        //         token as string,
-        //         chatIdRef.current,
-        //         refreshTokens
-        //       );
-        //     }
+            if (isNewChat) {
+              const newTitle = await generateChatTitle(
+                token as string,
+                chatIdRef.current,
+                refreshTokens
+              );
+            }
 
         Keyboard.dismiss();
       } catch (e) {
