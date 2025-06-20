@@ -47,6 +47,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { getPowerSyncMessages } from "@/powersync/utils";
 import { LegendList, LegendListRef } from "@legendapp/list";
+import { parse } from "@babel/core";
 
 const ChatScreen = () => {
   let { id, symptom } = useLocalSearchParams<{ id: string; symptom: string }>();
@@ -65,7 +66,7 @@ const ChatScreen = () => {
       setMessages([newWelcomeMessage]);
     }
   }, [t, id]);
-  const { token, user,refreshTokens } = useAuth();
+  const { token, user, refreshTokens } = useAuth();
 
   const flatListRef = useRef<LegendListRef>(null);
   const { theme } = useTheme();
@@ -89,8 +90,6 @@ const ChatScreen = () => {
   const { data: powerSyncMessages, isLoading: isPowerSyncLoading } =
     getPowerSyncMessages(chatId || "", { enabled: !!chatId && isOffline });
   const symptomHandledRef = useRef(false);
-
-
 
   const handleAbortStream = useCallback(() => {
     if (abortControllerRef.current) {
@@ -129,11 +128,10 @@ const ChatScreen = () => {
     const fetchMessagesFromAPI = async () => {
       if (!isOffline && chatId && token) {
         try {
-          const apiMessages = await getMessages(token, chatId,refreshTokens);
-        
+          const apiMessages = await getMessages(token, chatId, refreshTokens);
+
           setMessages(apiMessages);
         } catch (error) {
-          
           Toast.show({
             type: "error",
             text1: t("toast.error"),
@@ -146,21 +144,29 @@ const ChatScreen = () => {
     fetchMessagesFromAPI();
   }, [isOffline, chatId, token]);
 
-    const displayMessages = useMemo(() => {
-  if (isOffline && chatId) {
- 
-    if (isPowerSyncLoading) {
-      return messages;
+  const displayMessages = useMemo(() => {
+    if (isOffline && chatId) {
+      if (isPowerSyncLoading) {
+        return messages;
+      }
+
+      return powerSyncMessages && powerSyncMessages.length > 0
+        ? powerSyncMessages
+        : messages;
     }
-    
+    return messages;
+  }, [isOffline, chatId, powerSyncMessages, messages, isPowerSyncLoading]);
+  useEffect(() => {
+    if (displayMessages.length > 0) {
+      const timer = setTimeout(() => {
+        if (flatListRef.current) {
+          flatListRef.current.scrollToEnd({ animated: false });
+        }
+      }, 200);
 
-    return powerSyncMessages && powerSyncMessages.length > 0 
-      ? powerSyncMessages 
-      : messages;
-  }
-  return messages;
-}, [isOffline, chatId, powerSyncMessages, messages, isPowerSyncLoading]);
-
+      return () => clearTimeout(timer);
+    }
+  }, [displayMessages.length, chatId]);
   useEffect(() => {
     if (isOffline) {
       return;
@@ -170,8 +176,9 @@ const ChatScreen = () => {
       symptomHandledRef.current = true;
       handleMessageSend("I have a symptom: " + symptom);
     }
-  }, [symptom,isOffline]);
+  }, [symptom, isOffline]);
 
+  // Update your message creation to use unique IDs
   const handleMessageSend = useCallback(
     async (message: string) => {
       try {
@@ -202,16 +209,18 @@ const ChatScreen = () => {
 
         const currentChatId = chatIdRef.current;
         const isNewChat = !currentChatId;
-        let newMessageId = MessageType.Human;
+
+        // Generate unique IDs
+        let newMessageId = Date.now();
         let newMessage: Message = {
-          id: newMessageId,
+          id: newMessageId.toString(),
           chatId: currentChatId || "",
           isAI: false,
           content: messageContent,
         };
 
         if (isNewChat) {
-          const chat = await addChat(token as string,refreshTokens);
+          const chat = await addChat(token as string, refreshTokens);
           if (chat?.id) {
             chatIdRef.current = chat.id;
             newMessage.chatId = chat.id;
@@ -221,11 +230,12 @@ const ChatScreen = () => {
           setMessages((prev) => [...prev, newMessage]);
         }
 
-        const aiMessageId = MessageType.AI;
+        // Generate unique AI message ID
+        const aiMessageId = Date.now() + 1;
         setMessages((prev) => [
           ...prev,
           {
-            id: aiMessageId,
+            id: aiMessageId.toString(),
             chatId: chatIdRef.current || "",
             isAI: true,
             content: "",
@@ -268,7 +278,7 @@ const ChatScreen = () => {
               fullResponse += chunk.content;
               setMessages((prev) =>
                 prev.map((msg) =>
-                  msg.id === aiMessageId
+                  msg.id === aiMessageId.toString()
                     ? {
                         ...msg,
                         content: fullResponse,
@@ -277,7 +287,7 @@ const ChatScreen = () => {
                 )
               );
             },
-           parseInt(chatIdRef.current!),
+            parseInt(chatIdRef.current!),
             contextData,
             abortControllerRef.current.signal
           );
@@ -294,30 +304,30 @@ const ChatScreen = () => {
           abortControllerRef.current = null;
         }
 
-        if (chatIdRef.current) {
-          try {
-            const updatedMessages = await getMessages(
-              token as string,
-              chatIdRef.current,
-              refreshTokens
-            );
-            setMessages(updatedMessages);
-          } catch (e) {
-        
-            Toast.show({
-              type: "error",
-              text1: t("chat.chatFetchError"),
-            });
-          }
-        }
+        //     if (chatIdRef.current) {
+        //       try {
+        //         const updatedMessages = await getMessages(
+        //           token as string,
+        //           chatIdRef.current,
+        //           refreshTokens
+        //         );
+        //         setMessages(updatedMessages);
+        //       } catch (e) {
 
-        if (isNewChat) {
-          const newTitle = await generateChatTitle(
-            token as string,
-            chatIdRef.current,
-            refreshTokens
-          );
-        }
+        //         Toast.show({
+        //           type: "error",
+        //           text1: t("chat.chatFetchError"),
+        //         });
+        //       }
+        //     }
+
+        //     if (isNewChat) {
+        //       const newTitle = await generateChatTitle(
+        //         token as string,
+        //         chatIdRef.current,
+        //         refreshTokens
+        //       );
+        //     }
 
         Keyboard.dismiss();
       } catch (e) {
@@ -414,7 +424,7 @@ const ChatScreen = () => {
   const renderChatMessage = useCallback(
     ({ item }: { item: Message }) => (
       <ChatMessage
-        key={item.id}
+        key={`${item.id}-${item.content?.length || 0}`} // More stable key
         id={item.id}
         name={user?.nickname || "User"}
         picture={user?.picture || ""}
@@ -425,33 +435,22 @@ const ChatScreen = () => {
     [user?.nickname, user?.picture]
   );
 
-
   const [isAtBottom, setIsAtBottom] = useState(true);
 
-useEffect(() => {
-  if (displayMessages && displayMessages.length > 0 && flatListRef.current) {
-    
-    setTimeout(() => {
-      flatListRef.current?.scrollToEnd({ animated: false });
-      setIsAtBottom(true);
-    }, 300);
-  }
-}, [displayMessages, flatListRef]);
-
-  
-  const handleScroll = (event: { nativeEvent: { contentOffset: any; contentSize: any; layoutMeasurement: any; }; }) => {
+  const handleScroll = useCallback((event: any) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-    const isScrolledToBottom = 
-      contentOffset.y >= contentSize.height - layoutMeasurement.height -100;
-    
-    setIsAtBottom(isScrolledToBottom);
-  };
+    const threshold = 150; // pixels from bottom
+    const isNearBottom =
+      contentOffset.y + layoutMeasurement.height >= contentSize.height - threshold;
 
-  const scrollToBottom = () => {
+    setIsAtBottom(isNearBottom);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
     if (flatListRef.current) {
       flatListRef.current.scrollToEnd({ animated: true });
     }
-  };
+  }, []);
 
   return (
     <SafeAreaView style={[styles.container, { paddingBottom: bottom }]}>
@@ -521,16 +520,21 @@ useEffect(() => {
           ref={flatListRef}
           data={displayMessages}
           renderItem={renderChatMessage}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => {
+            if (typeof item.id === "string") {
+              return item.id;
+            }
+
+            return `${item.id}-${item.content?.length || 0}-${
+              item.isAI ? "ai" : "human"
+            }`;
+          }}
           keyboardDismissMode="on-drag"
           contentContainerStyle={styles.chatContainer}
           ListFooterComponent={<View style={{ height: 150 }} />}
-
-         
           onScroll={handleScroll}
-        
         />
-  
+
         {!isAtBottom && (
           <TouchableOpacity
             style={styles.floatingButton}
@@ -557,7 +561,7 @@ useEffect(() => {
       </View>
 
       <BottomSheetModal
-    ref={profilesBottomSheetRef}
+        ref={profilesBottomSheetRef}
         index={-1}
         snapPoints={["60%"]}
         backgroundStyle={{ backgroundColor: theme.backgroundDark }}
@@ -593,7 +597,7 @@ useEffect(() => {
         {useProfileContext ? (
           <BottomSheetFlashList
             data={profiles}
-            keyExtractor={(item:any) => item.id.toString()}
+            keyExtractor={(item: any) => item.id.toString()}
             renderItem={renderProfileItem}
             contentContainerStyle={styles.profilesList}
             ListEmptyComponent={
@@ -798,17 +802,16 @@ const getStyles = (theme: ThemeColors) =>
       lineHeight: 24,
     },
     floatingButton: {
-      position: 'absolute',
+      position: "absolute",
       bottom: 160,
       right: 20,
       width: 50,
       height: 50,
       borderRadius: 25,
       backgroundColor: theme.progressColor,
-      justifyContent: 'center',
-      alignItems: 'center',
+      justifyContent: "center",
+      alignItems: "center",
       elevation: 5,
-
     },
   });
 

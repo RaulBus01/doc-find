@@ -50,8 +50,8 @@ export const initI18n = async () => {
     },
     react: {
       useSuspense: false,
-    },
-    debug: __DEV__,
+    }
+  
   });
 };
 

@@ -5,7 +5,7 @@ import {
   Image,
 } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
-import React from "react";
+import React, { useMemo } from "react";
 import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
@@ -30,9 +30,11 @@ const ChatMessage = ({
   picture,
 
 }: ChatMessageProps) => {
-
-  const {theme} = useTheme();
+  const { theme } = useTheme();
   const styles = getStyles(theme);
+
+  // Memoize the markdown content to prevent unnecessary re-renders
+  const markdownContent = useMemo(() => message, [message]);
 
   const handleCopyToClipboard = async () => {
     await Clipboard.setStringAsync(message);
@@ -85,7 +87,7 @@ const ChatMessage = ({
   }
   
 >
-  {message}
+  {markdownContent}
 </Markdown>
 
       </View>
@@ -228,6 +230,7 @@ export default React.memo(ChatMessage, (prevProps, nextProps) => {
     prevProps.id === nextProps.id &&
     prevProps.message === nextProps.message &&
     prevProps.isAI === nextProps.isAI &&
-    prevProps.picture === nextProps.picture
+    prevProps.picture === nextProps.picture &&
+    prevProps.name === nextProps.name
   );
 });
