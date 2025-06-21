@@ -268,7 +268,7 @@ export default function AllergiesScreen() {
                 {item.severity ? 
                   t("allergies.severityText") :
                   t("allergies.mildText")}
-                {item.severity}
+              
              
               </Text>
             </View>

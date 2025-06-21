@@ -220,6 +220,7 @@
     "tapToSelect": "Atingeți pentru a selecta o alergie",
     "allergyName": "Numele alergiei",
     "severityText": "Reacție severă",
+    "mildText": "Reacție ușoară",
     "addButtonText": "Adăugați alergia"
   },
   "medications": {
@@ -236,7 +237,7 @@
     "tapToSelect": "Atingeți pentru a selecta un medicament",
     "medicationName": "Numele medicamentului",
     "dosageText": "Administrat zilnic",
-    "doasgeText2":"La nevoie",
+    "dosageText2":"La nevoie",
     "addButtonText": "Adăugați medicamentul"
   },
   "medicalHistory": {
