@@ -207,22 +207,6 @@
     "diabetesTitle": "Hat Diabetes?",
     "saveTitle": "Profil speichern"
   },
-  "allergies": {
-    "error": "Fehler beim Laden der Allergien",
-    "warning": "Bitte gib eine Allergie ein",
-    "errorAdd": "Fehler beim Hinzufügen der Allergie",
-    "warningExists": "Allergie existiert bereits",
-    "successAdd": "Allergie wurde hinzugefügt",
-    "deleteError": "Fehler beim Löschen der Allergie",
-    "successDelete": "Allergie wurde gelöscht",
-    "title": "Allergien",
-    "emptyText": "Keine Allergien hinzugefügt",
-    "addText": "Füge eine Allergie mit dem untenstehenden Formular hinzu",
-    "tapToSelect": "Tippe zum Auswählen einer Allergie",
-    "allergyName": "Name der Allergie",
-    "severityText": "Schwere Reaktion",
-    "addButtonText": "Allergie hinzufügen"
-  },
   "medications": {
     "error": "Fehler beim Laden der Medikamente",
     "warning": "Bitte gib ein Medikament ein",
@@ -237,7 +221,25 @@
     "tapToSelect": "Tippe zum Auswählen eines Medikaments",
     "medicationName": "Name des Medikaments",
     "dosageText": "Täglich verabreicht",
+    "dosageText2": "Bei Bedarf",
     "addButtonText": "Medikament hinzufügen"
+  },
+  "allergies": {
+    "error": "Fehler beim Laden der Allergien",
+    "warning": "Bitte gib eine Allergie ein",
+    "errorAdd": "Fehler beim Hinzufügen der Allergie",
+    "warningExists": "Allergie existiert bereits",
+    "successAdd": "Allergie wurde hinzugefügt",
+    "deleteError": "Fehler beim Löschen der Allergie",
+    "successDelete": "Allergie wurde gelöscht",
+    "title": "Allergien",
+    "emptyText": "Keine Allergien hinzugefügt",
+    "addText": "Füge eine Allergie mit dem untenstehenden Formular hinzu",
+    "tapToSelect": "Tippe zum Auswählen einer Allergie",
+    "allergyName": "Name der Allergie",
+    "severityText": "Schwere Reaktion",
+    "mildText": "Leichte Reaktion",
+    "addButtonText": "Allergie hinzufügen"
   },
   "medicalHistory": {
     "error": "Fehler beim Laden der medizinischen Vorgeschichte",

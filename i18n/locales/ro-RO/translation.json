@@ -229,13 +229,14 @@
     "warningExists": "Medicamentul există deja",
     "successAdd": "Medicamentul a fost adăugat",
     "deleteError": "Eroare la ștergerea medicamentului",
-    "successDelete": "Medicamentul a fost ștearsă",
+    "successDelete": "Medicamentul a fost șters",
     "title": "Medicamente",
     "emptyText": "Nu există medicamente adăugate",
     "addText": "Adăugați un medicament folosind formularul de mai jos",
     "tapToSelect": "Atingeți pentru a selecta un medicament",
     "medicationName": "Numele medicamentului",
     "dosageText": "Administrat zilnic",
+    "doasgeText2":"La nevoie",
     "addButtonText": "Adăugați medicamentul"
   },
   "medicalHistory": {

@@ -231,7 +231,7 @@ export default function MedicationScreen() {
                 <View style={styles.medicationDetails}>
                   <Text style={styles.medicationName}>{item.name}</Text>
                   <Text style={styles.medicationDosage}>
-                    {item.permanent ? "Take daily" : "As needed"}
+                    {item.permanent ? t('medications.dosageText') : t('medications.dosageText2')}
                   </Text>
                 </View>
                 <Pressable onPress={handleDeleteMedication(item.medicationId)} style={styles.deleteButton}>

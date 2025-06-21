@@ -220,6 +220,7 @@
     "tapToSelect": "Tocca per selezionare un'allergia",
     "allergyName": "Nome allergia",
     "severityText": "Reazione grave",
+     "mildText": "Reazione lieve",
     "addButtonText": "Aggiungi allergia"
   },
   "medications": {
@@ -236,6 +237,7 @@
     "tapToSelect": "Tocca per selezionare un farmaco",
     "medicationName": "Nome farmaco",
     "dosageText": "Somministrato giornalmente",
+    "dosageText2": "Dosaggio (se necessario)",
     "addButtonText": "Aggiungi farmaco"
   },
   "medicalHistory": {

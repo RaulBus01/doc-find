@@ -206,22 +206,6 @@
     "diabetesTitle": "Tem diabetes?",
     "saveTitle": "Salvar Perfil"
   },
-  "allergies": {
-    "error": "Erro ao carregar alergias",
-    "warning": "Digite uma alergia",
-    "errorAdd": "Erro ao adicionar alergia",
-    "warningExists": "Alergia já existe",
-    "successAdd": "Alergia adicionada",
-    "deleteError": "Erro ao excluir alergia",
-    "successDelete": "Alergia excluída",
-    "title": "Alergias",
-    "emptyText": "Nenhuma alergia adicionada",
-    "addText": "Adicione uma alergia usando o formulário abaixo",
-    "tapToSelect": "Toque para selecionar uma alergia",
-    "allergyName": "Nome da alergia",
-    "severityText": "Reação grave",
-    "addButtonText": "Adicionar Alergia"
-  },
   "medications": {
     "error": "Erro ao carregar medicamentos",
     "warning": "Digite um medicamento",
@@ -236,7 +220,25 @@
     "tapToSelect": "Toque para selecionar um medicamento",
     "medicationName": "Nome do medicamento",
     "dosageText": "Administrado diariamente",
+    "dosageText2": "Quando necessário",
     "addButtonText": "Adicionar Medicamento"
+  },
+  "allergies": {
+    "error": "Erro ao carregar alergias",
+    "warning": "Digite uma alergia",
+    "errorAdd": "Erro ao adicionar alergia",
+    "warningExists": "Alergia já existe",
+    "successAdd": "Alergia adicionada",
+    "deleteError": "Erro ao excluir alergia",
+    "successDelete": "Alergia excluída",
+    "title": "Alergias",
+    "emptyText": "Nenhuma alergia adicionada",
+    "addText": "Adicione uma alergia usando o formulário abaixo",
+    "tapToSelect": "Toque para selecionar uma alergia",
+    "allergyName": "Nome da alergia",
+    "severityText": "Reação grave",
+    "mildText": "Reação leve",
+    "addButtonText": "Adicionar Alergia"
   },
   "medicalHistory": {
     "error": "Erro ao carregar histórico médico",

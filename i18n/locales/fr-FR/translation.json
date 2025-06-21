@@ -206,22 +206,6 @@
     "diabetesTitle": "Diabète ?",
     "saveTitle": "Enregistrer le profil"
   },
-  "allergies": {
-    "error": "Erreur lors du chargement des allergies",
-    "warning": "Veuillez entrer une allergie",
-    "errorAdd": "Erreur lors de l'ajout de l'allergie",
-    "warningExists": "L'allergie existe déjà",
-    "successAdd": "Allergie ajoutée",
-    "deleteError": "Erreur lors de la suppression de l'allergie",
-    "successDelete": "Allergie supprimée",
-    "title": "Allergies",
-    "emptyText": "Aucune allergie ajoutée",
-    "addText": "Ajoutez une allergie avec le formulaire ci-dessous",
-    "tapToSelect": "Appuyez pour sélectionner une allergie",
-    "allergyName": "Nom de l'allergie",
-    "severityText": "Réaction sévère",
-    "addButtonText": "Ajouter une allergie"
-  },
   "medications": {
     "error": "Erreur lors du chargement des médicaments",
     "warning": "Veuillez entrer un médicament",
@@ -236,7 +220,25 @@
     "tapToSelect": "Appuyez pour sélectionner un médicament",
     "medicationName": "Nom du médicament",
     "dosageText": "Administré quotidiennement",
+    "dosageText2": "Au besoin",
     "addButtonText": "Ajouter un médicament"
+  },
+  "allergies": {
+    "error": "Erreur lors du chargement des allergies",
+    "warning": "Veuillez entrer une allergie",
+    "errorAdd": "Erreur lors de l'ajout de l'allergie",
+    "warningExists": "L'allergie existe déjà",
+    "successAdd": "Allergie ajoutée",
+    "deleteError": "Erreur lors de la suppression de l'allergie",
+    "successDelete": "Allergie supprimée",
+    "title": "Allergies",
+    "emptyText": "Aucune allergie ajoutée",
+    "addText": "Ajoutez une allergie avec le formulaire ci-dessous",
+    "tapToSelect": "Appuyez pour sélectionner une allergie",
+    "allergyName": "Nom de l'allergie",
+    "severityText": "Réaction sévère",
+    "mildText": "Réaction légère",
+    "addButtonText": "Ajouter une allergie"
   },
   "medicalHistory": {
     "error": "Erreur lors du chargement de l'historique médical",

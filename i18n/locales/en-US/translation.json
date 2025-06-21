@@ -238,6 +238,7 @@
     "tapToSelect": "Tap to select a medication",
     "medicationName": "Medication name",
     "dosageText": "Daily administered",
+    "dosageText2": "As needed",
     "addButtonText": "Add Medication"
   },
   "medicalHistory": {
