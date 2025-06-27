@@ -1,13 +1,10 @@
 import React, { Suspense, useEffect } from "react";
-import { Stack, useRouter } from "expo-router";
+import { Stack } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
-import { useFonts } from "expo-font";
-import { Auth0Provider, useAuth0 } from "react-native-auth0";
+import { Auth0Provider } from "react-native-auth0";
 import Constants from "expo-constants";
-import { TokenProvider } from "@/context/TokenContext";
-import { UserDataProvider } from "@/context/UserDataContext";
-import { View, ActivityIndicator, Text, useColorScheme } from "react-native";
+import { View, ActivityIndicator, Text } from "react-native";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { StatusBar } from "expo-status-bar";
 import { ThemeProvider, useTheme } from "@/context/ThemeContext";
@@ -16,100 +13,93 @@ import { drizzle } from "drizzle-orm/expo-sqlite";
 import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
 import migrations from "@/drizzle/migrations";
 import ToastManager from "toastify-react-native";
-import 'react-native-get-random-values'
+import "react-native-get-random-values";
+
+import { PowerSyncContext } from "@powersync/react-native";
+import { powersync } from "@/powersync/system";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import * as Font from 'expo-font';
+import { Entypo, FontAwesome, FontAwesome5, FontAwesome6, Fontisto, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { initI18n } from "@/i18n";
+
+import { createToastConfig } from "@/utils/Toast";
+
 SplashScreen.preventAutoHideAsync();
 
-const fonts = {
-  "Roboto-Bold": require("@/assets/fonts/RobotoSerif-Bold.ttf"),
-  "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
-  "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
-};
-
 const InitialLayout = () => {
-  const [fontsLoaded, fontError] = useFonts(fonts);
-  const { user, isLoading: authLoading, error: authError } = useAuth0();
-  const router = useRouter();
-  const { theme, isDark } = useTheme();
-  const LoadingScreen = () => (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <ActivityIndicator size="large" color={theme.background} />
-    </View>
-  );
+
+  const [appIsReady, setAppIsReady] = React.useState(false);
+  const [fontError, setFontError] = React.useState<Error | null>(null);
+  
+  const { theme } = useTheme();
 
   useEffect(() => {
-    if (fontError) {
-      console.error("Font loading error:", fontError);
+    async function prepareApp() {
+      try {
+     
+        const promises = [
+          Font.loadAsync({
+            "Roboto-Bold": require("@/assets/fonts/RobotoSerif-Bold.ttf"),
+            "Roboto-Regular": require("@/assets/fonts/RobotoSerif-Regular.ttf"),
+            "Roboto-Medium": require("@/assets/fonts/RobotoSerif-Medium.ttf"),
+            ...Ionicons.font,
+            ...MaterialCommunityIcons.font,
+            ...Entypo.font,
+            ...FontAwesome.font,
+            ...FontAwesome5.font,
+            ...FontAwesome6.font,
+            ...Fontisto.font,
+          }),
+          initI18n(),
+        ];
+
+     
+        await Promise.all(promises);
+
+      } catch (e: any) {
+      
+        setFontError(e);
+        console.error("Failed to load app resources:", e);
+      } finally {
+       
+        setAppIsReady(true);
+      
+        SplashScreen.hideAsync();
+      }
     }
-  }, [fontError]);
 
-  useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync().catch(console.error);
-    }
-  }, [fontsLoaded]);
+    prepareApp();
+  }, []);
 
-
-  useEffect(() => {
-    if (!authLoading && fontsLoaded) {
-      const route = user ? "/(tabs)" : "/";
-      router.replace(route);
-    }
-  }, [user, authLoading, fontsLoaded, router]);
-
-  if (!fontsLoaded || authLoading) {
-    return <LoadingScreen />;
+  if (!appIsReady) {
+    return null; 
   }
 
-  if (fontError || authError) {
+  if (fontError) {
+
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text style={{ color: "red" }}>
-          {fontError?.message || authError?.message}
-        </Text>
+        <Text style={{ color: "red" }}>Error loading fonts: {fontError.message}</Text>
       </View>
     );
   }
 
+  const toastConfig = createToastConfig(theme);
+
   return (
     <>
       <ToastManager
-        theme={isDark ? "dark" : "light"}
-        showProgressBar={false}
-        style={{ width: "100%", height: "100px",elevation: 0 }}
-        animationIn={"fadeIn"}
-        animationOut="fadeOut"
-        animationStyle={"upInUpOut"}
+        config={toastConfig}
+        position="top"
+        iconSize={24}
+        useModal={false}
       />
-      <StatusBar
-        animated={true}
-        backgroundColor="transparent"
-        style="auto"
-      />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen name="login" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="(profiles)"
-          options={{
-            headerShown: false,
-            animation: "slide_from_left",
-          }}
-        />
+      <StatusBar animated={true} backgroundColor="transparent" style="auto" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(profiles)" options={{ animation: "slide_from_left" }} />
       </Stack>
     </>
   );
@@ -126,26 +116,29 @@ const RootLayout = () => {
   if (!domain || !clientId) {
     throw new Error("Auth0 configuration is missing");
   }
+   const queryClient = React.useMemo(() => new QueryClient(), [])
 
   return (
     <Suspense fallback={<ActivityIndicator size="large" />}>
       <ThemeProvider>
         <Auth0Provider domain={domain} clientId={clientId}>
-          <SQLiteProvider
-            databaseName={DATABASE_NAME}
-            options={{ enableChangeListener: true }}
-            useSuspense
-          >
-            <GestureHandlerRootView style={{ flex: 1 }}>
-              <BottomSheetModalProvider>
-                <TokenProvider>
-                  <UserDataProvider>
+          <AuthProvider>
+            <PowerSyncContext.Provider value={powersync}>
+               <QueryClientProvider client={queryClient}>
+              <SQLiteProvider
+                databaseName={DATABASE_NAME}
+                options={{ enableChangeListener: true }}
+                useSuspense
+              >
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <BottomSheetModalProvider>
                     <InitialLayout />
-                  </UserDataProvider>
-                </TokenProvider>
-              </BottomSheetModalProvider>
-            </GestureHandlerRootView>
-          </SQLiteProvider>
+                  </BottomSheetModalProvider>
+                </GestureHandlerRootView>
+              </SQLiteProvider>
+              </QueryClientProvider>
+            </PowerSyncContext.Provider>
+          </AuthProvider>
         </Auth0Provider>
       </ThemeProvider>
     </Suspense>

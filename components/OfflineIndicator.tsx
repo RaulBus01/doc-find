@@ -2,10 +2,17 @@ import { useTheme } from "@/context/ThemeContext";
 import { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 import { View,Text,StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
-export const OfflineIndicator = () => {
+
+interface OfflineIndicatorProps {
+    style?: object;
+}
+
+export const OfflineIndicator = ({ style }: OfflineIndicatorProps) => {
     const [isOffline,setIsOffline] = useState(false);
     const { theme } = useTheme();
+    const { t } = useTranslation();
 
     useEffect(() => {
        const unsubscribe = NetInfo.addEventListener(state => {
@@ -16,14 +23,12 @@ export const OfflineIndicator = () => {
         };
     }, []);
 
-    if(!isOffline) {
-        return null;
-    }
+    if (!isOffline) return null;
 
     return (
-        <View style={[styles.container, { backgroundColor: "transparent" }]}>
+        <View style={[styles.container, { backgroundColor: "transparent" }, style]}>
             <Text style={[styles.text, { color: theme.textLight ? theme.textLight : theme.text }]}>
-                You are offline
+                {t('offlineMessage')}
             </Text>
         </View> 
     )

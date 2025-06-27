@@ -60,7 +60,12 @@ const AddMedicalHistoryPage = () => {
 
   const handleAddMedicalHistory = async () => {
     if (!formData.condition.trim()) {
-      Toast.warn(t('medicalHistory.warning'), "top");
+
+      Toast.show({
+        type: "warn",
+        text1: t('toast.warning'),
+        text2: t('medicalHistory.warning'),
+      });
       return;
     }
 
@@ -68,11 +73,19 @@ const AddMedicalHistoryPage = () => {
      
       const result = await addProfileMedicalHistory(drizzleDB, formData);
       if (!result) {
-        Toast.error(t('medicalHistory.errorAdd'), "top");
+       
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medicalHistory.errorAdd'),
+        });
         return;
       }
-
-      Toast.success(t('medicalHistory.errorAdd'), "top");
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medicalHistory.successAdd'),
+      });
       setFormData({
         profileId: parseInt(id as string, 10),
         condition: "",
@@ -84,7 +97,11 @@ const AddMedicalHistoryPage = () => {
       router.back();
     } catch (error) {
      
-    Toast.error(t('medicalHistory.errorAdd'), "top");
+    Toast.show({
+      type: "error",
+      text1: t('toast.error'),
+      text2: t('medicalHistory.errorAdd'),
+    });
     }
   };
 

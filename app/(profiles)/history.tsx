@@ -5,12 +5,15 @@ import {
   Alert,
   TouchableOpacity,
   StatusBar,
-  RefreshControl
+  RefreshControl,
 } from "react-native";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDatabase } from "@/hooks/useDatabase";
 import { useTheme } from "@/context/ThemeContext";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import Animated, { useAnimatedRef } from "react-native-reanimated";
 import {
   Ionicons,
@@ -20,13 +23,24 @@ import {
 import { useFocusEffect, useRouter } from "expo-router";
 
 import { formatDate } from "@/utils/Date";
-import { getHealthIndicatorLabel, healthIndicatorConfig,genderValueKeys,getGenderValue } from "@/utils/HealthIndicatorInterface";
-import { useUserData } from "@/context/UserDataContext";
+import {
+  getHealthIndicatorLabel,
+  healthIndicatorConfig,
+  genderValueKeys,
+  getGenderValue,
+} from "@/utils/HealthIndicatorInterface";
+
 import { ThemeColors } from "@/constants/Colors";
-import { deleteProfile, getProfileHealthIndicators, getProfiles } from "@/utils/LocalDatabase";
+import {
+  deleteProfile,
+  getProfileHealthIndicators,
+  getProfiles,
+} from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
 import OptionsBottomSheet from "@/components/modals/Options";
 import bottomSheetModal from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetModal";
+import { useAuth } from "@/hooks/useAuth";
+import { Toast } from "toastify-react-native";
 
 const HistoryProfile = () => {
   const drizzleDB = useDatabase();
@@ -42,33 +56,30 @@ const HistoryProfile = () => {
   const [selectedProfileId, setSelectedProfileId] = useState<string | null>(
     null
   );
-  const {userId} = useUserData();
-  const {t} = useTranslation();
-
- 
-
+  const { user } = useAuth();
+  const { t } = useTranslation();
 
   const fetchProfiles = async () => {
-    const profiles = await getProfiles(drizzleDB,userId as string);
+    const profiles = await getProfiles(drizzleDB, user?.sub as string);
     if (!profiles) {
       setProfilesData([]);
       return;
     }
     setProfilesData(profiles);
     // Fetch health indicators for all profiles
-    const healthMap = await getProfileHealthIndicators(drizzleDB,profiles);
+    const healthMap = await getProfileHealthIndicators(drizzleDB, profiles);
     setHealthData(healthMap);
   };
 
   useFocusEffect(
     useCallback(() => {
       const fetchData = async () => {
-        if (userId) {
+        if (user?.sub) {
           await fetchProfiles();
         }
       };
       fetchData();
-    }, [userId])
+    }, [user?.sub])
   );
 
   const onProfilePress = (id: string) => {
@@ -84,20 +95,27 @@ const HistoryProfile = () => {
     if (!selectedProfileId) return;
 
     try {
-      await deleteProfile(drizzleDB,parseInt(selectedProfileId));
+      await deleteProfile(drizzleDB, parseInt(selectedProfileId));
       fetchProfiles();
       bottomSheetModalRef.current?.dismiss();
-      Alert.alert("Success", "Profile deleted successfully");
+      Toast.show({
+        type: "success",
+        text1: t("toast.success"),
+        text2: t("profileHistory.profileDeleteSuccessMessage"),
+      });
     } catch (error) {
-      console.error("Error deleting profile:", error);
-      Alert.alert("Error", "Failed to delete profile");
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t("profileHistory.profileDeleteErrorMessage"),
+      });
     }
   }, [selectedProfileId]);
 
   const handleAddProfile = () => {
     router.push("/(profiles)/new");
   };
- const getChoiceStyle = (choice: string) => {
+  const getChoiceStyle = (choice: string) => {
     switch (choice) {
       case "Yes":
         return styles.indicatorActive;
@@ -110,22 +128,26 @@ const HistoryProfile = () => {
       default:
         return {};
     }
-  }
+  };
   return (
-    <SafeAreaView style={[styles.container, { paddingBottom: bottom }]} edges={["bottom"]}>
-  
+    <SafeAreaView
+      style={[styles.container, { paddingBottom: bottom }]}
+      edges={["bottom"]}
+    >
       <View style={[styles.header, { paddingTop: top + 10 }]}>
         <View>
-          <Text style={styles.headerTitle}>{t('profileHistory.profileHeaderTitle')}</Text>
+          <Text style={styles.headerTitle}>
+            {t("profileHistory.profileHeaderTitle")}
+          </Text>
           <Text style={styles.headerSubtitle}>
-            {t('profileHistory.profileSubHeaderTitle')}
+            {t("profileHistory.profileSubHeaderTitle")}
           </Text>
         </View>
         <TouchableOpacity style={styles.addButton} onPress={handleAddProfile}>
           <MaterialCommunityIcons
             name="account-plus"
             size={32}
-            color={theme.textLight || '#fff'}
+            color={theme.textLight || "#fff"}
           />
         </TouchableOpacity>
       </View>
@@ -151,34 +173,32 @@ const HistoryProfile = () => {
                 size={60}
                 color={theme.text}
               />
-              <Text style={styles.emptyText}>{t('profileHistory.profileNoProfileText')}</Text>
+              <Text style={styles.emptyText}>
+                {t("profileHistory.profileNoProfileText")}
+              </Text>
               <Text style={styles.emptySubtext}>
-               {t('profileHistory.profileAddText')}
+                {t("profileHistory.profileAddText")}
               </Text>
               <TouchableOpacity
                 style={styles.createButton}
                 onPress={handleAddProfile}
               >
-                <Text style={styles.createButtonText}>{t('profileHistory.profileCreateButtonText')}</Text>
+                <Text style={styles.createButtonText}>
+                  {t("profileHistory.profileCreateButtonText")}
+                </Text>
               </TouchableOpacity>
             </View>
           ) : (
             profilesData.map((profile) => (
-            
               <View style={styles.profileCardWrapper} key={profile.id}>
                 <TouchableOpacity
                   style={styles.profileTouchable}
                   onPress={() => onProfilePress(profile.id.toString())}
-                 
                 >
                   <View style={styles.profileCard}>
                     <View style={styles.profileHeader}>
                       <View style={styles.profileAvatar}>
-                        <Ionicons
-                          name="person"
-                          size={28}
-                          color={theme.text}
-                        />
+                        <Ionicons name="person" size={28} color={theme.text} />
                       </View>
                       <View style={styles.profileInfo}>
                         <Text style={styles.profileName}>
@@ -194,10 +214,10 @@ const HistoryProfile = () => {
                               color={theme.text}
                             />
                             <Text style={styles.profileMetaText}>
-                              {
-                                getGenderValue(profile.gender as keyof typeof genderValueKeys,t)
-
-                                }
+                              {getGenderValue(
+                                profile.gender as keyof typeof genderValueKeys,
+                                t
+                              )}
                             </Text>
                           </View>
                           <View style={styles.metaSeparator} />
@@ -208,7 +228,7 @@ const HistoryProfile = () => {
                               color={theme.text}
                             />
                             <Text style={styles.profileMetaText}>
-                              {profile.age} {t('years')}
+                              {profile.age} {t("years")}
                             </Text>
                           </View>
                         </View>
@@ -232,15 +252,13 @@ const HistoryProfile = () => {
                       <View style={styles.healthIndicators}>
                         {Object.entries(healthIndicatorConfig).map(
                           ([key, config]) => (
-                              <View
+                            <View
                               key={key}
                               style={[
                                 styles.indicator,
-                                getChoiceStyle(
-                                  healthData[profile.id][key]
-                                ),
+                                getChoiceStyle(healthData[profile.id][key]),
                               ]}
-                              >
+                            >
                               <FontAwesome5
                                 name={config.icon}
                                 size={14}
@@ -248,9 +266,11 @@ const HistoryProfile = () => {
                               />
                               <Text style={styles.indicatorText}>
                                 {getHealthIndicatorLabel(
-                                  key as keyof typeof healthIndicatorConfig,t)} 
+                                  key as keyof typeof healthIndicatorConfig,
+                                  t
+                                )}
                               </Text>
-                              </View>
+                            </View>
                           )
                         )}
                       </View>
@@ -284,8 +304,7 @@ const HistoryProfile = () => {
         onDelete={handleDelete}
         ref={bottomSheetModalRef}
       />
-  
-  </SafeAreaView>
+    </SafeAreaView>
   );
 };
 
@@ -295,11 +314,11 @@ const getStyles = (theme: ThemeColors) =>
       flex: 1,
       backgroundColor: theme.background,
     },
-  
+
     header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
       backgroundColor: theme.blue,
       paddingHorizontal: 16,
       paddingBottom: 12,
@@ -437,11 +456,11 @@ const getStyles = (theme: ThemeColors) =>
       paddingVertical: 6,
       marginRight: 8,
     },
-     indicatorNegative: {
+    indicatorNegative: {
       backgroundColor: theme.GreenIconBackground,
       borderColor: theme.GreenIconBackground,
     },
-     indicatorActive: {
+    indicatorActive: {
       backgroundColor: theme.RedIconBackground,
       borderColor: theme.RedIconBackground,
     },

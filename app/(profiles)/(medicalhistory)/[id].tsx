@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { FlatList, Pressable } from "react-native-gesture-handler";
+import {  Pressable } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -16,6 +16,8 @@ import {
   getProfileMedicalHistoryList,
 } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import { LegendList } from "@legendapp/list";
+
 
 export default function MedicalHistoryScreen() {
   const { id } = useLocalSearchParams();
@@ -35,7 +37,12 @@ export default function MedicalHistoryScreen() {
   const fetchMedicalHistory = async () => {
     try {
       if (!id) {
-        Toast.error(t('medicalHistory.error'),"top");
+
+        Toast.show({
+          type: "error",
+           text1: t('toast.error'),
+          text2: t('medicalHistory.error'),
+        });
         return;
       }
 
@@ -44,14 +51,23 @@ export default function MedicalHistoryScreen() {
         parseInt(id as string)
       );
       if (!result) {
-         Toast.error(t('medicalHistory.error'), "top");
+         Toast.show({
+          type: "error",
+           text1: t('toast.error'),
+          text2: t('medicalHistory.error'),
+         })
         return;
       }
 
       setMedicalHistoryList(result || []);
     } catch (error) {
       setMedicalHistoryList([]);
-       Toast.error(t('medicalHistory.error'), "top");
+
+       Toast.show({
+        type: "error",
+         text1: t('toast.error'),
+        text2: t('medicalHistory.error'),
+       });
     }
   };
 
@@ -69,14 +85,29 @@ export default function MedicalHistoryScreen() {
     try {
       const result = await deleteMedicalHistory(drizzleDB, entryId);
       if (!result) {
-          Toast.error(t('medicalHistory.deleteError'), "top");
+
+          Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medicalHistory.deleteError'),
+        });
         return;
       }
 
-      Toast.success(t('medicalHistory.successDelete'), "top");
+     
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medicalHistory.successDelete'),
+      });
       fetchMedicalHistory();
     } catch (error) {
-      Toast.error(t('medicalHistory.deleteError'), "top");
+
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medicalHistory.deleteError'),
+      });
     }
   };
 
@@ -98,10 +129,10 @@ export default function MedicalHistoryScreen() {
       </View>
 
       {/* Medical History List */}
-      <FlatList
+      <LegendList
         data={medicalHistoryList}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
+        renderItem={({ item }:{item:any}) => (
           <TouchableOpacity 
           onPress={() => router.push(`/(profiles)/(medicalhistory)/edit/${item.id}?profileId=${id}`)} 
           activeOpacity={0.7}

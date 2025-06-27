@@ -5,34 +5,32 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  View,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import MapView, { Marker, Region, PROVIDER_GOOGLE } from "react-native-maps";
 import * as Location from "expo-location";
-import { FontAwesome6, Ionicons, MaterialIcons } from "@expo/vector-icons";
+import {
+  FontAwesome6,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { Colors, ThemeColors } from "@/constants/Colors";
 import CustomSearchBar from "@/components/searchBar/searchBar";
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 
 import { useTheme } from "@/context/ThemeContext";
-import {
-  secureGetValueFor,
-
-  secureSaveObject,
-} from "@/utils/SecureStorage";
+import { secureGetValueFor, secureSaveObject } from "@/utils/SecureStorage";
 import { fetchNearbyPlaces } from "@/utils/MapsDetails";
 import { GooglePlaceDetails, MapsTypes } from "@/interface/Interface";
-import {
-  BottomSheetModal,
-  BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import PlaceDetails from "@/components/PlaceDetails/PlaceDetails";
 import PlaceDetailsBottomSheet from "@/components/modals/PlaceDetails";
 import { Toast } from "toastify-react-native";
+import { useTranslation } from "react-i18next";
+import {
+  OfflineIndicator,
+  useOfflineStatus,
+} from "@/components/OfflineIndicator";
 
 export default function Map() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -42,11 +40,13 @@ export default function Map() {
   const styles = getStyles(theme);
   const mapRef = useRef<MapView>(null);
   const [search, setSearch] = useState("");
-  const { setIsTabBarVisible } = useContext(TabBarVisibilityContext); 
+  const { setIsTabBarVisible } = useContext(TabBarVisibilityContext);
   const [places, setPlaces] = useState<GooglePlaceDetails[]>([]);
   const [activeFilter, setActiveFilter] = useState<string>("doctor");
   const [isLoading, setIsLoading] = useState(false);
   const [lastRegion, setLastRegion] = useState<Region | null>(null);
+  const { t } = useTranslation();
+  const isOffline = useOfflineStatus();
 
   const userLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
@@ -56,6 +56,10 @@ export default function Map() {
 
     let location = await Location.getCurrentPositionAsync({});
     await secureSaveObject("lastLocation", location);
+    if (isOffline) {
+
+      return;
+    }
     fetchNearbyPlaces(
       {
         latitude: location.coords.latitude,
@@ -79,7 +83,12 @@ export default function Map() {
         );
       })
       .catch((error) => {
-        console.error("Error fetching places:", error);
+       
+        Toast.show({
+          type: "error",
+          text1: t("toast.networkError")
+        });
+
       })
       .finally(() => {
         setIsLoading(false);
@@ -121,7 +130,12 @@ export default function Map() {
   const getUserLocation = async () => {
     let { status } = await Location.requestForegroundPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission to access location was denied");
+      Toast.show({
+        type: "info",
+        text1: t("toast.info"),
+        text2: t("locationPermissionDenied"),
+      });
+
       return;
     }
 
@@ -139,14 +153,15 @@ export default function Map() {
     await secureSaveObject("lastLocation", location);
   };
   const fetchPlacesInViewport = async (region: Region, type: string) => {
+    if (isOffline) {
+      return;
+    }
     fetchNearbyPlaces(region, type)
       .then((places) => {
         setPlaces(places);
         setLastRegion(region);
       })
-      .catch((error) => {
-      
-      })
+      .catch((error) => {})
       .finally(() => {
         setIsLoading(false);
       });
@@ -178,7 +193,13 @@ export default function Map() {
   const getIconForType = (type: string) => {
     switch (type) {
       case "hospital":
-        return <FontAwesome6 name="hospital" size={22} color={theme.text} />;
+        return (
+          <MaterialCommunityIcons
+            name="hospital-building"
+            size={22}
+            color={theme.text}
+          />
+        );
       case "pharmacy":
         return (
           <MaterialIcons name="local-pharmacy" size={22} color={theme.text} />
@@ -197,15 +218,22 @@ export default function Map() {
     doctor: require("@/assets/images/doctorIcon.png"),
   };
 
-
-  const handleLocationSelect = (coordinates: { latitude: number; longitude: number }) => {
-
-    mapRef.current?.animateToRegion({
-      latitude: coordinates.latitude,
-      longitude: coordinates.longitude,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    }, 1000);
+  const handleLocationSelect = (coordinates: {
+    latitude: number;
+    longitude: number;
+  }) => {
+    if (isOffline) {
+      return;
+    }
+    mapRef.current?.animateToRegion(
+      {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      },
+      1000
+    );
 
     const newRegion = {
       latitude: coordinates.latitude,
@@ -213,7 +241,7 @@ export default function Map() {
       latitudeDelta: 0.01,
       longitudeDelta: 0.01,
     };
-    
+
     fetchPlacesInViewport(newRegion, activeFilter);
   };
 
@@ -223,7 +251,6 @@ export default function Map() {
         customMapStyle={mapStyle}
         style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
         provider={PROVIDER_GOOGLE}
-      
         showsUserLocation={true}
         showsMyLocationButton={false}
         showsCompass={true}
@@ -255,6 +282,7 @@ export default function Map() {
             onPress={() => handlePresentModalPress(place)}
             tracksViewChanges={false}
             icon={markerIcons[activeFilter]}
+            style={{width: 300, height: 300}}
           ></Marker>
         ))}
       </MapView>
@@ -303,9 +331,20 @@ export default function Map() {
         ))}
       </View>
 
-      <CustomSearchBar 
-        onSearch={handleSearch} 
+      <CustomSearchBar
+        onSearch={handleSearch}
         onLocationSelect={handleLocationSelect}
+      />
+      <OfflineIndicator
+        style={{
+          position: "absolute",
+          backgroundColor: theme.red,
+          borderRadius: 12,
+          top: 100,
+          left: 50,
+          right: 50,
+          width: "75%",
+        }}
       />
 
       <PlaceDetailsBottomSheet ref={bottomSheetModalRef}>

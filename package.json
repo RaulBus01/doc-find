@@ -18,8 +18,14 @@
     "@expo/config-plugins": "~9.0.0",
     "@expo/vector-icons": "^14.0.2",
     "@gorhom/bottom-sheet": "^5.1.1",
+    "@journeyapps/react-native-quick-sqlite": "^2.4.4",
+    "@legendapp/list": "^1.0.17",
+    "@powersync/drizzle-driver": "^0.4.0",
+    "@powersync/react-native": "^1.20.4",
+    "@powersync/tanstack-react-query": "^0.0.25",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
+    "@react-native-community/netinfo": "11.4.1",
     "@react-native-picker/picker": "2.9.0",
     "@react-navigation/bottom-tabs": "^7.0.0",
     "@react-navigation/native": "^7.0.0",
@@ -66,8 +72,7 @@
     "react-native-screens": "~4.4.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
-    "toastify-react-native": "^6.0.0",
-    "@react-native-community/netinfo": "11.4.1"
+    "toastify-react-native": "^7.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

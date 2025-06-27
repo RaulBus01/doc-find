@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { View, Text, StyleSheet, TextInput, Alert,Keyboard, Switch, TouchableOpacity } from "react-native";
-import { FlatList, Pressable, ScrollView } from "react-native-gesture-handler";
+import {  Pressable, ScrollView } from "react-native-gesture-handler";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
@@ -14,6 +14,8 @@ import { Toast } from "toastify-react-native";
 import { ThemeColors } from "@/constants/Colors";
 import { addProfileMedication, deleteMedication, getExistingMedicationsByName, getExistingMedicationsById, getMedicationsSuggestions, getProfileMedications, insertMedication } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
+import { LegendList } from "@legendapp/list";
+
 
 export default function MedicationScreen() {
   const { id } = useLocalSearchParams();
@@ -34,7 +36,11 @@ export default function MedicationScreen() {
   const fetchProfileMedications = async () => {
     try {
       if (!id) {
-        Toast.error(t('medications.error'), "top");
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
         return;
       }
       
@@ -43,7 +49,11 @@ export default function MedicationScreen() {
       setProfileMedicationsList(result || []);
     } catch (error) {
       setProfileMedicationsList([]);
-         Toast.error(t('medications.error'), "top");
+          Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
     }
   };
   
@@ -67,7 +77,11 @@ export default function MedicationScreen() {
     setShowSuggestions(results.length > 0);
     }
     catch (error) {
-      Toast.error(t('medications.error'), "top");
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.error'),
+        })
       setSuggestedMedications([]);
       setShowSuggestions(false);
     }
@@ -95,7 +109,11 @@ export default function MedicationScreen() {
   
   const handleAddMedication = async () => {
     if (!medicationName.trim()) {
-      Toast.warn(t('medications.warning'), "top");
+      Toast.show({
+        type: "warn",
+        text1: t('toast.warning'),
+        text2: t('medications.warning'),
+      })
       return;
     }
     
@@ -110,7 +128,11 @@ export default function MedicationScreen() {
         // Create new medication if it doesn't exist
         const insertResult =  await insertMedication(drizzleDB, medicationName.trim());
         if (!insertResult) {
-          Toast.error(t('medications.errorAdd'), "top");
+          Toast.show({
+            type: "error",
+            text1: t('toast.error'),
+            text2: t('medications.errorAdd'),
+          });
           return;
         }
           
@@ -122,18 +144,33 @@ export default function MedicationScreen() {
       const existingProfileMed = await getExistingMedicationsById(drizzleDB, parseInt(id as string, 10), medicationId);
         
       if (existingProfileMed) {
-        Toast.warn(t('medications.warningExists'), 'top');
+
+        Toast.show({
+          type: "warn",
+          text1: t('toast.warning'),
+          text2: t('medications.warningExists'),
+        });
         return;
       }
       // Add medication to profile
       await addProfileMedication(drizzleDB, parseInt(id as string, 10), medicationId, dosage);
-      Toast.success(t('medications.successAdd'), "top");
+ 
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medications.successAdd'),
+      });
       setMedicationName("");
       setDosage(false);
       fetchProfileMedications();
       
     } catch (error) {
-      Toast.error(t('medications.errorAdd'), "top");
+   
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medications.errorAdd'),
+      });
     }
   };
   const handleDeleteMedication = (medicationId: number) => async () => {
@@ -141,14 +178,30 @@ export default function MedicationScreen() {
      
       const result = await deleteMedication(drizzleDB, parseInt(id as string, 10), medicationId);
       if (!result) {
-        Toast.error(t('medications.deleteError'), "top");
+     
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t('medications.deleteError'),
+        });
+
         return;
       }
-      Toast.success(t('medications.successDelete'), "top");
+
+      Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('medications.successDelete'),
+      });
       fetchProfileMedications();
     }
     catch (error) {
-      Toast.error(t('medications.deleteError'), "top");
+
+      Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('medications.deleteError'),
+      });
     }
   }
 
@@ -167,10 +220,10 @@ export default function MedicationScreen() {
       
       {/* Medication List */}
   
-          <FlatList
+          <LegendList
             data={profileMedicationsList}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item } : {item:any}) => (
               <View style={styles.medicationCard}>
                 <View style={styles.medicationIconContainer}>
                   <FontAwesome5 name="prescription-bottle" size={20} color="#fff" />
@@ -178,7 +231,7 @@ export default function MedicationScreen() {
                 <View style={styles.medicationDetails}>
                   <Text style={styles.medicationName}>{item.name}</Text>
                   <Text style={styles.medicationDosage}>
-                    {item.permanent ? "Take daily" : "As needed"}
+                    {item.permanent ? t('medications.dosageText') : t('medications.dosageText2')}
                   </Text>
                 </View>
                 <Pressable onPress={handleDeleteMedication(item.medicationId)} style={styles.deleteButton}>

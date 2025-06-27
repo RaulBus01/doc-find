@@ -18,7 +18,7 @@ async function fetchNearbyPlaces(region:Region,type:string = "doctor") {
     const data = await response.json();
     return data.results;
   } catch (error) {
-    console.error('Error fetching nearby places:', error);
+    
     throw error;
     }
 }
@@ -36,7 +36,7 @@ async function fetchPlaceDetails(placeId: string) {
     const data = await response.json();
     return data.result;
   } catch (error) {
-    console.error('Error fetching place details:', error);
+
     throw error;
   }
 }

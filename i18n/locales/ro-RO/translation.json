@@ -1,158 +1,199 @@
-
 {
   "language": "Limba",
-  "date":"ro-RO",
-  "dateToday":"Astăzi la",
-  "dateYesterday":"Ieri la",
-  "years":"ani",
-  "offlineMessage":"Nu există conexiune la internet",
+  "selectLanguage": "Selectați limba",
+  "date": "ro-RO",
+  "dateToday": "Astăzi la",
+  "dateYesterday": "Ieri la",
+  "years": "ani",
+  "offlineMessage": "Sunteți offline",
+  "profileDeleteSuccessMessage": "Profilul a fost șters cu succes",
+  "profileDeleteErrorMessage": "Eroare la ștergerea profilului",
+  "locationPermissionDenied": "Permisiune de localizare refuzată",
   "login": {
-     "welcomeText": "Bine ați revenit",
-     "subText": "Vă rugăm să vă conectați pentru a continua",
-     "loginButtonText": "Conectare cu Auth0",
-     "newUserText": "Ești nou ? Vedeți ce oferim"
+    "welcomeText": "Bine ați revenit",
+    "subText": "Vă rugăm să vă conectați pentru a continua",
+    "loginButtonText": "Conectare cu Auth0",
+    "newUserText": "Ești nou ? Vedeți ce oferim"
   },
   "loading": {
     "loadingText": "Încărcare...",
     "loadingErrorText": "Eroare la încărcarea datelor"
   },
-   "home":{
-    "titleFirst":"Primul element",
-    "titleSecond":"Al doilea element",
-    "titleThird":"Al treilea element",
-    "loginButtonText":"Continuați spre autentificare"
+  "home": {
+    "titleFirst": "Primul element",
+    "titleSecond": "Al doilea element",
+    "titleThird": "Al treilea element",
+    "loginButtonText": "Continuați spre autentificare"
   },
-  "gender":{
+  "gender": {
     "Male": "Masculin",
     "Female": "Feminin"
   },
-  "homePage":{
-    "ProfileSectionTitle":"Profilele tale",
-    "ProfileCardText":"Adăugați un nou profil",
-    "ProfileViewText":"Vizualizați profilele",
-    "SymptomsSectionTitle":"Care sunt simptomele tale?",
-    "cough":"Tuse",
-    "fever":"Febră",
-    "headache":"Dureri de cap",
-    "morning":"Dimineața",
-    "afternoon":"După-amiaza",
-    "evening":"Seara",
-    "good":"Bună",
-    "chatSectionTitle":"Chatbot AI",
-     "chatCountNoChats":"Nu sunt conversații",
-     "chatCountTotalChats":"Conversații totale",
-     "chatStatusText":"24/7 disponibil",
-     "chatStartText":"Începeți o conversație",
-     "chatAllChatsText":"Toate conversațiile",
-     "chatRecentText":"Conversații recente",
-     "chatErrorText":"Eroare la încărcarea conversațiilor",
-      "chatEmptyText":"Nu există conversații disponibile"
+  "homePage": {
+    "ProfileSectionTitle": "Profilele tale",
+    "ProfileCardText": "Adăugați un nou profil",
+    "ProfileViewText": "Vizualizați profilele",
+    "SymptomsSectionTitle": "Care sunt simptomele tale?",
+    "cough": "Tuse",
+    "fever": "Febră",
+    "headache": "Dureri de cap",
+    "nausea": "Greață",
+    "fatigue": "Oboseală",
+    "sorethroat": "Durere în gât",
+    "morning": "Dimineața",
+    "afternoon": "După-amiaza",
+    "evening": "Seara",
+    "good": "Bună",
+    "chatSectionTitle": "Chatbot AI",
+    "chatCountNoChats": "Nu sunt conversații",
+    "chatCountTotalChats": "Conversații totale",
+    "chatStatusText": "24/7 disponibil",
+    "chatStatusOfflineText": "Assistentul AI nu este disponibil",
+    "chatStartText": "Începeți o conversație",
+    "chatAllChatsText": "Toate conversațiile",
+    "chatRecentText": "Conversații recente",
+    "chatErrorText": "Eroare la încărcarea conversațiilor",
+    "chatEmptyText": "Nu există conversații disponibile",
+    "powerSyncErrorText": "Eroare la sincronizarea cu PowerSync"
   },
   "tabbar": {
     "home": "Acasă",
     "map": "Hartă",
     "chat": "Chat",
     "account": "Cont"
-  }
-  ,
-  "account":{
-    "sectionTitle":"Contul tău",
-    "emailText":"Email",
-    "passwordText":"Parolă",
-    "passwordSubText":"Modificați parola",
-    "profileText":"Profile Medicale",
-    "profileSubText":"Organizați-vă profilele medicale",
-    "preferencesText":"Preferințe",
-    "darkModeText":"Mod întunecat",
-    "darkModeSubText":"Activați modul întunecat",
-    "languageText":"Limbă",
-    "languageSubText":"Modificați limba aplicației",
-    "aboutText":"Despre",
-    "aboutSubText":"Informații despre aplicație",
-    "termsText":"Termeni și condiții",
-    "termsSubText":"Citiți termenii și condițiile",
-    "logoutText":"Deconectare"
   },
-   "chat":{
-    "chatHeaderTitle":"Asistent AI",
-    "chatProfileActiveTitle":"Profil activ",
-    "chatProfileInactiveTitle":"Profil inactiv",
-    "chatContextTitle":"Datele Profilului",
-    "chatContextSubTitle":"Folosiți datele profilului",
-    "chatContextSubTitle1":"Alegeți un profil pentru  a îmbunătăți răspunsurile",
-    "chatContextSubTitle2":"Folosiți datele profilului pentru a îmbunătăți răspunsurile",
-    "chatContextDisabledText":"Fara date de profil, AI va oferi răspunsuri generale.",
-    "chatCreateText":"Creează un nou profil",
-    "chatNoProfileText":"Nu există profiluri disponibile",
-    "chatMessageInputPlaceholder":"Scrieți un mesaj...",
-     "welcomeMessages": [
+  "account": {
+    "sectionTitle": "Contul tău",
+    "emailText": "Email",
+    "passwordText": "Parolă",
+    "passwordSubText": "Modificați parola",
+    "profileText": "Profile Medicale",
+    "profileSubText": "Organizați-vă profilele medicale",
+    "preferencesText": "Preferințe",
+    "darkModeText": "Mod întunecat",
+    "darkModeSubText": "Activați modul întunecat",
+    "languageText": "Limbă",
+    "languageSubText": "Modificați limba aplicației",
+    "aboutText": "Despre",
+    "aboutSubText": "Informații despre aplicație",
+    "termsText": "Termeni și condiții",
+    "termsSubText": "Citiți termenii și condițiile",
+    "logoutText": "Deconectare"
+  },
+  "chat": {
+    "chatHeaderTitle": "Asistent AI",
+    "chatProfileActiveTitle": "Profil activ",
+    "chatProfileInactiveTitle": "Profil inactiv",
+    "chatContextTitle": "Datele Profilului",
+    "chatContextSubTitle": "Folosiți datele profilului",
+    "chatContextSubTitle1": "Alegeți un profil pentru  a îmbunătăți răspunsurile",
+    "chatContextSubTitle2": "Folosiți datele profilului pentru a îmbunătăți răspunsurile",
+    "chatContextDisabledText": "Fara date de profil, AI va oferi răspunsuri generale.",
+    "chatCreateText": "Creează un nou profil",
+    "chatNoProfileText": "Nu există profiluri disponibile",
+    "chatMessageInputPlaceholder": "Scrieți un mesaj...",
+    "welcomeMessages": [
       "Salut! Sunt Medora, asistentul tău virtual de sănătate. Te rog să îmi spui simptomele tale și te voi ajuta să identifici potențialele afecțiunile . Dacă ai nevoie de asistență imediată, pot găsi și servicii de urgență în apropiere.",
       "Salutări de la Medora. Te rog să îmi descrii simptomele tale și îți voi oferi o listă de boli posibile. Pentru situații urgente, te pot îndrepta către unități de îngrijire de urgență din zona ta.",
       "Bine ai venit la Medora, resursa ta de sănătate. Împărtășește simptomele tale și îți voi sugera diagnostice potențiale. Dacă ai nevoie de asistență imediată, pot găsi servicii de urgență aproape de locația ta.",
       "Medora este aici să te sprijine. Oferă detalii despre simptomele tale și le voi analiza pentru afecțiuni posibile. Dacă situația este critică, pot identifica opțiuni de tratament de urgență din apropiere.",
       "Bine ai venit la Medora. Sunt echipat să te ajut să îți interpretezi simptomele și să explorezi boli potențiale. În caz de urgență, pot asista și prin localizarea unităților medicale din apropiere."
     ],
-    "chatOfflineError": "Eroare de rețea. Te rog să verifici conexiunea la internet."
-
+    "chatOfflineErrorText1": "Eroare de rețea.",
+    "chatOfflineErrorText2": "Te rog să verifici conexiunea la internet",
+    "streamAbortedInfo": "Fluxul de date a fost întrerupt de utilizator.",
+    "chatAuthErrorText1": "Eroare de autentificare.",
+    "chatAuthErrorText2": "Te rog să te autentifici din nou.",
+    "chatStreamErrorText1": "Eroare la fluxul de date.",
+    "chatStreamErrorText2": "Te rog să reîncarci pagina."
   },
-  "chatHistory":{
-    "chatHistoryTitle":"Istoricul conversațiilor",
-    "chatHistoryEmptyText":"Nu există conversații disponibile",
-    "chatStartText":"Începeți o conversație",
-    "chatDeleteText":"Ștergeți conversația",
-    "chatDeleteConfirmText":"Sigur doriți să ștergeți această conversație?",
-    "chatDeleteConfirmButtonText":"Ștergeți",
-    "chatDeleteCancelButtonText":"Anulați"
+  "chatHistory": {
+    "chatHistoryTitle": "Istoricul conversațiilor",
+    "chatHistoryEmptyText": "Nu există conversații disponibile",
+    "chatStartText": "Începeți o conversație",
+    "chatDeleteText": "Ștergeți conversația",
+    "chatDeleteConfirmText": "Sigur doriți să ștergeți această conversație?",
+    "chatDeleteConfirmButtonText": "Ștergeți",
+    "chatDeleteCancelButtonText": "Anulați",
+    "chatDeleteSuccessText": "Conversația a fost ștearsă cu succes",
+    "chatDeleteErrorText": "Eroare la ștergerea conversației",
+    "chatDeleteOfflineErrorText1": "Eroare la ștergerea conversației",
+    "chatDeleteOfflineErrorText2": "Te rog să verifici conexiunea la internet"
   },
-  "profile":{
-    "profileLoadingText":"Încărcare profil...",
-    "profileHeaderTitle":"Detalii profil",
-    "profileEditText":"Editează profilul",
-    "profileHealthIndicationsTitle":"Indicatori de Sănătate",
-    "profileMedicationsTitle":"Medicamente",
-    "profileAllergiesTitle":"Alergii",
-    "profileMedicalHistoryTitle":"Istoric Medical",
-    "profileCreated":"Creat",
-    "profileLastUpdated":"Ultima actualizare"
-
+  "profile": {
+    "profileLoadingText": "Încărcare profil...",
+    "profileHeaderTitle": "Detalii profil",
+    "profileEditText": "Editează profilul",
+    "profileHealthIndicationsTitle": "Indicatori de Sănătate",
+    "profileMedicationsTitle": "Medicamente",
+    "profileAllergiesTitle": "Alergii",
+    "profileMedicalHistoryTitle": "Istoric Medical",
+    "profileCreated": "Creat",
+    "profileLastUpdated": "Ultima actualizare"
   },
-  "profileHistory":{
-    "profileHeaderTitle":"Profilele tale",
-    "profileSubHeaderTitle":"Organizați-vă profilele medicale",
-    "profileNoProfileText":"Nu există profiluri disponibile",
-    "profileAddText":"Adăugați un nou profil medical",
-    "profileCreateButtonText":"Creează un profil"
-    
+  "toast": {
+    "success": "Succes",
+    "error": "Eroare",
+    "warning": "Avertisment",
+    "info": "Informație",
+    "nameRequired": "Numele este obligatoriu",
+    "genderRequired": "Genul este obligatoriu",
+    "birthYearRequired": "Anul nașterii este obligatoriu",
+    "profileSaved": "Profilul a fost salvat cu succes",
+    "profileUpdated": "Profilul a fost actualizat cu succes",
+    "saveError": "Eroare la salvarea profilului",
+    "updateError": "Eroare la actualizarea profilului",
+    "networkError": "Eroare de rețea. Verificați conexiunea la internet",
+    "validationError": "Vă rugăm să completați toate câmpurile obligatorii"
   },
-  "profileNew":{
-    "profileHeaderTitle":"Creează un nou profil",
-    "profileNameTitle":"Care este numele tău?",
-    "profileNamePlaceholder":"Introduceți numele",
-    "profileAgeText":"Vârstă",
-    "profileAgePlaceholder":"Introduceți anul nașterii",
-    "profileBirthYearTitle":"În ce an s-a născut ",
-    "profileGenderMale":"Masculin",
-    "profileGenderFemale":"Feminin",
-    "profileGenderPlaceholder":"Selectați genul",
-    "profileSmokerTitle":"este fumător",
-    "profileHypertensionTitle":"are hipertensiune arterială",
-    "profileDiabetesTitle":"are diabet",
-    "profileSaveButtonText":"Salvați profilul",
-    "profileCancelButtonText":"Anulați",
-    "profileStep":"Pas",
-    "profileStepOf":"din",
-    "profileButtonNext":"Următorul",
-    "profileButtonBack":"Înapoi",
-    "profileButtonSave":"Salvați",
-    "profileSummaryTitle":"Rezumat profil",
-    "profileSummaryName":"Nume:",
-    "profileSummaryGender":"Gen:",
-    "profileSummarySmoker":"Fumător:",
-    "profileSummaryHypertension":"Hipertensiune arterială:",
-    "profileSummaryDiabetes":"Diabet:",
-    "profileSummaryBirthYear":"Anul nașterii:"
+  "profileEdit": {
+    "profileNotFoundText": "Profilul nu a fost găsit",
+    "healthDataNotFoundText": "Nu există date despre sănătate disponibile",
+    "errorLoadingProfile": "Eroare la încărcarea profilului",
+    "nameRequired": "Numele este obligatoriu",
+    "birthYearRequired": "Anul nașterii este obligatoriu",
+    "genderRequired": "Sexul este obligatoriu",
+    "updatedSuccessfully": "Profilul a fost actualizat cu succes",
+    "errorUpdatingProfile": "Eroare la actualizarea profilului"
   },
-  "editProfile":{
+  "profileHistory": {
+    "profileHeaderTitle": "Profilele tale",
+    "profileSubHeaderTitle": "Organizați-vă profilele medicale",
+    "profileNoProfileText": "Nu există profiluri disponibile",
+    "profileAddText": "Adăugați un nou profil medical",
+    "profileCreateButtonText": "Creează un profil",
+    "profileDeleteSuccessMessage": "Profilul a fost șters cu succes",
+    "profileDeleteErrorMessage": "Eroare la ștergerea profilului"
+  },
+  "profileNew": {
+    "profileHeaderTitle": "Creează un nou profil",
+    "profileNameTitle": "Care este numele tău?",
+    "profileNamePlaceholder": "Introduceți numele",
+    "profileAgeText": "Vârstă",
+    "profileAgePlaceholder": "Introduceți anul nașterii",
+    "profileBirthYearTitle": "Selectați anul nașterii",
+    "profileGenderMale": "Masculin",
+    "profileGenderFemale": "Feminin",
+    "profileGenderPlaceholder": "Selectați sexul",
+    "profileSmokerTitle": "este fumător",
+    "profileHypertensionTitle": "are hipertensiune arterială",
+    "profileDiabetesTitle": "are diabet",
+    "profileSaveButtonText": "Salvați profilul",
+    "profileCancelButtonText": "Anulați",
+    "profileStep": "Pas",
+    "profileStepOf": "din",
+    "profileButtonNext": "Următorul",
+    "profileButtonBack": "Înapoi",
+    "profileButtonSave": "Salvați",
+    "profileSummaryTitle": "Rezumat profil",
+    "profileSummaryName": "Nume:",
+    "profileSummaryGender": "Gen:",
+    "profileSummarySmoker": "Fumător:",
+    "profileSummaryHypertension": "Hipertensiune arterială:",
+    "profileSummaryDiabetes": "Diabet:",
+    "profileSummaryBirthYear": "Anul nașterii:"
+  },
+  "editProfile": {
     "headerTitle": "Editează profilul",
     "personalTitle": "Informații personale",
     "nameTitle": "Nume",
@@ -165,7 +206,7 @@
     "diabetesTitle": "Are diabet?",
     "saveTitle": "Salvează profilul"
   },
-  "allergies":{
+  "allergies": {
     "error": "Eroare la încărcarea alergiilor",
     "warning": "Introduceți o alergie",
     "errorAdd": "Eroare la adăugarea alergiei",
@@ -178,26 +219,28 @@
     "addText": "Adăugați o alergie folosind formularul de mai jos",
     "tapToSelect": "Atingeți pentru a selecta o alergie",
     "allergyName": "Numele alergiei",
-    "severityText":"Reacție severă",
+    "severityText": "Reacție severă",
+    "mildText": "Reacție ușoară",
     "addButtonText": "Adăugați alergia"
   },
-  "medications":{
+  "medications": {
     "error": "Eroare la încărcarea medicamentelor",
     "warning": "Introduceți un medicament",
     "errorAdd": "Eroare la adăugarea medicamentului",
     "warningExists": "Medicamentul există deja",
     "successAdd": "Medicamentul a fost adăugat",
     "deleteError": "Eroare la ștergerea medicamentului",
-    "successDelete": "Medicamentul a fost ștearsă",
+    "successDelete": "Medicamentul a fost șters",
     "title": "Medicamente",
     "emptyText": "Nu există medicamente adăugate",
     "addText": "Adăugați un medicament folosind formularul de mai jos",
     "tapToSelect": "Atingeți pentru a selecta un medicament",
     "medicationName": "Numele medicamentului",
-    "dosageText":"Administrat zilnic",
+    "dosageText": "Administrat zilnic",
+    "dosageText2":"La nevoie",
     "addButtonText": "Adăugați medicamentul"
   },
-  "medicalHistory":{
+  "medicalHistory": {
     "error": "Eroare la încărcarea istoricului medical",
     "warning": "Introduceți un istoric medical",
     "errorAdd": "Eroare la adăugarea istoricului medical",
@@ -219,18 +262,34 @@
     "currentStatus": "Stare actuală",
     "saveButtonText": "Salvați istoricul medical"
   },
-    "healthIndicators": {
+  "healthIndicators": {
     "diabetic": "Diabetic",
     "hypertensive": "Hipertensiv",
     "smoker": "Fumător"
   },
   "healthIndicatorValues": {
     "Yes": "Da",
-    "No": "Nu", 
+    "No": "Nu",
     "I don't know": "Nu știu",
     "I used to": "A fost"
+  },
+  "placeDetails": {
+    "call": "Sunați",
+    "website": "Vizitați site-ul",
+    "viewMaps": "Vizualizați pe hartă",
+    "reviews": "Recenzii",
+    "operational": "Operațional",
+    "notOperational": "Nu este operațional",
+    "statusUnknown": "Stare necunoscută",
+    "directions": "Indicații",
+    "wheelchairAccessible": "Accesibil cu scaun cu rotile",
+    "notWheelchairAccessible": "Nu este accesibil cu scaun cu rotile",
+    "openNow": "Deschis acum",
+    "closedNow": "Închis acum",
+    "openingHours": "Program de lucru",
+    "addressNotAvailable": "Adresa nu este disponibilă",
+    "failedToFetchDetails": "Nu s-au putut încărca detaliile. Încercați din nou mai târziu.",
+    "closed": "Închis",
+    "noCategories": "Nu există categorii disponibile"
   }
-  
-
-
 }

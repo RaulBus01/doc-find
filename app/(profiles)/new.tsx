@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { HealthIndicatorInput,  ProfileInput } from "@/database/schema";
 import { MultiStepForm } from "@/components/CustomMultiStepForm/MultiStepForm";
 import { useDatabase } from '@/hooks/useDatabase';
-import { useUserData } from "@/context/UserDataContext";
+
 import { ThemeColors } from "@/constants/Colors";
 import  {
   BottomSheetModal,
@@ -25,6 +25,7 @@ import { addProfile } from "@/utils/LocalDatabase";
 import { useTranslation } from "react-i18next";
 import { getHealthIndicatorValue,getGenderValue,  genderValueKeys } from '@/utils/HealthIndicatorInterface'; 
 import YearPickerBottomSheet from "@/components/modals/Years";
+import { useAuth } from "@/hooks/useAuth";
 
 const NewProfile = () => {
   const { theme } = useTheme();
@@ -35,7 +36,7 @@ const NewProfile = () => {
   const handleRoutingBack = () => {
     router.back();
   };
-  const {userId} = useUserData();
+  const {user } = useAuth();
 
 
   const drizzleDB = useDatabase();
@@ -101,7 +102,7 @@ const getChoiceStyle = (choice: string) => {
     },
     {
       key: "gender",
-      title: `${formData.fullname} ${t('profileNew.profileGenderPlaceholder')}`,
+      title: `${t('profileNew.profileGenderPlaceholder')}`,
       component: (
         <View style={styles.choiceContainer}>
           {['Male', 'Female'].map((englishGender) => {
@@ -130,7 +131,7 @@ const getChoiceStyle = (choice: string) => {
     },
     {
       key: "birthYear", 
-      title: `${t('profileNew.profileBirthYearTitle')} ${formData.fullname}?`, 
+      title: `${t('profileNew.profileBirthYearTitle')}`, 
       component: (
         <>
           <Pressable style={styles.pickerTrigger} onPress={handlePresentModalPress}>
@@ -271,9 +272,9 @@ const getChoiceStyle = (choice: string) => {
     try{
    
       const {diabetic, hypertensive, smoker, birthYear, ...profileData} = formData;
-      const age = birthYear > 0 ? currentYear - birthYear : 0; // Calculate age
+      const age = birthYear > 0 ? currentYear - birthYear : 0; 
 
-      const profileToInsert = { ...profileData, age, auth0Id:userId as string} as ProfileInput;
+      const profileToInsert = { ...profileData, age, auth0Id:user?.sub as string} as ProfileInput;
       const healthData = {
         profileId: 0, 
         diabetic: diabetic,

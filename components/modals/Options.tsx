@@ -1,5 +1,5 @@
-import React, { forwardRef, useCallback, useMemo } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { forwardRef, useCallback, useMemo, useState, useEffect } from "react";
+import { StyleSheet, View, BackHandler } from "react-native";
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -18,10 +18,38 @@ interface OptionsBottomSheetProps {
 }
 
 const OptionsBottomSheet = forwardRef<BottomSheetModal, OptionsBottomSheetProps>(
-  ({ onDelete, onEdit, showEdit = true,index }, ref) => {
+  ({ onDelete, onEdit, showEdit = true, index }, ref) => {
     const { theme } = useTheme();
     const styles = getStyles(theme);
     const snapPoints = useMemo(() => ["20%", "25%"], []);
+    
+ 
+    const [isModalVisible, setModalVisible] = useState(false);
+
+
+    const handleBackPress = useCallback(() => {
+      if (isModalVisible) {
+        (ref as React.RefObject<BottomSheetModal>)?.current?.dismiss();
+        return true;
+      }
+      return false;
+    }, [isModalVisible, ref]);
+
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        handleBackPress
+      );
+      return () => backHandler.remove();
+    }, [handleBackPress]);
+
+   
+    const handleOnAnimate = useCallback(
+      (fromIndex: number, toIndex: number) => {
+        setModalVisible(toIndex >= 0);
+      },
+      []
+    );
 
     const renderBackdrop = useCallback(
       (props: any) => (
@@ -45,8 +73,11 @@ const OptionsBottomSheet = forwardRef<BottomSheetModal, OptionsBottomSheetProps>
         handleIndicatorStyle={styles.handleIndicator}
         handleStyle={styles.handle}
         backgroundStyle={styles.container}
+        onDismiss={() => setModalVisible(false)}
+        onAnimate={handleOnAnimate}
       >
         <BottomSheetView style={styles.content}>
+          <View style={styles.separator} />
           {onDelete && (
             <BottomSheetModalButton
               title="Delete"
@@ -57,17 +88,7 @@ const OptionsBottomSheet = forwardRef<BottomSheetModal, OptionsBottomSheetProps>
               }}
             />
           )}
-          {onDelete && showEdit && onEdit && <View style={styles.separator} />}
-          {showEdit && onEdit && (
-            <BottomSheetModalButton
-              title="Edit"
-              icon="create-outline"
-              onPress={() => {
-                onEdit();
-                (ref as React.RefObject<BottomSheetModal>)?.current?.dismiss();
-              }}
-            />
-          )}
+       
         </BottomSheetView>
       </BottomSheetModal>
     );

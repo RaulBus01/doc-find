@@ -16,7 +16,6 @@ import {
   updateProfile,
   updateHealthIndicator
 } from "@/utils/LocalDatabase";
-import { useUserData } from "@/context/UserDataContext";
 import { Toast } from "toastify-react-native";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useTranslation } from "react-i18next";
@@ -28,11 +27,12 @@ import {
   genderValueKeys
 } from "@/utils/HealthIndicatorInterface";
 import YearPickerBottomSheet from "@/components/modals/Years";
+import { useAuth } from "@/hooks/useAuth";
 
 const EditProfilePage = () => {
   const { id } = useLocalSearchParams();
   const profileId = id as string;
-  const { userId } = useUserData();
+  const { user} = useAuth();
   const { theme } = useTheme();
   const router = useRouter();
   const styles = getStyles(theme);
@@ -77,9 +77,14 @@ const EditProfilePage = () => {
         setLoading(true);
         
         // Fetch profile data
-        const profile = await getProfileById(drizzleDB, Number(profileId), userId as string);
+        const profile = await getProfileById(drizzleDB, Number(profileId), user?.sub as string);
         if (!profile) {
-          Toast.error("Profile not found", "top");
+     
+          Toast.show({
+            type: "error",
+            text1: t('toast.error'),
+            text2: t('profileEdit.profileNotFoundText'),
+          });
           router.back();
           return;
         }
@@ -88,7 +93,13 @@ const EditProfilePage = () => {
         // Fetch health indicators
         const health = await getProfileHealthIndicatorById(drizzleDB, Number(profileId));
         if (!health) {
-          Toast.error("Health data not found", "top");
+
+          Toast.show({
+            type: "error",
+            text1:t('toast.error'),
+            text2: t('profileEdit.healthDataNotFoundText'),
+          });
+
           router.back();
           return;
         }
@@ -109,8 +120,12 @@ const EditProfilePage = () => {
         setFormData(initialData);
         setOriginalData(initialData);
       } catch (error) {
-        console.error("Error fetching profile:", error);
-        Toast.error("Error loading profile", "top");
+      
+         Toast.show({
+      type: "error",
+      text1:t('toast.error'),
+      text2: t('profileEdit.errorLoadingProfile')
+    });
       } finally {
         setLoading(false);
       }
@@ -145,17 +160,29 @@ const EditProfilePage = () => {
   
   const handleSave = async () => {
     if (!formData.fullname.trim()) {
-      Toast.error("Name is required", "top");
+      Toast.show({
+      type: "warn",
+      text1:t('toast.warning'),
+      text2: t('profileEdit.nameRequired')
+    });
       return;
     }
     
     if (!formData.gender) {
-      Toast.error("Gender is required", "top");
+      Toast.show({
+      type: "warn",
+      text1:t('toast.warning'),
+      text2: t('profileEdit.genderRequired')
+    });
       return;
     }
     
     if (formData.birthYear <= 0) {
-      Toast.error("Birth year is required", "top");
+      Toast.show({
+      type: "warn",
+      text1:t('toast.warning'),
+      text2: t('profileEdit.birthYearRequired'),
+    });
       return;
     }
     
@@ -181,14 +208,27 @@ const EditProfilePage = () => {
       });
       
       if (profileResult && healthResult) {
-        Toast.success("Profile updated successfully", "top");
+        Toast.show({
+        type: "success",
+        text1: t('toast.success'),
+        text2: t('profileEdit.updatedSuccessfully'),
+      });
         router.back();
       } else {
-        Toast.error("Failed to update profile", "top");
+      
+       Toast.show({
+        type: "error",
+        text1: t('toast.error'),
+        text2: t('profileEdit.errorUpdatingProfile'),
+      });
       }
     } catch (error) {
       console.error("Error updating profile:", error);
-      Toast.error("Failed to update profile", "top");
+       Toast.show({
+          type: "error",
+          text1:t('toast.error'),
+          text2: t('profileEdit.healthDataNotFoundText'),
+        });
     } finally {
       setSaving(false);
     }

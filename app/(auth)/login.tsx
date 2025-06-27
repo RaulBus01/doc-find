@@ -1,52 +1,33 @@
 import { router } from "expo-router";
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image, Dimensions } from "react-native";
-import { useAuth0 } from "react-native-auth0";
-import { secureSave, secureSaveObject } from '@/utils/SecureStorage';
-import Constants from 'expo-constants';
-import { ApiCall } from '@/utils/ApiCall';
-import { FontAwesome, FontAwesome6 } from '@expo/vector-icons';
-import { useUserData } from "@/context/UserDataContext";
-import { useToken } from "@/context/TokenContext";
+
+
 import { useTranslation } from "react-i18next";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
 import { ThemeColors } from "@/constants/Colors";
 import { useTheme } from "@/context/ThemeContext";
+import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
+import { useAuth } from "@/hooks/useAuth";
 
 const { width } = Dimensions.get('window');
 
 export default function AuthorizationScreen() {
-  const { authorize, user, error, isLoading } = useAuth0();
+  const { signIn, isLoading, error } = useAuth()
   const { t } = useTranslation();
-  const { refreshData } = useUserData();
-  const { refreshToken } = useToken();
+
+
   const {theme} = useTheme();
   const styles = getStyles(theme);
 
 
+
   const onLogin = async () => {
     try {
-      const authResult = await authorize({
-        scope: "openid profile email",
-        audience: `${Constants.expoConfig?.extra?.auth0?.audience}`,
-      });
+      await signIn();
       
-      if (!authResult) return;
+    
       
-      await secureSave('accessToken', authResult.accessToken);
-      const userData = await ApiCall.post('/user/signup', authResult.accessToken, {});
-      
-      if (userData) {
-        // Save user data securely
-        await secureSaveObject('user', userData);
-        // Update token context
-        await refreshToken(); 
-        // Update user data context
-        await refreshData();
-        
-        // ONLY navigate after data is refreshed
-        router.push("/(tabs)");
-      }
     } catch (e) {
       console.error("Login error:", e);
     }
@@ -64,7 +45,7 @@ export default function AuthorizationScreen() {
     <View style={styles.container}>
       <View style={styles.logoContainer}>
         <Image 
-          source={require('../assets/images/logo.png')} 
+          source={require('../../assets/images/logo.png')} 
           style={styles.logo}
           resizeMode="contain"
         />
@@ -92,7 +73,7 @@ export default function AuthorizationScreen() {
       
       <TouchableOpacity 
         style={styles.newUserButton} 
-        onPress={() => router.push("/")}
+        onPress={() => router.replace("/(auth)/onboarding")}
       >
         <Text style={styles.newUserText}>{t('login.newUserText')}</Text>
         <FontAwesome6 name="arrow-right" size={14} color="#0056b3" />
@@ -159,7 +140,7 @@ const getStyles = (theme: ThemeColors) =>
     marginRight: 10,
   },
   loginButtonText: {
-    color: theme.text,
+    color: theme.textLight ? theme.textLight : theme.text,
     fontSize: 16,
     fontWeight: '600',
   },

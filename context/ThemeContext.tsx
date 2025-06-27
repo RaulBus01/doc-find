@@ -22,7 +22,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [manualTheme, setManualTheme] = useState<'light' | 'dark' | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   
-  // Load saved theme preference on initial render
+
   useEffect(() => {
     const loadThemePreference = async () => {
       try {
@@ -47,10 +47,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const toggleTheme = async () => {
 
     const newTheme = isDark ? 'light' : 'dark';
-    console.log('Toggling theme to:', newTheme);
+
     setManualTheme(newTheme);
     
-    // Save preference to AsyncStorage
+ 
     try {
       await AsyncStorage.setItem(THEME_PREFERENCE_KEY, newTheme);
     } catch (error) {
@@ -60,7 +60,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
 
   if (isLoading) {
-    // Return a default while loading, matching system theme
+
     return (
       <ThemeContext.Provider value={{ theme: Colors[systemColorScheme], isDark: systemColorScheme === 'dark', toggleTheme }}>
         {children}

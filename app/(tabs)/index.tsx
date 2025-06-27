@@ -5,7 +5,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  TextInput,
   ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useContext, useEffect, useState } from "react";
@@ -13,61 +12,68 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useRouter } from "expo-router";
-import { Chat } from "@/interface/Interface";
-import { useToken } from "@/context/TokenContext";
-import { getChats, getChatsCount } from "@/utils/DatabaseAPI";
 import { useTheme } from "@/context/ThemeContext";
 import { ThemeColors } from "@/constants/Colors";
-import { useUserData } from "@/context/UserDataContext";
-import { RefreshControl } from "react-native-gesture-handler";
+
 import { TabBarVisibilityContext } from "@/context/TabBarContext";
 import { useTranslation } from "react-i18next";
-import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
+import {
+  OfflineIndicator,
+  useOfflineStatus,
+} from "@/components/OfflineIndicator";
+import { powersync, setupPowerSync } from "@/powersync/system";
+
+import { getPowerSyncChats, getPowerSyncChatsCount } from "@/powersync/utils";
+import { useAuth } from "@/hooks/useAuth";
+import { Toast } from "toastify-react-native";
+import { LegendList } from "@legendapp/list";
 
 const Home = () => {
   const { theme } = useTheme();
   const styles = getStyles(theme);
   const router = useRouter();
-  const { token } = useToken();
-  const { picture, name } = useUserData();
   const { top, bottom } = useSafeAreaInsets();
+  const { user } = useAuth();
 
   const RETRIVE_CHATS = 5;
-  const [chats, setChats] = useState<Chat[]>();
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [chatCount, setChatCount] = useState<number>(0);
-  const [displayCount, setDisplayCount] = useState<number>(0);
-  const {isTabBarVisible, setIsTabBarVisible} = useContext(TabBarVisibilityContext);
-  useFocusEffect( useCallback(() => {
-    if(!isTabBarVisible) {
-      setIsTabBarVisible(true);
-    }
-    const fetchChats = async () => {
+  const { isTabBarVisible, setIsTabBarVisible } = useContext(TabBarVisibilityContext);
+  const { t } = useTranslation();
+  const isOffline = useOfflineStatus();
+
+  const { data: powerSyncChats = [], isLoading: powerSyncLoading } = getPowerSyncChats(user?.sub || '', RETRIVE_CHATS);
+  const { count: chatCountFromSync, isLoading: powerSyncCountLoading } = getPowerSyncChatsCount(user?.sub || '');
+
+  useEffect(() => {
+    const initializePowerSync = async () => {
       try {
-        setIsLoading(true);
-        const data = await getChats(token, RETRIVE_CHATS);
-        setChats(data);
-        const chatCount = await getChatsCount(token);
-        setChatCount(chatCount);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err : new Error("Failed to fetch chats")
-        );
-      } finally {
-        setIsLoading(false);
+        await setupPowerSync().then(() => {
+        });
+      } catch (error) {
+        Toast.show({
+          type: "error",
+          text1: t('toast.error'),
+          text2: t("homePage.powerSyncErrorText"),
+
+        });
       }
     };
 
-    if (token) {
-      fetchChats();
-    }
-  }, [token, lastUpdated])
-  );
+    initializePowerSync();
+  }, []);
 
+
+
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!isTabBarVisible) {
+        setIsTabBarVisible(true);
+      }
+    }, [isTabBarVisible, setIsTabBarVisible])
+  );
 
   const handleProfileRouting = (path: string) => {
     router.push(`/(profiles)/${path}`);
@@ -77,16 +83,23 @@ const Home = () => {
     router.push(`/(tabs)/(chat)/${path}`);
   };
 
-
   const handleSymptom = (symptom: string) => {
+    if(isOffline) {
+      Toast.show({
+        type: "error",
+        text1: t('toast.networkError')
+      });
+      return;
+    }
     router.push(`/(tabs)/(chat)/new?symptom=${symptom}`);
   };
-  const {t} = useTranslation();
-  const isOffline = useOfflineStatus();
+
   const ProfilesComponent = () => {
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{t('homePage.ProfileSectionTitle')}</Text>
+        <Text style={styles.sectionTitle}>
+          {t("homePage.ProfileSectionTitle")}
+        </Text>
         <View style={styles.profileCards}>
           <TouchableOpacity
             style={[
@@ -98,7 +111,9 @@ const Home = () => {
             <View style={styles.profileCardIcon}>
               <Ionicons name="person-add" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>{t('homePage.ProfileCardText')}</Text>
+            <Text style={styles.profileCardText}>
+              {t("homePage.ProfileCardText")}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -108,7 +123,9 @@ const Home = () => {
             <View style={styles.profileCardIcon}>
               <Ionicons name="people" size={24} color="white" />
             </View>
-            <Text style={styles.profileCardText}>{t('homePage.ProfileViewText')}</Text>
+            <Text style={styles.profileCardText}>
+              {t("homePage.ProfileViewText")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -117,18 +134,22 @@ const Home = () => {
 
   const SymptomsComponent = () => {
     const symptoms = [
-      { name: t('homePage.cough'), icon: "😷", color: theme.progressColor },
-      { name: t('homePage.headache'), icon: "🤕", color: theme.red },
-      { name: t('homePage.fever'), icon: "🤒", color: theme.blue },
+      { name: t("homePage.cough"), icon: "😷", color: theme.progressColor },
+      { name: t("homePage.headache"), icon: "🤕", color: theme.red },
+      { name: t("homePage.fever"), icon: "🤒", color: theme.blue },
+      { name: t("homePage.nausea"), icon: "🤢", color: theme.YellowIconBackground },
+      { name: t("homePage.fatigue"), icon: "😴", color: theme.lightGreen },
+      { name: t("homePage.sorethroat"), icon: "🗣️", color: theme.VioletIconBackground },
     ];
 
     return (
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>{t('homePage.SymptomsSectionTitle')}</Text>
+        <Text style={styles.sectionTitle}>
+          {t("homePage.SymptomsSectionTitle")}
+        </Text>
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.symptomsScroll}
         >
           {symptoms.map((symptom, index) => (
             <TouchableOpacity
@@ -147,52 +168,36 @@ const Home = () => {
 
   const getTimeOfDay = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return t('homePage.morning');
-    if (hour < 18) return t('homePage.afternoon');
-    return t('homePage.evening');
+    if (hour < 12) return t("homePage.morning");
+    if (hour < 18) return t("homePage.afternoon");
+    return t("homePage.evening");
   };
-  useEffect(() => {
 
-    setDisplayCount(0);
-
-
-    if (!chatCount) return;
-
-
-    const interval = setInterval(() => {
-      setDisplayCount((current) => {
-      
-        const next =
-          current + Math.max(1, Math.floor((chatCount - current) / 10));
-        if (next >= chatCount) {
-          clearInterval(interval);
-          return chatCount;
-        }
-        return next;
-      });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [chatCount]);
   return (
     <SafeAreaView
       style={[styles.container, { paddingBottom: bottom }]}
       edges={["bottom"]}
     >
-
       {/* Header */}
       <View style={[styles.header, { paddingTop: top + 10 }]}>
-   
         <View style={styles.headerTopRow}>
           <View style={styles.headerLeftSection}>
-            <View style={[styles.profileContainer, { backgroundColor: isOffline ? theme.red : theme.progressColor }]}>
+            <View
+              style={[
+                styles.profileContainer,
+                {
+                  backgroundColor: isOffline ? theme.red : theme.progressColor,
+                },
+              ]}
+            >
               <Image
-                source={{ uri: picture as string }}
+                source={{ uri: user?.picture as string }}
                 style={styles.profileImage}
               />
             </View>
             <View style={styles.dateContainer}>
               <Text style={styles.dateText}>
-                {new Date().toLocaleDateString(t('date'), {
+                {new Date().toLocaleDateString(t("date"), {
                   weekday: "long",
                   month: "long",
                   day: "numeric",
@@ -205,10 +210,14 @@ const Home = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Second row - greeting message */}
+
         <View style={styles.headerBottomRow}>
           <Text style={styles.greetingText}>
-           {t('homePage.good')} {getTimeOfDay()}, {name} 👋
+            {t("homePage.good")} {getTimeOfDay()},{" "}
+            {user?.givenName && user?.familyName
+              ? `${user.givenName} ${user.familyName}`
+              : user?.nickname}{" "}
+            👋
           </Text>
         </View>
         <OfflineIndicator />
@@ -218,36 +227,52 @@ const Home = () => {
         showsVerticalScrollIndicator={false}
         nestedScrollEnabled={true}
         style={styles.scrollContainer}
-        refreshControl={
-          <RefreshControl
-            refreshing={isLoading}
-            onRefresh={() => setLastUpdated(new Date())}
-            tintColor={theme.progressColor}
-          />
-        }
-
       >
-        
         <ProfilesComponent />
         <SymptomsComponent />
 
         {/* AI Chatbot Section */}
         <View style={[styles.sectionContainer, styles.lastSection]}>
-          <Text style={styles.sectionTitle}>{t('homePage.chatSectionTitle')} </Text>
+          <Text style={styles.sectionTitle}>
+            {t("homePage.chatSectionTitle")}{" "}
+          </Text>
           <View style={styles.chatbotCard}>
-          
             <View style={styles.chatbotDetails}>
-                {displayCount > 0 ? (
-              <><Text style={styles.chatbotCount}>{displayCount}+</Text><Text style={styles.chatbotLabel}>{t('homePage.chatCountTotalChats')}</Text></>
-                )
-                : (
-                  <Text style={styles.chatbotCount}>{t('homePage.chatCountNoChats')}</Text>
-                )}
+              {!powerSyncCountLoading ? (
+                <>
+                  <Text style={styles.chatbotCount}>{chatCountFromSync}+</Text>
+                  <Text style={styles.chatbotLabel}>
+                    {t("homePage.chatCountTotalChats")}
+                  </Text>
+                </>
+              ) : (
+                <Text style={styles.chatbotCount}>
+                  {t("homePage.chatCountNoChats")}
+                </Text>
+              )}
               <View style={styles.chatbotStatusRow}>
+                {isOffline ?
+                (
+                <View style={styles.chatbotStatus}>
+                  <View style={styles.statusDotRed} />
+
+                  <Text style={styles.statusLabel}>
+                    {t("homePage.chatStatusOfflineText")}
+                  </Text>
+                  
+                </View>
+                )
+                :
+                (
                 <View style={styles.chatbotStatus}>
                   <View style={styles.statusDot} />
-                  <Text style={styles.statusLabel}>{t('homePage.chatStatusText')}</Text>
-                </View>
+                  <Text style={styles.statusLabel}>
+                    {t("homePage.chatStatusText")}
+                  </Text>
+                
+              </View>
+                )
+                }
               </View>
               <View style={styles.chatbotButtons}>
                 <TouchableOpacity
@@ -255,14 +280,18 @@ const Home = () => {
                   onPress={() => handleChatRouting("new")}
                 >
                   <Ionicons name="add-circle" size={18} color="white" />
-                  <Text style={styles.startChatText}>{t('homePage.chatStartText')}</Text>
+                  <Text style={styles.startChatText}>
+                    {t("homePage.chatStartText")}
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.startChatButton}
                   onPress={() => handleChatRouting("history")}
                 >
                   <Ionicons name="chatbubbles" size={18} color="white" />
-                  <Text style={styles.startChatText}>{t('homePage.chatAllChatsText')}</Text>
+                  <Text style={styles.startChatText}>
+                    {t("homePage.chatAllChatsText")}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -275,42 +304,52 @@ const Home = () => {
 
           {/* Recent Chats */}
           <View style={styles.recentChatsContainer}>
-            <Text style={styles.recentChatsTitle}>{t('homePage.chatRecentText')}</Text>
-            {isLoading ? (
+            <Text style={styles.recentChatsTitle}>
+              {t("homePage.chatRecentText")}
+            </Text>
+            {powerSyncLoading ? (
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.progressColor} />
+              <ActivityIndicator size="large" color={theme.progressColor} />
               </View>
             ) : error ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{t('homePage.chatErrorText')}</Text>
+              <Text style={styles.errorText}>
+                {t("homePage.chatErrorText")}
+              </Text>
               </View>
-            ) : chats && chats.length > 0 ? (
-              chats.map((chat) => (
+            ) : powerSyncChats && !powerSyncCountLoading ? (
+              <LegendList
+              data={powerSyncChats}
+              keyExtractor={(chat) => chat.id.toString()}
+              estimatedItemSize={65}
+              renderItem={({ item: chat }: { item: any }) => (
                 <TouchableOpacity
-                  key={chat.id}
-                  style={styles.recentChatItem}
-                  onPress={() => handleChatRouting(chat.id)}
+                style={styles.recentChatItem}
+                onPress={() => handleChatRouting(chat.id)}
                 >
-                  <View style={styles.chatIconContainer}>
-                    <Ionicons
-                      name="chatbubble-ellipses"
-                      size={20}
-                      color="white"
-                    />
-                  </View>
-
-                  <View style={styles.chatItemContent}>
-                    <Text style={styles.chatItemTitle} numberOfLines={1}>
-                      {chat.title}
-                    </Text>
-                    <Text style={styles.chatItemDate}>
-                      {new Date(chat.createdAt).toLocaleDateString()}
-                    </Text>
-                  </View>
+                <View style={styles.chatIconContainer}>
+                  <Ionicons
+                  name="chatbubble-ellipses"
+                  size={20}
+                  color="white"
+                  />
+                </View>
+        
+                <View style={styles.chatItemContent}>
+                  <Text style={styles.chatItemTitle} numberOfLines={1}>
+                  {chat.title}
+                  </Text>
+                  <Text style={styles.chatItemDate}>
+                  {new Date(chat.updated_at).toLocaleDateString()}
+                  </Text>
+                </View>
                 </TouchableOpacity>
-              ))
+              )}
+              />
             ) : (
-              <Text style={styles.noChatsText}>{t('homePage.chatEmptyText')}</Text>
+              <Text style={styles.noChatsText}>
+              {t("homePage.chatEmptyText")}
+              </Text>
             )}
           </View>
         </View>
@@ -338,6 +377,7 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       marginBottom: 15,
     },
+    
     headerLeftSection: {
       flexDirection: "row",
       alignItems: "center",
@@ -355,15 +395,15 @@ const getStyles = (theme: ThemeColors) =>
       height: 40,
       width: 40,
       borderRadius: 50,
-      padding:3,
-      backgroundColor:theme.avatarBackground,
+      padding: 3,
+      backgroundColor: theme.avatarBackground,
       marginRight: 12,
     },
 
     profileImage: {
-     width: '100%',
-    height: '100%',
-    borderRadius: 38,
+      width: "100%",
+      height: "100%",
+      borderRadius: 38,
     },
     dateContainer: {
       flex: 1,
@@ -415,7 +455,7 @@ const getStyles = (theme: ThemeColors) =>
       color: theme.text,
       marginBottom: 15,
     },
-    // Profiles Component Styles
+  
     profileCards: {
       flexDirection: "row",
       justifyContent: "space-between",
@@ -444,17 +484,14 @@ const getStyles = (theme: ThemeColors) =>
       fontWeight: "600",
       textAlign: "center",
     },
-    // Symptoms Component Styles
-    symptomsScroll: {
-      flexDirection: "row",
-    },
     symptomCard: {
-      width: 95,
-      height: 100,
+      width: 170,
+      minHeight: 120,
       borderRadius: 15,
       justifyContent: "center",
       alignItems: "center",
       marginRight: 15,
+      minWidth: 100,
     },
     symptomIcon: {
       fontSize: 32,
@@ -465,7 +502,7 @@ const getStyles = (theme: ThemeColors) =>
       fontSize: 14,
       fontWeight: "500",
     },
-    // Chats Component Styles
+ 
     chatsScroll: {
       flexDirection: "row",
     },
@@ -493,7 +530,7 @@ const getStyles = (theme: ThemeColors) =>
       color: "#F44336",
       fontSize: 14,
     },
-    // Health Insights Styles
+ 
     insightsScroll: {
       flexDirection: "row",
     },
@@ -592,7 +629,7 @@ const getStyles = (theme: ThemeColors) =>
       color: "white",
       marginRight: 3,
     },
-    // AI Chatbot Styles
+  
     chatbotCard: {
       backgroundColor: theme.progressColor,
       borderRadius: 15,
@@ -631,6 +668,13 @@ const getStyles = (theme: ThemeColors) =>
       height: 8,
       borderRadius: 4,
       backgroundColor: theme.lightGreen,
+      marginRight: 5,
+    },
+    statusDotRed:{
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+      backgroundColor: theme.red,
       marginRight: 5,
     },
     statusLabel: {
@@ -691,7 +735,7 @@ const getStyles = (theme: ThemeColors) =>
       alignItems: "center",
       backgroundColor: theme.pressedBackground,
       borderRadius: 18,
-      paddingHorizontal: 15,
+      paddingHorizontal: 10,
       paddingVertical: 12,
       marginBottom: 10,
     },

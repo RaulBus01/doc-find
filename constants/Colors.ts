@@ -8,7 +8,7 @@ interface ThemeColors {
   tabbarBackground: string;
   lightGreen: string;
   blue: string;
-
+  yellow: string;
   red: string; 
   cardBackground: string;
   pressedBackground: string;
@@ -35,6 +35,7 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
     progressColor:"#4CAF50",
     blue:"#3c82f6",
     red:"#FF5722",
+    yellow: '#FFEB3B',
 
     cardBackground: 'rgba(141, 141, 141, 0.18)',
     pressedBackground: 'rgba(36, 29, 29, 0.05)',
@@ -60,6 +61,7 @@ export const Colors: { light: ThemeColors; dark: ThemeColors } = {
     progressColor:"#3b893d",
     blue:"#1f3354",
     red: '#db3908', 
+    yellow: '#f2b600',
 
     cardBackground: 'rgba(255, 255, 255, 0.1)',
     pressedBackground: 'rgba(92, 92, 92, 0.25)',

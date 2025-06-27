@@ -24,7 +24,7 @@ type TabBarProps = {
 
 
 const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
-  // Shared value to control vertical translation
+
   const { isTabBarVisible } = useContext(TabBarVisibilityContext);
   const translateY = useSharedValue(50); 
   const { theme } = useTheme();
@@ -46,14 +46,12 @@ const TabBar: React.FC<TabBarProps> = ({ state, descriptors, navigation }) => {
     transform: [{ translateY: translateY.value }],
   }));
 
-  // Use a stable reference with useMemo to prevent unnecessary re-renders
   const filteredRoutes = useMemo(() => 
     state.routes.filter((route: { name: string }) =>
       allowedRoutes.some(allowed => allowed.path === route.name)
     ), 
   [state.routes]);
 
-  // Use useMemo to prevent unnecessary re-renders
   const orderedRoutes = useMemo(() => {
     return [...filteredRoutes].sort((a, b) => {
       const aIndex = allowedRoutes.find(allowed => allowed.path === a.name)?.order;
@@ -115,7 +113,7 @@ const getStyles = (theme: ThemeColors) => StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     width: '100%',
-    height: 50,
+    height: '6%',
     backgroundColor: theme.tabbarBackground,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,

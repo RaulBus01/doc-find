@@ -1,25 +1,36 @@
 import 'dotenv/config';
 
 export default {
+   
     "expo": {
-      "name": "doc-find",
+      "owner": "laurbalaur",
+      "name": "Medora",
       "slug": "doc-find",
       "version": "1.0.0",
       "orientation": "portrait",
-      "icon": "./assets/images/icon.png",
+      "icon": "./assets/images/adaptiveLogo.png",
       "scheme": "myapp",
       "userInterfaceStyle": "automatic",
       "newArchEnabled": true,
+      "assetBundlePatterns": [
+        "**/*"
+      ],
       "ios": {
         "supportsTablet": true,
-        "bundleIdentifier": "com.laurbalaur.docfind"
+        "bundleIdentifier": "com.laurbalaur.medora"
       },
+      "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+      } ,
+
       "android": {
         "adaptiveIcon": {
-          "foregroundImage": "./assets/images/adaptive-icon.png",
+          "foregroundImage": "./assets/images/adaptiveLogo.png",
           "backgroundColor": "#ffffff"
         },
-        "package": "com.laurbalaur.docfind",
+        "package": "com.laurbalaur.medora",
         "config":{
         "googleMaps": {
           "apiKey": process.env.GOOGLE_MAPS_API_KEY
@@ -39,7 +50,7 @@ export default {
         [
           "expo-splash-screen",
           {
-            "image": "./assets/images/splash-icon.png",
+            "image": "./assets/images/logo.png",
             "imageWidth": 200,
             "resizeMode": "contain",
             "backgroundColor": "#ffffff"
@@ -81,4 +92,3 @@ export default {
       }
     }
   }
-  

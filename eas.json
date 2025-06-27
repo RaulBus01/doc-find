@@ -5,12 +5,25 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+       "env": {
+        "GOOGLE_MAPS_API_KEY": "AIzaSyCcTfMhQoUFF4bVofxMTAoj22iAhkY_98o",
+        "AUTH0_DOMAIN": "dev-20pzuivt0lfo5hhy.us.auth0.com", 
+        "AUTH0_CLIENT_ID": "v9UP3USmg0NvwZTgHTYKCAOEbOURYSmD",
+        "AUTH0_AUDIENCE": "https://683ed5478a7b3028979350a4.powersync.journeyapps.com"
+      }
     },
     "preview": {
-      "distribution": "internal"
+      "android": {
+        "buildType": "apk"
+      }
+    
     },
-    "production": {}
+     "production": {
+      "android": {
+        "buildType": "apk"
+      }
+    }
   },
   "submit": {
     "production": {}

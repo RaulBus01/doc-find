@@ -1,13 +1,13 @@
 import { sqliteTable, text, integer, primaryKey, foreignKey } from 'drizzle-orm/sqlite-core';
 import { relations } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
-import { double } from 'drizzle-orm/singlestore-core';
+
 
 // Profiles table
 export const profiles = sqliteTable('profiles', {
     id: integer("id").primaryKey({ autoIncrement: true }),
     auth0Id: text("auth0Id").notNull(),
-    fullname: text("fullname").unique().notNull(),
+    fullname: text("fullname").notNull(),
     gender: text("gender").notNull(),
     age: integer("age").notNull(),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
@@ -43,7 +43,7 @@ export const profileAllergies = sqliteTable('profile_allergies', {
     id: integer("id").primaryKey({ autoIncrement: true }),
     profileId: integer("profile_id").notNull().references(() => profiles.id, { onDelete: 'cascade' }),
     allergyId: integer("allergy_id").notNull().references(() => allergies.id, { onDelete: 'cascade' }),
-    severity: text("severity"),
+    severity: integer("severity", { mode: "boolean" }).notNull().default(false),
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
 });
 
@@ -68,23 +68,6 @@ export const healthIndicators = sqliteTable('health_indicators', {
     created_at: integer("created_at").notNull().default(sql`(current_timestamp)`),
     updated_at: integer("updated_at").notNull().default(sql`(current_timestamp)`),
 });
-
-export const cachedMedicalPlaces = sqliteTable('cached_medical_places', {
-    id: text("place_id").primaryKey(), 
-    name: text("name").notNull(),
-    latitude: text("latitude").notNull(),
-    longitude: text("longitude").notNull(),
-    vicinity: text("vicinity"), // Address 
-    business_status: text("business_status"),
-    rating: text("rating"),
-    user_ratings_total: text("user_ratings_total"),
-    place_types: text("place_types"), 
-    opening_hours: text("opening_hours"), 
-    place_data: text("place_data"), 
-    cached_at: integer("cached_at").notNull().default(sql`(current_timestamp)`),
-    expires_at: integer("expires_at").notNull(),
-});
-
 // Define relations for profileMedications
 export const profileMedicationsRelations = relations(profileMedications, ({ one }) => ({
   profile: one(profiles, {
@@ -97,12 +80,11 @@ export const profileMedicationsRelations = relations(profileMedications, ({ one 
   }),
 }));
 
-// Also add the reverse relations on medications
+
 export const medicationsRelations = relations(medications, ({ many }) => ({
   profileMedications: many(profileMedications),
 }));
 
-// Export types for TypeScript type safety
 export type Profile = typeof profiles.$inferSelect;
 export type ProfileInput = typeof profiles.$inferInsert;
 

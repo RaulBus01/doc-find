@@ -1,8 +1,8 @@
-import React, { forwardRef, useCallback, useMemo } from "react";
-import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
+import React, { forwardRef, useCallback, useMemo, useState, useEffect } from "react";
+import { StyleSheet, TouchableOpacity, View, Text, BackHandler } from "react-native";
 import {
   BottomSheetBackdrop,
-  BottomSheetFlatList,
+  BottomSheetFlashList,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import { FontAwesome } from "@expo/vector-icons";
@@ -21,11 +21,40 @@ const YearPickerBottomSheet = forwardRef<BottomSheetModal, YearPickerProps>(
     const { theme } = useTheme();
     const styles = getStyles(theme);
     const snapPoints = useMemo(() => ["50%", "80%"], []);
-    const {t} = useTranslation();
+    const { t } = useTranslation();
+    
+
+    const [isModalVisible, setModalVisible] = useState(false);
+    
     const currentYear = new Date().getFullYear();
     const years = useMemo(() => {
       return Array.from({ length: 100 }, (_, i) => currentYear - i);
     }, [currentYear]);
+
+    const handleBackPress = useCallback(() => {
+      if (isModalVisible) {
+        (ref as React.RefObject<BottomSheetModal>)?.current?.dismiss();
+        return true;
+      }
+      return false;
+    }, [isModalVisible, ref]);
+
+ 
+    useEffect(() => {
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        handleBackPress
+      );
+      return () => backHandler.remove();
+    }, [handleBackPress]);
+
+
+    const handleOnAnimate = useCallback(
+      (fromIndex: number, toIndex: number) => {
+        setModalVisible(toIndex >= 0);
+      },
+      []
+    );
 
     const renderBackdrop = useCallback(
       (props: any) => (
@@ -63,11 +92,14 @@ const YearPickerBottomSheet = forwardRef<BottomSheetModal, YearPickerProps>(
         handleIndicatorStyle={styles.handleIndicator}
         handleStyle={styles.handle}
         backgroundStyle={styles.container}
+        onDismiss={() => setModalVisible(false)}
+        onAnimate={handleOnAnimate}
       >
-        <BottomSheetFlatList
+        <BottomSheetFlashList
           data={years}
-          keyExtractor={(item) => item.toString()}
+          keyExtractor={(item:any) => item.toString()}
           renderItem={renderYearItem}
+          estimatedItemSize={67}
           contentContainerStyle={styles.contentContainer}
           ListHeaderComponent={() => (
             <View style={styles.header}>

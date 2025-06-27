@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
@@ -12,67 +12,80 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from "react-native-reanimated";
-import { useAuth0 } from "react-native-auth0";
+import { useAuth } from "@/hooks/useAuth";
 import { router } from "expo-router";
-import { useToken } from "@/context/TokenContext";
+
 import { User } from "@/interface/Interface";
-import { Ionicons, MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons, FontAwesome5, FontAwesome6 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "@/context/ThemeContext";
-import { secureGetValueFor } from "@/utils/SecureStorage";
+
 import { Switch } from "react-native-gesture-handler";
-import { useUserData } from "@/context/UserDataContext";
+
 import { ThemeColors } from "@/constants/Colors";
 import { useTranslation } from "react-i18next";
+import { changeLanguage } from "@/i18n";
+
 import { OfflineIndicator, useOfflineStatus } from "@/components/OfflineIndicator";
+
+import LanguagePicker from "../../components/modals/Language";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { secureDeleteValue } from "@/utils/SecureStorage";
+
 
 const BOTTOM_TAB_HEIGHT = 80;
 
 export default function Account() {
-  const { clearSession } = useAuth0();
-  const { clearToken } = useToken();
-  const { clearUserData } = useUserData();
+ const {signOut} = useAuth();
 
-  const [user, setUser] = useState<User | null>(null);
+
+
+  const {user } =useAuth();
+  const languagePickerRef = useRef<BottomSheetModal>(null);
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollViewOffset(scrollRef);
-  const { theme, toggleTheme,isDark } = useTheme();
+  const { theme, toggleTheme, isDark } = useTheme();
   const styles = getStyles(theme);
   const isOffline = useOfflineStatus();
+  const { t, i18n } = useTranslation();
 
   const handleChangeTheme = () => {
     toggleTheme();
   }
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await secureGetValueFor("user");
-        if (userData) {
-          const userJSON = JSON.parse(userData);
-          setUser(userJSON);
-        }
-      } catch (error) {
-        console.error("Error fetching user:", error);
-      }
-    };
+  const handleLanguageSelect = async (languageCode: string) => {
+    await changeLanguage(languageCode);
+  };
 
-    fetchUser();
-  }, []);
+  const getCurrentLanguageName = () => {
+    const languageNames: { [key: string]: string } = {
+      'en-US': 'English',
+      'ro-RO': 'Română',
+      'fr-FR': 'Français',
+      'es-ES': 'Español',
+      'de-DE': 'Deutsch',
+      'it-IT': 'Italiano',
+      'pt-PT': 'Português',
+    };
+    return languageNames[i18n.language] || 'English';
+  };
+
+  const openLanguagePicker = () => {
+    languagePickerRef.current?.present();
+  };
+
+ 
 
   const onLogout = async () => {
     console.log("Logging out...");
     try {
-      await clearSession();
-      await clearToken();
-      await clearUserData();
-      router.replace("/login");
+      await signOut();
+  
     } catch (e) {
       console.error("Error during logout:", e);
     }
   };
 
-  const {t} = useTranslation();
 
   const headerAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -91,9 +104,14 @@ export default function Account() {
               <Image source={{ uri: user?.picture }} style={styles.avatar} />
             </View>
             <View style={styles.profileInfo}>
-              <Text style={styles.profileName}>
-                {user?.givenName} {user?.familyName}
-              </Text>
+              {user?.givenName && user.familyName ? (
+                <Text style={styles.profileName}>
+                  {user.givenName} {user.familyName}
+                </Text>
+              ) : (
+                <Text style={styles.profileName}>{user?.nickname}</Text>
+              )}
+              
               <Text style={styles.profileEmail}>{user?.email}</Text>
             </View>
             
@@ -128,22 +146,8 @@ export default function Account() {
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
               
-              <View style={styles.separator} />
-              
-              <Pressable 
-                style={styles.option}
-                onPress={() => console.log("Change Password")} 
-                android_ripple={{ color: theme.pressedBackground }}
-              >
-                <View style={[styles.optionIcon, {backgroundColor: theme.VioletIconBackground}]}>
-                  <Ionicons name="lock-closed" size={20} color={theme.text} />
-                </View>
-                <View style={styles.optionContent}>
-                  <Text style={styles.optionTitle}>{t('account.passwordText')}</Text>
-                  <Text style={styles.optionSubtitle}>{t('account.passwordSubText')}</Text>
-                </View>
-                <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
-              </Pressable>
+          
+  
               
               <View style={styles.separator} />
               
@@ -153,7 +157,7 @@ export default function Account() {
                 android_ripple={{color: theme.pressedBackground}}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.GreenIconBackground}]}>
-                  <FontAwesome5 name="user-friends" size={18} color={theme.text} />
+                  <FontAwesome6 name="users" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={styles.optionTitle}>{t('account.profileText')}</Text>
@@ -171,15 +175,15 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Notifications")} 
+                onPress={openLanguagePicker}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.RedIconBackground}]}>
-                  <Ionicons name="notifications" size={20} color={theme.text} />
+                  <Ionicons name="language" size={20} color={theme.text} />
                 </View>
                 <View style={styles.optionContent}>
                   <Text style={styles.optionTitle}>{t('account.languageText')}</Text>
-                  <Text style={styles.optionSubtitle}>{t('account.languageSubText')}</Text>
+                  <Text style={styles.optionSubtitle}>{getCurrentLanguageName()}</Text>
                 </View>
                 <MaterialIcons name="keyboard-arrow-right" size={24} color={theme.text} style={styles.optionArrow} />
               </Pressable>
@@ -218,7 +222,7 @@ export default function Account() {
             <View style={styles.optionCard}>
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("About")} 
+                 onPress={() => router.push('/(about)/about')}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightBlueIconBackground}]}>
@@ -235,7 +239,7 @@ export default function Account() {
               
               <Pressable 
                 style={styles.option}
-                onPress={() => console.log("Terms of Use")} 
+                onPress={() => router.push('/(about)/terms')}
                 android_ripple={{ color: theme.pressedBackground }}
               >
                 <View style={[styles.optionIcon, {backgroundColor: theme.LightVioletIconBackground}]}>
@@ -256,7 +260,7 @@ export default function Account() {
               styles.logoutButton,
               pressed ? styles.logoutButtonPressed : null,
             ]}
-            onPressIn={onLogout}
+            onPress={onLogout}
             android_ripple={{ color: theme.pressedBackground }}
           >
             <Ionicons name="log-out" size={18} color="#fff" />
@@ -266,6 +270,11 @@ export default function Account() {
         
         </ScrollView>
      
+      <LanguagePicker
+        ref={languagePickerRef}
+        onLanguageSelect={handleLanguageSelect}
+        currentLanguage={i18n.language}
+      />
     </SafeAreaView>
   );
 }

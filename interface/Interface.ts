@@ -5,27 +5,25 @@ export enum Role {
     Bot = 1,
 }
 export enum MessageType{
-    Human = -100,
-    AI = -200,
-    System = -300,
+    Human = "-100",
+    AI = "-200",
+    System = "-300",
 }
   
   
   export interface Message {
-    id: number;
+    id: string;
     chatId: string;
     isAI: boolean;
     content: string;
-    createdAt: string;
-    updatedAt: string;
   }
   
   export interface Chat {
-    id: string;
-    userId: string;
+    id: number;
+    user_id: string;
     title: string;
-    createdAt: string;
-    updatedAt: string;
+    created_at: string;
+    updated_at: string;
   }
   export interface User {
     id: string,
@@ -121,3 +119,4 @@ export interface GooglePlaceDetails {
   };
   website?: string;
 }
+
